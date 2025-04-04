@@ -39,6 +39,3 @@ make package FINALPACKAGE=1 STRIP=0
 
 ## License
 This project is licensed under the [Boost Software License 1.0](./LICENSE). Additionally, this project also uses code from [LiveContainer](https://github.com/khanhduytran0/LiveContainer). View the [NOTICE.md](./NOTICE.md) for more details.
-
-## Footnotes
-It may be possible to run Theos on a non-GNU Linux system, however this is poorly documented and is not recommended.
