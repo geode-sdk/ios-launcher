@@ -1,9 +1,9 @@
 # Installation Guide
 > [!WARNING]
-> For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode. Additionally, **JIT** is a **__requirement__** if you want to run Geode without jailbreaking.
+> For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, **JIT** is a **__requirement__** if you want to run Geode without jailbreaking.
 
 > [!WARNING]
-> Do **not** use enterprise certificates in sideloaders **like ESign and Scarlet.** Those certificates **does not have the entitlements for enabling JIT**. You **won't be able to enable JIT** if you use them. If you want to use ESign, buy a developer certificate.
+> Do **not** use enterprise certificates in sideloaders **like ESign and Scarlet.** Those certificates **do not have the entitlements for enabling JIT** (`get-task-allow`). You **won't be able to enable JIT** if you use them. If you want to use ESign, buy a developer certificate.
 
 ## Prerequisites
 - iOS/iPadOS 14.0 or later
