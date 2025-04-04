@@ -22,7 +22,7 @@ If you have any further questions, or need help, be sure to join [our Discord se
 ## Building / Development
 
 To build this project, you must have the following prerequisites installed:
-- [Theos](https://theos.dev/docs/) [WSL for Windows]
+- [Theos](https://theos.dev/docs/) [WSL for Windows and GNU/Linux]
 - [make](https://formulae.brew.sh/formula/make) [Mac OS only]
 
 After installing these, you can compile the project by running:
