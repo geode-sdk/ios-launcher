@@ -192,15 +192,15 @@ static void* getAppEntryPoint(void* handle, uint32_t imageIndex) {
 	const struct mach_header_64* header = (struct mach_header_64*)_dyld_get_image_header(imageIndex);
 	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
 	struct load_command* command = (struct load_command*)imageHeaderPtr;
-	for (int i = 0; i < header->ncmds > 0; ++i) {
-		if (command->cmd == LC_MAIN) {
-			struct entry_point_command ucmd = *(struct entry_point_command*)imageHeaderPtr;
-			entryoff = ucmd.entryoff;
-			break;
-		}
-		imageHeaderPtr += command->cmdsize;
-		command = (struct load_command*)imageHeaderPtr;
-	}
+	for (int i = 0; i < header->ncmds && header->ncmds > 0; ++i) {
+    if (command->cmd == LC_MAIN) {
+        struct entry_point_command ucmd = *(struct entry_point_command*)imageHeaderPtr;
+        entryoff = ucmd.entryoff;
+        break;
+    }
+    imageHeaderPtr += command->cmdsize;
+    command = (struct load_command*)imageHeaderPtr;
+}
 	assert(entryoff > 0);
 	return (void*)header + entryoff;
 }

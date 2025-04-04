@@ -168,7 +168,7 @@ Class LCSharedUtilsClass = nil;
 		NSString* error = LCParseMachO(fileURL.path.UTF8String, ^(const char* path, struct mach_header_64* header) {
 			uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
 			struct load_command* command = (struct load_command*)imageHeaderPtr;
-			for (int i = 0; i < header->ncmds > 0; i++) {
+			for (int i = 0; i < header->ncmds && header->ncmds > 0; i++) {
 				if (command->cmd == LC_CODE_SIGNATURE) {
 					struct linkedit_data_command* csCommand = (struct linkedit_data_command*)command;
 					void* csData = (void*)((uint8_t*)header + csCommand->dataoff);
