@@ -22,7 +22,7 @@ If you have any further questions, or need help, be sure to join [our Discord se
 ## Building / Development
 
 To build this project, you must have the following prerequisites installed:
-- [Theos](https://theos.dev/docs/) [WSL for Windows]
+- [Theos](https://theos.dev/docs/) [WSL for Windows and GNU/Linux]
 - [make](https://formulae.brew.sh/formula/make) [Mac OS only]
 
 After installing these, you can compile the project by running:
@@ -39,3 +39,6 @@ make package FINALPACKAGE=1 STRIP=0
 
 ## License
 This project is licensed under the [Boost Software License 1.0](./LICENSE). Additionally, this project also uses code from [LiveContainer](https://github.com/khanhduytran0/LiveContainer). View the [NOTICE.md](./NOTICE.md) for more details.
+
+## Footnotes
+It may be possible to run Theos on a non-GNU Linux system, however this is poorly documented and is not recommended.
