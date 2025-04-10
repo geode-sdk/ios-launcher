@@ -285,25 +285,30 @@ bool _GenerateCMS(X509 *scert, EVP_PKEY *spkey, const string &strCDHashData, con
 	ASN1_TYPE_free(type_256);
 	return (!strCMSOutput.empty());
 }
+bool GenerateCMS(const string &strSignerCertData, 
+                const string &strSignerPKeyData,
+                const string &strCDHashData,
+                const string &strCDHashPlist,
+                string &strCMSOutput) {
+    
+    BIO* certBio = BIO_new_mem_buf(strSignerCertData.data(), strSignerCertData.size());
+    BIO* pkeyBio = BIO_new_mem_buf(strSignerPKeyData.data(), strSignerPKeyData.size());
+    BIO *bcert = BIO_new_mem_buf(strSignerCertData.c_str(), (int)strSignerCertData.size());
+    BIO *bpkey = BIO_new_mem_buf(strSignerPKeyData.c_str(), (int)strSignerPKeyData.size());
+    
+    if (!bcert || !bpkey)
+    {
+        return CMSError();
+    }
 
-bool GenerateCMS(const string &strSignerCertData, const string &strSignerPKeyData, const string &strCDHashData, const string &strCDHashesPlist, string &strCMSOutput)
-{
-	BIO *bcert = BIO_new_mem_buf(strSignerCertData.c_str(), (int)strSignerCertData.size());
-	BIO *bpkey = BIO_new_mem_buf(strSignerPKeyData.c_str(), (int)strSignerPKeyData.size());
+    X509 *scert = PEM_read_bio_X509(bcert, NULL, 0, NULL);
+    EVP_PKEY *spkey = PEM_read_bio_PrivateKey(bpkey, NULL, 0, NULL);
+    if (!scert || !spkey)
+    {
+        return CMSError();
+    }
 
-	if (!bcert || !bpkey)
-	{
-		return CMSError();
-	}
-
-	X509 *scert = PEM_read_bio_X509(bcert, NULL, 0, NULL);
-	EVP_PKEY *spkey = PEM_read_bio_PrivateKey(bpkey, NULL, 0, NULL);
-	if (!scert || !spkey)
-	{
-		return CMSError();
-	}
-
-	return ::_GenerateCMS(scert, spkey, strCDHashData, strCDHashesPlist, "", "", strCMSOutput);
+    return ::_GenerateCMS(scert, spkey, strCDHashData, strCDHashPlist, "", "", strCMSOutput);
 }
 
 bool GetCMSContent(const string &strCMSDataInput, string &strContentOutput)
