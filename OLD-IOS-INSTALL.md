@@ -24,6 +24,9 @@ Tap the `+` button and tap either **Install IPA File** or **Install From URL**, 
 > [!WARNING]
 > Only follow this if you're jailbroken and have the TIPA version installed!
 
+> [!WARNING]
+> If you follow this and your jailbreak goes away (whether from a reboot, battery dying and etc.), Geode will not work. You will have to re-jailbreak your device for Geode to work again.
+
 > [!TIP]
 > Once you install the jailbreak tweak, you can launch the game without going to the Geode launcher. However you should keep the launcher if you want to restart the game, enter safe mode and update Geode!
 
