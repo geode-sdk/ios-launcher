@@ -12,6 +12,7 @@
 - USB Cable to connect your device (Lightning / USB C)
 - Full version of Geometry Dash installed
 - An internet connection
+- A passcode on your device
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases)
 
 ## Install SideStore
