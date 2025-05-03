@@ -90,36 +90,5 @@ There are a few ways to launch Geode with JIT, depending on both iOS version, an
 > StikDebug works without Wi-Fi connection, just by Airplane Mode. Unfortunately, this on-device VPN does not support cellular. However, you can use cellular data after launching an app with JIT.
 This is due to Apple limitations, but can be bypassed by downloading StosVPN! You can still use your cellular data after enabling an app with JIT by turning cellular data off, turning on Wi-Fi, launching Geode, turning cellular data back on.
 
-#### JITStreamer
-> [!NOTE]
-> For the first time setup, you will need a computer to get a Pairing File. After the setup, you will never need a computer for SideStore or JIT. If you installed SideStore, you likely already have a pairing profile, meaning there is no need to reinstall Jitterbug Pair. Additionally, this method is only if you do not want to use StikJIT, as unlike JITStreamer, StikJIT doesn't require an internet connection, as it is on-device JIT.
-
-[JITStreamer](https://github.com/jkcoxson/JitStreamer-EB) works for iOS 18+, and overall is the recommended method to launching Geode with JIT, as it does not require a computer each time you want to run Geometry Dash.
-
-#### Option 1: Auto JIT
-1. Follow https://jkcoxson.com/jitstreamer (For Jitterbug Pair, install the `.zip` corresponding to your operating system.)
-2. It is recommended to follow the guide on an iOS device, as you will need to upload the pairing file to get the wireguard config.
-3. After installing the shortcut, launch the **Geode** app again.
-4. Enable the **Enable Auto JIT** setting in the Geode app.
-5. Set the **Address** to be `http://[fd00::]:9172` if it isn't already set to that.
-6. Enable the `jitstreamer` VPN in the WireGuard app
-7. Tap the **Launch** button in the Geode app.
-8. Geode should launch in Geometry Dash!
-
-#### Option 2: Manual Method
-1. Enable the **Manual reopen with JIT** setting in the Geode app.
-2. Follow https://jkcoxson.com/jitstreamer (For Jitterbug Pair, install the `.zip` corresponding to your operating system.)
-3. It is recommended to follow the guide on an iOS device, as you will need to upload the pairing file to get the wireguard config.
-4. After installing the shortcut, launch the **Geode** app again.
-5. Tap the **Launch** button in the Geode app.
-6. Exit the Geode app. (https://support.apple.com/en-us/109359 if you don't know how to exit an app)
-7. Open the **JitStreamer EB** Shortcut
-8. Tap **Geode** when the shortcut asks "Which one?"
-9. Geode should launch in Geometry Dash!
-
-![](screenshots/jitstreamer-manual.png)
-
-> Optionally, you can follow the youtube tutorial here for installing both SideStore and JITStreamer: https://www.youtube.com/watch?v=Mt4cwFyPsoM
-
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
