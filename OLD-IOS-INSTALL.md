@@ -3,6 +3,8 @@
 This guide is for devices that is compatible with TrollStore (and optionally a jailbreak)
 
 ## Prerequisites
+- PC (Windows, Linux) or Mac OS (only for iOS 17.0)
+- USB Cable to connect your device (Lightning / USB C) (only for iOS 17.0) 
 - TrollStore
 - A jailbreak like Dopamine (optional, only if you want to use the jailbreak tweak)
 - Full version of Geometry Dash installed
