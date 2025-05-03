@@ -84,7 +84,6 @@ There are a few ways to launch Geode with JIT, depending on both iOS version, an
 4. Go back to StikDebug and click on "Import Pairing File". You actually will need **WiFi connection** on your phone for it to download DDI.
 5. After DDI is mounted you won't need WiFi. Now you can go back to Geode and click on **Launch**.
 6. Geode will now launch in Geometry Dash.
-
 ![](screenshots/stikdebug.png)
 > [!TIP]
 > StikDebug works without Wi-Fi connection, just by Airplane Mode. Unfortunately, this on-device VPN does not support cellular. However, you can use cellular data after launching an app with JIT.
