@@ -81,7 +81,7 @@ There are a few ways to launch Geode with JIT, depending on both iOS version, an
 1. Download StikDebug from the App Store: https://apps.apple.com/tr/app/stikdebug/id6744045754
 2. Launch the app
 3. It'll ask you to add "StikDebug" as a VPN Configuration. Click "Allow" and enter your passcode to add it.
-4. Go back to StikDebug and click on "Import Pairing File". You actually will need **WiFi connection** on your phone for it to download DDI.
+4. Go back to StikDebug and click on "Select Pairing File". You actually will need **WiFi connection** on your phone for it to download DDI.
 5. After DDI is mounted you won't need WiFi. Now you can go back to Geode and click on **Launch**.
 6. Geode will now launch in Geometry Dash.
 ![](screenshots/stikdebug.png)
