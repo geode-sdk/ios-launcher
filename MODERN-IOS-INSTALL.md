@@ -40,7 +40,7 @@ After going through the setup process, you may have seen the warning that **Just
 > [!WARNING]
 > JIT also requires you to have **Wi-Fi** connection or **Airplane Mode** enabled on your iOS device. Cellular will **not work**.
 
-## Getting StikDebug to enable JIT
+## Installing and Using StikDebug to enable JIT
 > [!NOTE]
 > For the first time setup, you will need a computer to get a Pairing File. If you installed SideStore, you likely already have a pairing profile, meaning there is no need to reinstall Jitterbug Pair.
 
