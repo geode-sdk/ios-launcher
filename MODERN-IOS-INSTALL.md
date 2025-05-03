@@ -4,7 +4,7 @@
 > For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, **JIT** is a **__requirement__** to run Geode.
 
 > [!WARNING]
-> Don't use enterprise certificates to install Geode, as you won't be successful. This is because enterprise certificates **cannot** enable JIT, and Geode **requires** JIT to work.
+> Don't use enterprise certificates to install Geode, as you won't be successful. This is because enterprise certificates **cannot** enable JIT, and Geode **requires** JIT to work. (This also means sideloaders like ESign with enterprise certificates **will not** work.)
 
 ## Prerequisites
 - PC (Windows, Linux) or Mac OS
