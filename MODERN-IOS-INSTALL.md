@@ -14,7 +14,7 @@
 - An internet connection
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases)
 
-## Install Geode using SideStore
+## Install SideStore
 
 1. **Enabling Developer Mode (iOS 16+)**
 	- You will need to enable **Developer Mode** in order to launch third party apps like SideStore, otherwise you will encounter this error when attempting to sideload SideStore or any app:
