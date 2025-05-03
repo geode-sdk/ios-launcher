@@ -41,6 +41,9 @@ Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select th
 ![](screenshots/install-altstore.png)
 
 ## Installing TrollStore
+> [!TIP]
+> TrollStore can permanently sign and install any application, eliminating the need to refresh the launcher — though this comes at the cost of some compatibility. Once TrollStore is successfully installed, you'll never need a computer again.
+
 > [!WARNING]
 > Make sure your device is compatible! If your device is on iOS 14.0 *beta* 1 or earlier, is running iOS 16.7.x (excluding 16.7 RC (20H18)), or is running iOS 17.0.1 or newer, it will ***never*** be supported by TrollStore.
 
