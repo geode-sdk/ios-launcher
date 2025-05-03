@@ -1,6 +1,6 @@
 # Installation Guide (iOS 15-16.6.1, 16.7 RC and iOS 17.0)
 
-This guide is for devices that is compatible with TrollStore (and optionally a jailbreak)
+This guide is for devices that are compatible with TrollStore (and optionally a jailbreak)
 
 ## Prerequisites
 - PC (Windows, Linux) or Mac OS (only for iOS 17.0)
