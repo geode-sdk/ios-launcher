@@ -40,7 +40,126 @@ Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select th
 
 ![](screenshots/install-altstore.png)
 
+## Installing TrollStore
+> [!WARNING]
+> Make sure your device is compatible! If your device is on iOS 14.0 *beta* 1 or earlier, is running iOS 16.7.x (excluding 16.7 RC (20H18)), or is running iOS 17.0.1 or newer, it will ***never*** be supported by TrollStore.
+
+<h1 align="center">TrollStore Compatibility and Installers</h1>
+<div class="table" align="center">
+<table>
+  <colgroup>
+    <col span="1" style="width: 13%;">
+    <col span="1" style="width: 13%;">
+    <col span="1" style="width: 23%;">
+    <col span="1" style="width: 23%;">
+    <col span="1" style="width: 28%;">
+  </colgroup>
+  <thead>
+    <tr>
+      <th style="text-align: center; font-weight: bold;">From</th>
+      <th style="text-align: center; font-weight: bold;">To</th>
+      <th style="text-align: center; font-weight: bold;">arm64 (A8)</th>
+      <th style="text-align: center; font-weight: bold;">arm64 (A9-A11)</th>
+      <th style="text-align: center; font-weight: bold;">arm64e (A12-A17/M1-M2)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center; font-weight: bold;" colspan="2">14.0 beta 1 and earlier</td>
+      <td style="text-align: center;" colspan="3">Unsupported</td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">14.0 beta 2</td>
+      <td style="text-align: center; font-weight: bold;">14.8.1</td>
+      <td style="text-align: center;" colspan="2"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollhelperota">TrollHelperOTA</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">15.0</td>
+      <td style="text-align: center; font-weight: bold;">15.5 beta 4</td>
+      <td style="text-align: center;" colspan="3"><a href="https://ios.cfw.guide/installing-trollstore-trollhelperota">TrollHelperOTA</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">15.5</td>
+      <td style="text-align: center; font-weight: bold;">15.5</td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallermdc">TrollInstallerMDC</a></td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollhelperota">TrollHelperOTA</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">15.6 beta 1</td>
+      <td style="text-align: center; font-weight: bold;">15.6 beta 3</td>
+      <td style="text-align: center;" colspan="3"><a href="https://ios.cfw.guide/installing-trollstore-trollhelperota">TrollHelperOTA</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">15.6 beta 4</td>
+      <td style="text-align: center; font-weight: bold;">15.6.1</td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallermdc">TrollInstallerMDC</a></td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollhelperota">TrollHelperOTA</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">15.7</td>
+      <td style="text-align: center; font-weight: bold;">15.7.1</td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallermdc">TrollInstallerMDC</a></td>
+      <td style="text-align: center;" colspan="2"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">15.7.2</td>
+      <td style="text-align: center; font-weight: bold;">15.8.4</td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollmisaka">TrollMisaka</a></td>
+      <td style="text-align: center;" colspan="2"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">16.0 beta 1</td>
+      <td style="text-align: center; font-weight: bold;">16.0 beta 3</td>
+      <td style="text-align: center;">Not Applicable</td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollhelperota">TrollHelperOTA</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">16.0 beta 4</td>
+      <td style="text-align: center; font-weight: bold;">16.6.1</td>
+      <td style="text-align: center;">Not Applicable</td>
+      <td style="text-align: center;" colspan="2"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">16.7 RC</td>
+      <td style="text-align: center; font-weight: bold;">16.7 RC</td>
+      <td style="text-align: center;">Not Applicable</td>
+      <td style="text-align: center;" colspan="2"><a href="https://ios.cfw.guide/installing-trollstore-trollrestore">TrollRestore</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">16.7</td>
+      <td style="text-align: center; font-weight: bold;">16.7.11</td>
+      <td style="text-align: center;">Not Applicable</td>
+      <td style="text-align: center;" colspan="2">Unsupported</td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">17.0 beta 1</td>
+      <td style="text-align: center; font-weight: bold;">17.0 beta 4</td>
+      <td style="text-align: center;">Not Applicable</td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollinstallerx">TrollInstallerX</a></td>
+      <td style="text-align: center;"><a href="https://ios.cfw.guide/installing-trollstore-trollrestore">TrollRestore</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;">17.0 beta 5</td>
+      <td style="text-align: center; font-weight: bold;">17.0</td>
+      <td style="text-align: center;">Not Applicable</td>
+      <td style="text-align: center;" colspan="2"><a href="https://ios.cfw.guide/installing-trollstore-trollrestore">TrollRestore</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-weight: bold;" colspan="2">17.0.1 and later</td>
+      <td style="text-align: center;">Not Applicable</td>
+      <td style="text-align: center;" colspan="2">Unsupported</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
+
 ## Installing Geode through TrollStore
+
 Tap the `+` button and tap either **Install IPA File** or **Install From URL**, depending if you manually downloaded the TIPA file. After either selecting the TIPA file for the Geode app, or providing the URL, the Geode app should appear on your home screen!
 
 ![](screenshots/install-trollstore.png)
@@ -52,7 +171,7 @@ Tap the `+` button and tap either **Install IPA File** or **Install From URL**, 
 After going through the setup process, you may have seen the warning that **Just-In-Time** (JIT) compilation is required. This is true if you want to run Geode without being jailbroken, as by default, Apple restricts how apps can manage memory.
 
 > [!WARNING]
-> JIT also requires you to have **Wi-Fi** connection or **Airplane Mode** enabled on your iOS device if you're not jailbroken or don't have Trollstore.
+> JIT also requires you to have **Wi-Fi** connection or **Airplane Mode** enabled on your iOS device if you're not jailbroken or don't have Trollstore. Cellular will **not work**.
 
 There are a few ways to launch Geode with JIT, depending on both iOS version, and your use case.
 
