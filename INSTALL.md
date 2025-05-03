@@ -78,7 +78,7 @@ There are a few ways to launch Geode with JIT, depending on both iOS version, an
 3. Use iCloud, Airdrop, or a website such as [Pairdrop](https://pairdrop.net/) to upload the pairing file to your iOS device.
 
 #### Downloading StikDebug
-1. Download StikDebug from the App Store: https://apps.apple.com/tr/app/stikdebug/id6744045754
+1. Download StikDebug from the App Store: https://apps.apple.com/us/app/stikdebug/id6744045754
 2. Launch the app
 3. It'll ask you to add "StikDebug" as a VPN Configuration. Click "Allow" and enter your passcode to add it.
 4. Go back to StikDebug and click on "Select Pairing File". You actually will need **WiFi connection** on your phone for it to download DDI.
