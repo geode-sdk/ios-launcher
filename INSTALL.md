@@ -10,6 +10,7 @@
 - PC (Windows, Linux) or Mac OS
 - Apple ID (Secondary / Throwaway Recommended)
 - USB Cable to connect your device (Lightning / USB C)
+- IPA / TIPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases) (only get the TIPA file if you want to use the jailbreak tweak)
 
 ## Installing SideStore / AltStore
 > [!TIP]
