@@ -37,17 +37,29 @@ extern NSBundle* gcMainBundle;
 	static NSString* appGroupID = @"Unknown";
 	dispatch_once(&once, ^{
 		NSArray* possibleAppGroups = @[
-			[@"group.com.SideStore.SideStore." stringByAppendingString:[self teamIdentifier]], [@"group.com.rileytestut.AltStore." stringByAppendingString:[self teamIdentifier]]
+			[@"group.com.SideStore.SideStore." stringByAppendingString:[self teamIdentifier]], [@"group.com.rileytestut.AltStore." stringByAppendingString:[self teamIdentifier]],
+			@"group.com.SideStore.SideStore", @"group.com.rileytestut.AltStore"
 		];
 
 		for (NSString* group in possibleAppGroups) {
 			NSURL* path = [NSFileManager.defaultManager containerURLForSecurityApplicationGroupIdentifier:group];
+			if (!path)
+				continue;
 			NSURL* bundlePath = [path URLByAppendingPathComponent:@"Apps/com.geode.launcher/App.app"];
 			if ([NSFileManager.defaultManager fileExistsAtPath:bundlePath.path]) {
 				// This will fail if LiveContainer is installed in both stores, but it should never be the case
 				appGroupID = group;
 				return;
 			}
+		}
+		// if no "Apps" is found, we choose a valid group
+		for (NSString* group in possibleAppGroups) {
+			NSURL* path = [NSFileManager.defaultManager containerURLForSecurityApplicationGroupIdentifier:group];
+			if (!path) {
+				continue;
+			}
+			appGroupID = group;
+			return;
 		}
 	});
 	return appGroupID;
@@ -66,12 +78,7 @@ extern NSBundle* gcMainBundle;
 		return ans;
 	} else {
 		// password of cert retrieved from the store tweak is always @"". We just keep this function so we can check if certificate presents without changing codes.
-		NSString* ans = [[[NSUserDefaults alloc] initWithSuiteName:[self appGroupID]] objectForKey:@"LCCertificatePassword"];
-		if (ans) {
-			return @"";
-		} else {
-			return nil;
-		}
+		return [[[NSUserDefaults alloc] initWithSuiteName:[self appGroupID]] objectForKey:@"LCCertificatePassword"];
 	}
 }
 
@@ -119,18 +126,12 @@ extern NSBundle* gcMainBundle;
 		return;
 	}
 	if ([gcUserDefaults boolForKey:@"JITLESS_REMOVEMEANDTHEUNDERSCORE"]) {
-		LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
-		app.signer = [gcUserDefaults boolForKey:@"USE_ZSIGN"] ? 1 : 0;
-		if ([[Utils getPrefs] boolForKey:@"LCCertificateImported"]) {
-			app.signer = ZSign;
-		}
-		[LCUtils signMods:[[LCPath docPath] URLByAppendingPathComponent:@"game/geode"] force:NO signer:app.signer progressHandler:^(NSProgress* progress) {}
-			completion:^(NSError* error) {
-				if (error != nil) {
-					AppLog(@"Detailed error for signing mods: %@", error);
-				}
-				[LCUtils launchToGuestApp];
-			}];
+		[LCUtils signMods:[[LCPath docPath] URLByAppendingPathComponent:@"game/geode"] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+			if (error != nil) {
+				AppLog(@"Detailed error for signing mods: %@", error);
+			}
+			[LCUtils launchToGuestApp];
+		}];
 	} else {
 		if (![GCSharedUtils askForJIT])
 			return;

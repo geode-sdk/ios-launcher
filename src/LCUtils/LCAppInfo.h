@@ -11,8 +11,6 @@
 @property bool isShared;
 @property bool doSymlinkInbox;
 @property bool ignoreDlopenError;
-@property bool bypassAssertBarrierOnQueue;
-@property Signer signer;
 @property NSString* dataUUID;
 @property NSArray<NSDictionary*>* containerInfo;
 @property bool autoSaveDisabled;

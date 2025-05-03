@@ -88,7 +88,6 @@ There are a few ways to launch Geode with JIT, depending on both iOS version, an
 ![](screenshots/stikdebug.png)
 > [!TIP]
 > StikDebug works without Wi-Fi connection, just by Airplane Mode. Unfortunately, this on-device VPN does not support cellular. However, you can use cellular data after launching an app with JIT.
-This is due to Apple limitations, but can be bypassed by downloading StosVPN! You can still use your cellular data after enabling an app with JIT by turning cellular data off, turning on Wi-Fi, launching Geode, turning cellular data back on.
 
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!

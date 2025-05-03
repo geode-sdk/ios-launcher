@@ -157,10 +157,8 @@
 			return NO;
 		}
 		if ([url.host isEqualToString:@"relaunch"] && [[Utils getPrefs] boolForKey:@"JITLESS_REMOVEMEANDTHEUNDERSCORE"]) {
-			LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
-			app.signer = [[Utils getPrefs] boolForKey:@"USE_ZSIGN"] ? 1 : 0;
-			[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"GeometryDash/Documents/game/geode"] force:NO signer:app.signer
-				progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+			[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"GeometryDash/Documents/game/geode"] force:NO progressHandler:^(NSProgress* progress) {}
+				completion:^(NSError* error) {
 					if (error != nil) {
 						AppLog(@"Detailed error for signing mods: %@", error);
 					}

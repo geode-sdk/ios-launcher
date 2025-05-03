@@ -199,7 +199,6 @@ BOOL hasDoneUpdate = NO;
 			}
 			finalNewApp.relativeBundlePath = appRelativePath;
 
-			finalNewApp.signer = [[Utils getPrefs] boolForKey:@"USE_ZSIGN"] ? 1 : 0;
 			[finalNewApp patchExecAndSignIfNeedWithCompletionHandler:^(BOOL success, NSString* errorInfo) {
 				dispatch_async(dispatch_get_main_queue(), ^{
 					if (![VerifyInstall verifyGeodeInstalled]) {
@@ -216,10 +215,8 @@ BOOL hasDoneUpdate = NO;
 					if (appToReplace != nil) {
 						finalNewApp.autoSaveDisabled = true;
 						finalNewApp.isShared = appToReplace.appInfo.isShared;
-						finalNewApp.bypassAssertBarrierOnQueue = appToReplace.appInfo.bypassAssertBarrierOnQueue;
 						finalNewApp.doSymlinkInbox = appToReplace.appInfo.doSymlinkInbox;
 						finalNewApp.containerInfo = appToReplace.appInfo.containerInfo;
-						finalNewApp.signer = appToReplace.appInfo.signer;
 						finalNewApp.dataUUID = appToReplace.appInfo.dataUUID;
 						finalNewApp.autoSaveDisabled = false;
 

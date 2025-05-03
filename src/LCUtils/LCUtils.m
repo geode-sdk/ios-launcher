@@ -2,13 +2,13 @@
 @import MachO;
 @import UIKit;
 
-#import "AltStoreCore/ALTSigner.h"
 #import "LCUtils.h"
 #import "Shared.h"
 #import "ZSign/zsigner.h"
 #import "src/Utils.h"
 #import "src/components/LogUtils.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 extern NSBundle* gcMainBundle;
 
@@ -81,42 +81,21 @@ Class LCSharedUtilsClass = nil;
 
 #pragma mark Code signing
 
-+ (void)loadStoreFrameworksWithError:(NSError**)error {
-	// too lazy to use dispatch_once
-	static BOOL loaded = NO;
-	if (loaded)
-		return;
-
-	NSArray* signerFrameworks;
-
-	if ([NSFileManager.defaultManager fileExistsAtPath:[self.storeBundlePath URLByAppendingPathComponent:@"Frameworks/KeychainAccess.framework"].path]) {
-		// AltStore requires 1 more framework than sidestore
-		signerFrameworks = @[ @"OpenSSL.framework", @"Roxas.framework", @"KeychainAccess.framework", @"AltStoreCore.framework" ];
-	} else {
-		signerFrameworks = @[ @"OpenSSL.framework", @"Roxas.framework", @"AltStoreCore.framework" ];
-	}
-
-	NSURL* storeFrameworksPath = [self.storeBundlePath URLByAppendingPathComponent:@"Frameworks"];
-	for (NSString* framework in signerFrameworks) {
-		NSBundle* frameworkBundle = [NSBundle bundleWithURL:[storeFrameworksPath URLByAppendingPathComponent:framework]];
-		if (!frameworkBundle) {
-			// completionHandler(NO, error);
-			abort();
-		}
-		[frameworkBundle loadAndReturnError:error];
-		if (error && *error)
-			return;
-	}
-	loaded = YES;
-}
-
 + (void)loadStoreFrameworksWithError2:(NSError**)error {
 	// too lazy to use dispatch_once
 	static BOOL loaded = NO;
 	if (loaded)
 		return;
 
-	dlopen("@executable_path/Frameworks/ZSign.dylib", RTLD_GLOBAL);
+	void* handle = dlopen("@executable_path/Frameworks/ZSign.dylib", RTLD_GLOBAL);
+	const char* dlerr = dlerror();
+	if (!handle || (uint64_t)handle > 0xf00000000000) {
+		if (dlerr) {
+			AppLog(@"Failed to load ZSign: %s", dlerr);
+		} else {
+			AppLog(@"Failed to load ZSign: An unknown error occured.");
+		}
+	}
 
 	loaded = YES;
 }
@@ -137,93 +116,7 @@ Class LCSharedUtilsClass = nil;
 	}
 }
 
-+ (void)removeCodeSignatureFromBundleURL:(NSURL*)appURL {
-	int32_t cpusubtype;
-	sysctlbyname("hw.cpusubtype", &cpusubtype, NULL, NULL, 0);
-
-	NSDirectoryEnumerator* countEnumerator = [[NSFileManager defaultManager] enumeratorAtURL:appURL includingPropertiesForKeys:@[ NSURLIsRegularFileKey, NSURLFileSizeKey ]
-																					 options:0 errorHandler:^BOOL(NSURL* _Nonnull url, NSError* _Nonnull error) {
-																						 if (error) {
-																							 AppLog(@"Error: %@ (%@)", error, url);
-																							 return NO;
-																						 }
-																						 return YES;
-																					 }];
-
-	for (NSURL* fileURL in countEnumerator) {
-		NSNumber* isFile = nil;
-		if (![fileURL getResourceValue:&isFile forKey:NSURLIsRegularFileKey error:nil] || !isFile.boolValue) {
-			continue;
-		}
-
-		NSNumber* fileSize = nil;
-		[fileURL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil];
-		if (fileSize.unsignedLongLongValue < 0x4000) {
-			continue;
-		}
-
-		// Remove LC_CODE_SIGNATURE
-		NSString* error = LCParseMachO(fileURL.path.UTF8String, ^(const char* path, struct mach_header_64* header) {
-			uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
-			struct load_command* command = (struct load_command*)imageHeaderPtr;
-			for (int i = 0; i < header->ncmds > 0; i++) {
-				if (command->cmd == LC_CODE_SIGNATURE) {
-					struct linkedit_data_command* csCommand = (struct linkedit_data_command*)command;
-					void* csData = (void*)((uint8_t*)header + csCommand->dataoff);
-					// Nuke it.
-					AppLog(@"Removing code signature of %@", fileURL);
-					bzero(csData, csCommand->datasize);
-					break;
-				}
-				command = (struct load_command*)((void*)command + command->cmdsize);
-			}
-		});
-		if (error) {
-			AppLog(@"Error: %@ (%@)", error, fileURL);
-		}
-	}
-}
-
-+ (NSProgress*)signAppBundle:(NSURL*)path completionHandler:(void (^)(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* error))completionHandler {
-	NSError* error;
-
-	// I'm too lazy to reimplement signer, so let's borrow everything from SideStore
-	// For sure this will break in the future as SideStore team planned to rewrite it
-	NSURL* profilePath = [gcMainBundle URLForResource:@"embedded" withExtension:@"mobileprovision"];
-
-	// Load libraries from Documents, yeah
-	[self loadStoreFrameworksWithError:&error];
-	if (error) {
-		completionHandler(NO, nil, nil, error);
-		return nil;
-	}
-
-	ALTCertificate* cert = [[NSClassFromString(@"ALTCertificate") alloc] initWithP12Data:self.certificateData password:self.certificatePassword];
-	if (!cert) {
-		error = [NSError errorWithDomain:gcMainBundle.bundleIdentifier code:1 userInfo:@{
-			NSLocalizedDescriptionKey : @"Failed to create ALTCertificate. Please try: 1. make sure your store is patched 2. reopen your store 3. refresh all apps"
-		}];
-		completionHandler(NO, nil, nil, error);
-		return nil;
-	}
-	ALTProvisioningProfile* profile = [[NSClassFromString(@"ALTProvisioningProfile") alloc] initWithURL:profilePath];
-	if (!profile) {
-		error = [NSError errorWithDomain:gcMainBundle.bundleIdentifier code:2 userInfo:@{
-			NSLocalizedDescriptionKey : @"Failed to create ALTProvisioningProfile. Please try: 1. make sure your store is patched 2. reopen your store 3. refresh all apps"
-		}];
-		completionHandler(NO, nil, nil, error);
-		return nil;
-	}
-	ALTAccount* account = [NSClassFromString(@"ALTAccount") new];
-	ALTTeam* team = [[NSClassFromString(@"ALTTeam") alloc] initWithName:@"" identifier:@"" /*profile.teamIdentifier*/ type:ALTTeamTypeUnknown account:account];
-	ALTSigner* signer = [[NSClassFromString(@"ALTSigner") alloc] initWithTeam:team certificate:cert];
-
-	void (^signCompletionHandler)(BOOL success, NSError* error) =
-		^(BOOL success, NSError* _Nullable error) { completionHandler(success, [profile expirationDate], [profile teamIdentifier], error); };
-	return [signer signAppAtURL:path provisioningProfiles:@[ (id)profile ] completionHandler:signCompletionHandler];
-}
-
-+ (NSProgress*)signAppBundleWithZSign:(NSURL*)path completionHandler:(void (^)(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* error))completionHandler {
++ (NSProgress*)signAppBundleWithZSign:(NSURL*)path completionHandler:(void (^)(BOOL success, NSError* error))completionHandler {
 	NSError* error;
 
 	// use zsign as our signer~
@@ -236,7 +129,7 @@ Class LCSharedUtilsClass = nil;
 	}
 
 	if (profileData == nil) {
-		completionHandler(NO, nil, nil, error);
+		completionHandler(NO, error);
 		return nil;
 	}
 
@@ -244,7 +137,7 @@ Class LCSharedUtilsClass = nil;
 	[self loadStoreFrameworksWithError2:&error];
 
 	if (error) {
-		completionHandler(NO, nil, nil, error);
+		completionHandler(NO, error);
 		return nil;
 	}
 
@@ -256,13 +149,13 @@ Class LCSharedUtilsClass = nil;
 		if ([[NSFileManager defaultManager] fileExistsAtPath:bundleProvision.path]) {
 			[[NSFileManager defaultManager] removeItemAtURL:bundleProvision error:&error];
 			if (error) {
-				completionHandler(NO, nil, nil, error);
+				completionHandler(NO, error);
 				return nil;
 			}
 		}
 		[fm copyItemAtURL:provisionURL toURL:bundleProvision error:&error];
 		if (error) {
-			completionHandler(NO, nil, nil, error);
+			completionHandler(NO, error);
 			return nil;
 		}
 		AppLog(@"Copied provision to GD bundle.");
@@ -303,6 +196,19 @@ Class LCSharedUtilsClass = nil;
 	return ans;
 }
 
++ (int)validateCertificate:(void (^)(int status, NSDate* expirationDate, NSString* error))completionHandler {
+	NSError* error;
+	NSURL* profilePath = [NSBundle.mainBundle URLForResource:@"embedded" withExtension:@"mobileprovision"];
+	NSData* profileData = [NSData dataWithContentsOfURL:profilePath];
+	NSData* certData = [LCUtils certificateData];
+	if (error) {
+		return -6;
+	}
+	[self loadStoreFrameworksWithError2:&error];
+	int ans = [NSClassFromString(@"ZSigner") checkCertWithProv:profileData key:certData pass:[LCUtils certificatePassword] completionHandler:completionHandler];
+	return ans;
+}
+
 #pragma mark Setup
 
 + (Store)store {
@@ -310,10 +216,21 @@ Class LCSharedUtilsClass = nil;
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		AppLog(@"Store: %@", [self appGroupID]);
-		if ([[self appGroupID] containsString:@"AltStore"]) {
+		if ([UTType typeWithIdentifier:[NSString stringWithFormat:@"io.sidestore.Installed.%@", NSBundle.mainBundle.bundleIdentifier]]) {
+			ans = SideStore;
+		} else if ([UTType typeWithIdentifier:[NSString stringWithFormat:@"io.altstore.Installed.%@", NSBundle.mainBundle.bundleIdentifier]]) {
 			ans = AltStore;
 		} else {
+			ans = Unknown;
+		}
+		if (ans != Unknown)
+			return;
+		if ([[self appGroupID] containsString:@"AltStore"]) {
+			ans = AltStore;
+		} else if ([[self appGroupID] containsString:@"SideStore"]) {
 			ans = SideStore;
+		} else {
+			ans = Unknown;
 		}
 	});
 	return ans;
@@ -324,6 +241,8 @@ Class LCSharedUtilsClass = nil;
 }
 
 + (BOOL)isAppGroupAltStoreLike {
+	if (NSClassFromString(@"LCSharedUtils"))
+		return NO;
 	if (self.appGroupID.length == 0)
 		return NO;
 	return [NSFileManager.defaultManager fileExistsAtPath:self.storeBundlePath.path];
@@ -339,32 +258,7 @@ Class LCSharedUtilsClass = nil;
 	[infoDict writeToURL:infoPath error:error];
 }
 
-+ (void)writeStoreIDToSetupExecutableWithError:(NSError**)error {
-	NSURL* execPath = [self.appGroupPath URLByAppendingPathComponent:@"Apps/com.geode.launcher/App.app/JITLessSetup"];
-	NSMutableData* data = [NSMutableData dataWithContentsOfURL:execPath options:0 error:error];
-	if (!data)
-		return;
-
-	// We must get SideStore's exact application-identifier, otherwise JIT-less setup will bug out to hell for using the wrong, expired certificate
-	[self loadStoreFrameworksWithError:nil];
-	NSURL* profilePath = [self.storeBundlePath URLByAppendingPathComponent:@"embedded.mobileprovision"];
-	ALTProvisioningProfile* profile = [[NSClassFromString(@"ALTProvisioningProfile") alloc] initWithURL:profilePath];
-	NSString* storeKeychainID = profile.entitlements[@"application-identifier"];
-	assert(storeKeychainID);
-
-	NSData* findPattern = [@"KeychainAccessGroupWillBeWrittenByGeodeLauncherAAAAAAAAAAAAAAAAAAAA</string>" dataUsingEncoding:NSUTF8StringEncoding];
-	NSRange range = [data rangeOfData:findPattern options:0 range:NSMakeRange(0, data.length)];
-	if (range.location == NSNotFound)
-		return;
-
-	memset((char*)data.mutableBytes + range.location, ' ', range.length);
-	NSString* replacement = [NSString stringWithFormat:@"%@</string>", storeKeychainID];
-	assert(replacement.length < range.length);
-	memcpy((char*)data.mutableBytes + range.location, replacement.UTF8String, replacement.length);
-	[data writeToURL:execPath options:0 error:error];
-}
-
-+ (void)validateJITLessSetupWithSigner:(Signer)signer completionHandler:(void (^)(BOOL success, NSError* error))completionHandler {
++ (void)validateJITLessSetup:(void (^)(BOOL success, NSError* error))completionHandler {
 	// Verify that the certificate is usable
 	// Create a test app bundle
 	NSString* path = [NSTemporaryDirectory() stringByAppendingPathComponent:@"CertificateValidation.app"];
@@ -378,16 +272,25 @@ Class LCSharedUtilsClass = nil;
 	info[@"CFBundleExecutable"] = @"Geode.tmp";
 	[info writeToFile:tmpInfoPath atomically:YES];
 
-	// Sign the test app bundle
-	if (signer == AltSign && ![[Utils getPrefs] boolForKey:@"LCCertificateImported"]) {
-		[LCUtils signAppBundle:[NSURL fileURLWithPath:path] completionHandler:^(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* _Nullable error) {
-			dispatch_async(dispatch_get_main_queue(), ^{ completionHandler(success, error); });
-		}];
-	} else {
-		[LCUtils signAppBundleWithZSign:[NSURL fileURLWithPath:path] completionHandler:^(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* _Nullable error) {
-			dispatch_async(dispatch_get_main_queue(), ^{ completionHandler(success, error); });
-		}];
-	}
+	dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+	__block bool signSuccess = false;
+	__block NSError* signError = nil;
+
+	[LCUtils signAppBundleWithZSign:[NSURL fileURLWithPath:path] completionHandler:^(BOOL success, NSError* _Nullable error) {
+		signSuccess = success;
+		signError = error;
+		dispatch_semaphore_signal(sema);
+	}];
+	dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+	dispatch_async(dispatch_get_main_queue(), ^{
+		if (!signSuccess) {
+			completionHandler(NO, signError);
+		} else if (checkCodeSignature([tmpLibPath UTF8String])) {
+			completionHandler(YES, signError);
+		} else {
+			completionHandler(NO, [NSError errorWithDomain:NSBundle.mainBundle.bundleIdentifier code:2 userInfo:nil]);
+		}
+	});
 }
 
 + (NSURL*)archiveTweakedAltStoreWithError:(NSError**)error {
@@ -439,8 +342,8 @@ Class LCSharedUtilsClass = nil;
 		;
 	}
 
-	NSString* errorPatchAltStore =
-		LCParseMachO([execToPatch.path UTF8String], ^(const char* path, struct mach_header_64* header) { LCPatchAltStore(execToPatch.path.UTF8String, header); });
+	NSString* errorPatchAltStore = LCParseMachO(
+		[execToPatch.path UTF8String], false, ^(const char* path, struct mach_header_64* header, int fd, void* filePtr) { LCPatchAltStore(execToPatch.path.UTF8String, header); });
 	if (errorPatchAltStore) {
 		NSMutableDictionary* details = [NSMutableDictionary dictionary];
 		[details setValue:errorPatchAltStore forKey:NSLocalizedDescriptionKey];
@@ -502,10 +405,7 @@ Class LCSharedUtilsClass = nil;
 	return nil;
 }
 
-+ (void)signFilesInFolder:(NSURL*)url
-				   signer:(Signer)signer
-		onProgressCreated:(void (^)(NSProgress* progress))onProgressCreated
-			   completion:(void (^)(NSString* error, NSDate* expirationDate))completion {
++ (void)signFilesInFolder:(NSURL*)url onProgressCreated:(void (^)(NSProgress* progress))onProgressCreated completion:(void (^)(NSString* error))completion {
 	NSFileManager* fm = [NSFileManager defaultManager];
 	NSURL* codesignPath = [url URLByAppendingPathComponent:@"_CodeSignature"];
 	NSURL* provisionPath = [url URLByAppendingPathComponent:@"embedded.mobileprovision"];
@@ -517,52 +417,26 @@ Class LCSharedUtilsClass = nil;
 
 	NSError* copyError = nil;
 	if (![fm copyItemAtURL:[gcMainBundle executableURL] toURL:tmpExecPath error:&copyError]) {
-		completion(copyError.localizedDescription, nil);
+		completion(copyError.localizedDescription);
 		return;
 	}
-	if (signer == AltSign) {
-		[self signAppBundle:url completionHandler:^(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* error) {
-			NSString* ans = nil;
-			NSDate* ansDate = nil;
-			if (error) {
-				ans = error.localizedDescription;
-			}
-			if ([fm fileExistsAtPath:codesignPath.path]) {
-				[fm removeItemAtURL:codesignPath error:nil];
-			}
-			if ([fm fileExistsAtPath:provisionPath.path]) {
-				[fm removeItemAtURL:provisionPath error:nil];
-			}
-			[fm removeItemAtURL:tmpExecPath error:nil];
-			[fm removeItemAtURL:tmpInfoPath error:nil];
-			ansDate = expirationDate;
-			completion(ans, ansDate);
-		}];
-	} else {
-		[self signAppBundleWithZSign:url completionHandler:^(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* error) {
-			NSString* ans = nil;
-			NSDate* ansDate = nil;
-			if (error) {
-				ans = error.localizedDescription;
-			}
-			if ([fm fileExistsAtPath:codesignPath.path]) {
-				[fm removeItemAtURL:codesignPath error:nil];
-			}
-			if ([fm fileExistsAtPath:provisionPath.path]) {
-				[fm removeItemAtURL:provisionPath error:nil];
-			}
-			[fm removeItemAtURL:tmpExecPath error:nil];
-			[fm removeItemAtURL:tmpInfoPath error:nil];
-			ansDate = expirationDate;
-			completion(ans, ansDate);
-		}];
-	}
+	[self signAppBundleWithZSign:url completionHandler:^(BOOL success, NSError* error) {
+		NSString* ans = nil;
+		if (error) {
+			ans = error.localizedDescription;
+		}
+		if ([fm fileExistsAtPath:codesignPath.path]) {
+			[fm removeItemAtURL:codesignPath error:nil];
+		}
+		if ([fm fileExistsAtPath:provisionPath.path]) {
+			[fm removeItemAtURL:provisionPath error:nil];
+		}
+		[fm removeItemAtURL:tmpExecPath error:nil];
+		[fm removeItemAtURL:tmpInfoPath error:nil];
+		completion(ans);
+	}];
 }
-+ (void)signTweaks:(NSURL*)tweakFolderUrl
-			  force:(BOOL)force
-			 signer:(Signer)signer
-	progressHandler:(void (^)(NSProgress* progress))progressHandler
-		 completion:(void (^)(NSError* error))completion {
++ (void)signTweaks:(NSURL*)tweakFolderUrl force:(BOOL)force progressHandler:(void (^)(NSProgress* progress))progressHandler completion:(void (^)(NSError* error))completion {
 	if (![self certificatePassword]) {
 		completion([NSError errorWithDomain:@"CertificatePasswordMissing" code:0 userInfo:nil]);
 		return;
@@ -576,9 +450,8 @@ Class LCSharedUtilsClass = nil;
 	}
 
 	NSMutableDictionary* tweakSignInfo = [NSMutableDictionary dictionaryWithContentsOfURL:[tweakFolderUrl URLByAppendingPathComponent:@"TweakInfo.plist"]];
-	NSDate* expirationDate = [tweakSignInfo objectForKey:@"expirationDate"];
 	BOOL signNeeded = force;
-	if (!force && expirationDate && [expirationDate compare:[NSDate date]] == NSOrderedDescending) {
+	if (!force) {
 		NSMutableDictionary* tweakFileINodeRecord = [NSMutableDictionary dictionaryWithDictionary:[tweakSignInfo objectForKey:@"files"]];
 		NSArray* fileURLs = [fm contentsOfDirectoryAtURL:tweakFolderUrl includingPropertiesForKeys:nil options:0 error:nil];
 
@@ -598,11 +471,10 @@ Class LCSharedUtilsClass = nil;
 				continue;
 
 			NSNumber* inodeNumber = [fm attributesOfItemAtPath:fileURL.path error:nil][NSFileSystemNumber];
-			if ([tweakFileINodeRecord objectForKey:fileURL.lastPathComponent] != inodeNumber) {
+			if ([tweakFileINodeRecord objectForKey:fileURL.lastPathComponent] != inodeNumber || checkCodeSignature([fileURL.path UTF8String])) {
 				signNeeded = YES;
 				break;
 			}
-
 			AppLog(@"%@", [fileURL lastPathComponent]);
 		}
 	} else {
@@ -642,11 +514,10 @@ Class LCSharedUtilsClass = nil;
 		[fm removeItemAtURL:tmpDir error:nil];
 		return completion(nil);
 	}
-	[self signFilesInFolder:tmpDir signer:signer onProgressCreated:progressHandler completion:^(NSString* error, NSDate* expirationDate2) {
+	[self signFilesInFolder:tmpDir onProgressCreated:progressHandler completion:^(NSString* error) {
 		if (error)
 			return completion([NSError errorWithDomain:error code:0 userInfo:nil]);
 		NSMutableDictionary* newTweakSignInfo = [NSMutableDictionary dictionary];
-		newTweakSignInfo[@"expirationDate"] = expirationDate2;
 		NSMutableArray* fileInodes = [NSMutableArray array];
 		for (NSURL* tmpFile in tmpPaths) {
 			NSURL* toPath = [tweakFolderUrl URLByAppendingPathComponent:tmpFile.lastPathComponent];
@@ -685,11 +556,7 @@ Class LCSharedUtilsClass = nil;
 	return NO;
 }
 
-+ (void)signMods:(NSURL*)tweakFolderUrl
-			  force:(BOOL)force
-			 signer:(Signer)signer
-	progressHandler:(void (^)(NSProgress* progress))progressHandler
-		 completion:(void (^)(NSError* error))completion {
++ (void)signMods:(NSURL*)tweakFolderUrl force:(BOOL)force progressHandler:(void (^)(NSProgress* progress))progressHandler completion:(void (^)(NSError* error))completion {
 	if (![self certificatePassword]) {
 		completion([NSError errorWithDomain:@"CertificatePasswordMissing" code:0 userInfo:nil]);
 		return;
@@ -703,9 +570,8 @@ Class LCSharedUtilsClass = nil;
 	}
 
 	NSMutableDictionary* tweakSignInfo = [NSMutableDictionary dictionaryWithContentsOfURL:[tweakFolderUrl URLByAppendingPathComponent:@"ModInfo.plist"]];
-	NSDate* expirationDate = [tweakSignInfo objectForKey:@"expirationDate"];
 	BOOL signNeeded = force;
-	if (!force && expirationDate && [expirationDate compare:[NSDate date]] == NSOrderedDescending) {
+	if (!force) {
 		NSMutableDictionary* tweakFileINodeRecord = [NSMutableDictionary dictionaryWithDictionary:[tweakSignInfo objectForKey:@"files"]];
 		NSArray* fileURLs = [fm contentsOfDirectoryAtURL:[tweakFolderUrl URLByAppendingPathComponent:@"unzipped"] includingPropertiesForKeys:nil options:0 error:nil];
 
@@ -733,7 +599,7 @@ Class LCSharedUtilsClass = nil;
 					continue;
 
 				NSNumber* inodeNumber = [fm attributesOfItemAtPath:fileURL.path error:nil][NSFileSystemNumber];
-				if ([tweakFileINodeRecord objectForKey:fileURL.lastPathComponent] != inodeNumber) {
+				if ([tweakFileINodeRecord objectForKey:fileURL.lastPathComponent] != inodeNumber || checkCodeSignature([fileURL.path UTF8String])) {
 					signNeeded = YES;
 					break;
 				}
@@ -796,11 +662,10 @@ Class LCSharedUtilsClass = nil;
 		[fm removeItemAtURL:tmpDir error:nil];
 		return completion(nil);
 	}
-	[self signFilesInFolder:tmpDir signer:signer onProgressCreated:progressHandler completion:^(NSString* error, NSDate* expirationDate2) {
+	[self signFilesInFolder:tmpDir onProgressCreated:progressHandler completion:^(NSString* error) {
 		if (error)
 			return completion([NSError errorWithDomain:error code:0 userInfo:nil]);
 		NSMutableDictionary* newTweakSignInfo = [NSMutableDictionary dictionary];
-		newTweakSignInfo[@"expirationDate"] = expirationDate2;
 		NSMutableArray* fileInodes = [NSMutableArray array];
 		for (NSURL* tmpFile in tmpPaths) {
 			// NSURL *toPath = [tweakFolderUrl URLByAppendingPathComponent:tmpFile.lastPathComponent];

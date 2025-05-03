@@ -4,7 +4,7 @@ if [ -d "$THEOS/lib/OpenSSL.framework" ]; then
 else
 	echo "OpenSSL.framework not found. Downloading..."
 
-	curl -L "https://github.com/HAHALOSAH/OpenSSL-Swift/releases/download/3.1.5004/OpenSSL.xcframework.zip" -o "OpenSSL.xcframework.zip"
+	curl -L "https://github.com/krzyzanowskim/OpenSSL/releases/download/3.3.3001/OpenSSL.xcframework.zip" -o "OpenSSL.xcframework.zip"
 
 	unzip -q "OpenSSL.xcframework.zip" -d .
 

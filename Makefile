@@ -15,7 +15,7 @@ else
 Geode_CODESIGN_FLAGS = -Sentitlements.xml
 endif
 
-Geode_FILES = $(wildcard src/*.m) $(wildcard src/views/*.m) $(wildcard src/components/*.m) $(wildcard src/LCUtils/*.m) $(wildcard src/LCUtils/AltStoreCore*.m) fishhook/fishhook.c $(wildcard MSColorPicker/MSColorPicker/*.m) $(wildcard GCDWebServer/GCDWebServer/*/*.m)
+Geode_FILES = $(wildcard src/*.m) $(wildcard src/views/*.m) $(wildcard src/components/*.m) $(wildcard src/LCUtils/*.m) fishhook/fishhook.c $(wildcard MSColorPicker/MSColorPicker/*.m) $(wildcard GCDWebServer/GCDWebServer/*/*.m)
 Geode_FRAMEWORKS = UIKit CoreGraphics Security
 Geode_CFLAGS = -fobjc-arc -IGCDWebServer/GCDWebServer/Core -IGCDWebServer/GCDWebServer/Requests -IGCDWebServer/GCDWebServer/Responses
 Geode_LIBRARIES = archive # thats dumb

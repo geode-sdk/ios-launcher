@@ -121,25 +121,9 @@
 	}
 }
 
-- (void)preprocessBundleBeforeSiging:(NSURL*)bundleURL completion:(dispatch_block_t)completion {
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		// Remove faulty file
-		[NSFileManager.defaultManager removeItemAtURL:[bundleURL URLByAppendingPathComponent:@"Geode"] error:nil];
-		// Remove PlugIns folder
-		[NSFileManager.defaultManager removeItemAtURL:[bundleURL URLByAppendingPathComponent:@"PlugIns"] error:nil];
-		// Remove code signature from all library files
-		if ([self signer] == AltSign) {
-			[LCUtils removeCodeSignatureFromBundleURL:bundleURL];
-		}
-
-		dispatch_async(dispatch_get_main_queue(), completion);
-	});
-}
-
 - (void)patchExecAndSignIfNeedWithCompletionHandler:(void (^)(bool success, NSString* errorInfo))completetionHandler
 									progressHandler:(void (^)(NSProgress* progress))progressHandler
 										  forceSign:(BOOL)forceSign {
-	// NSFileManager *fm = [NSFileManager defaultManager];
 	NSString* appPath = self.bundlePath;
 	NSString* infoPath = [NSString stringWithFormat:@"%@/Info.plist", appPath];
 	NSMutableDictionary* info = _info;
@@ -148,129 +132,130 @@
 		completetionHandler(NO, @"Info.plist not found");
 		return;
 	}
+	NSFileManager* fm = [NSFileManager defaultManager];
+	NSString* execPath = [NSString stringWithFormat:@"%@/%@", appPath, _infoPlist[@"CFBundleExecutable"]];
 
 	// Update patch
-	int currentPatchRev = 5;
+	int currentPatchRev = 1;
+	bool needPatch = [info[@"LCPatchRevision"] intValue] < currentPatchRev;
+	if (needPatch || forceSign) {
+		// copy-delete-move to avoid EXC_BAD_ACCESS (SIGKILL - CODESIGNING)
+		NSString* backupPath = [NSString stringWithFormat:@"%@/%@_GeodePatchBackUp", appPath, _infoPlist[@"CFBundleExecutable"]];
+		NSError* err;
+		[fm copyItemAtPath:execPath toPath:backupPath error:&err];
+		[fm removeItemAtPath:execPath error:&err];
+		[fm moveItemAtPath:backupPath toPath:execPath error:&err];
+		if (err) {
+			completetionHandler(NO, @"Couldn't interact with execPath or backupPath");
+			return;
+		}
+	}
+
+	if (needPatch) {
+		NSString* error = LCParseMachO(execPath.UTF8String, false, ^(const char* path, struct mach_header_64* header, int fd, void* filePtr) { LCPatchExecSlice(path, header); });
+		if (error) {
+			completetionHandler(NO, error);
+			return;
+		}
+		info[@"LCPatchRevision"] = @(currentPatchRev);
+		forceSign = true;
+
+		[self save];
+	}
+
+	if (forceSign) {
+		// remove ZSign cache since hash is changed after upgrading patch
+		NSString* cachePath = [appPath stringByAppendingPathComponent:@"zsign_cache.json"];
+		if ([fm fileExistsAtPath:cachePath]) {
+			NSError* err;
+			[fm removeItemAtPath:cachePath error:&err];
+			if (err) {
+				completetionHandler(NO, @"Couldn't remove cachePath");
+				return;
+			}
+		}
+	}
+	/*
 	if ([info[@"LCPatchRevision"] intValue] < currentPatchRev) {
 		//[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app/GeometryJump"].path;
 		NSString* execPath = [NSString stringWithFormat:@"%@/%@", appPath, _infoPlist[@"CFBundleExecutable"]];
-		/*NSString *backupPath = [NSString stringWithFormat:@"%@/%@_GeodePatchBackUp", appPath, _infoPlist[@"CFBundleExecutable"]];
+		/\*NSString *backupPath = [NSString stringWithFormat:@"%@/%@_GeodePatchBackUp", appPath, _infoPlist[@"CFBundleExecutable"]];
 		NSError *err;
 		[fm copyItemAtPath:execPath toPath:backupPath error:&err];
 		[fm removeItemAtPath:execPath error:&err];
-		[fm moveItemAtPath:backupPath toPath:execPath error:&err];*/
+		[fm moveItemAtPath:backupPath toPath:execPath error:&err];*\/
 		NSString* error = LCParseMachO(execPath.UTF8String, ^(const char* path, struct mach_header_64* header) { LCPatchExecSlice(path, header); });
 		if (error) {
 			completetionHandler(NO, error);
 			return;
 		}
 		info[@"LCPatchRevision"] = @(currentPatchRev);
-		/*NSString* cachePath = [appPath stringByAppendingPathComponent:@"zsign_cache.json"];
-		forceSign = YES;
-		if([fm fileExistsAtPath:cachePath]) {
-			NSError* err;
-			[fm removeItemAtPath:cachePath error:&err];
-		}*/
 		[self save];
 	}
+	*/
 
 	if (!LCUtils.certificatePassword) {
 		completetionHandler(YES, nil);
 		return;
 	}
 
-	int signRevision = 1;
-
-	NSDate* expirationDate = info[@"LCExpirationDate"];
-	NSString* teamId = info[@"LCTeamId"];
-	if (expirationDate && [teamId isEqualToString:[LCUtils teamIdentifier]] &&
-		[[[NSUserDefaults alloc] initWithSuiteName:[LCUtils appGroupID]] boolForKey:@"LCSignOnlyOnExpiration"] && !forceSign) {
-		if ([expirationDate laterDate:[NSDate now]] == expirationDate) {
-			// not expired yet, don't sign again
+	NSString* executablePath = [appPath stringByAppendingPathComponent:infoPlist[@"CFBundleExecutable"]];
+	if (!forceSign) {
+		bool signatureValid = checkCodeSignature(executablePath.UTF8String);
+		if (signatureValid) {
+			// not expired, don't sign again
 			completetionHandler(YES, nil);
 			return;
 		}
 	}
 
-	// We're only getting the first 8 bytes for comparison
-	NSUInteger signID;
-	if (LCUtils.certificateData) {
-		uint8_t digest[CC_SHA1_DIGEST_LENGTH];
-		CC_SHA1(LCUtils.certificateData.bytes, (CC_LONG)LCUtils.certificateData.length, digest);
-		signID = *(uint64_t*)digest + signRevision;
-	} else {
+	if (!LCUtils.certificateData) {
 		completetionHandler(NO, @"Failed to find signing certificate. Please refresh your store and try again.");
 		return;
 	}
 
 	// Sign app if JIT-less is set up
-	if ([info[@"LCJITLessSignID"] unsignedLongValue] != signID || forceSign) {
-		NSURL* appPathURL = [NSURL fileURLWithPath:appPath];
-		[self preprocessBundleBeforeSiging:appPathURL completion:^{
-			// We need to temporarily fake bundle ID and main executable to sign properly
-			NSString* tmpExecPath = [appPath stringByAppendingPathComponent:@"Geode.tmp"];
-			if (!info[@"LCBundleIdentifier"]) {
-				// Don't let main executable get entitlements
-				[NSFileManager.defaultManager copyItemAtPath:NSBundle.mainBundle.executablePath toPath:tmpExecPath error:nil];
+	NSURL* appPathURL = [NSURL fileURLWithPath:appPath];
+	// We need to temporarily fake bundle ID and main executable to sign properly
+	NSString* tmpExecPath = [appPath stringByAppendingPathComponent:@"Geode.tmp"];
+	if (!info[@"LCBundleIdentifier"]) {
+		// Don't let main executable get entitlements
+		[NSFileManager.defaultManager copyItemAtPath:NSBundle.mainBundle.executablePath toPath:tmpExecPath error:nil];
 
-				infoPlist[@"LCBundleExecutable"] = infoPlist[@"CFBundleExecutable"];
-				infoPlist[@"LCBundleIdentifier"] = infoPlist[@"CFBundleIdentifier"];
-				infoPlist[@"CFBundleExecutable"] = tmpExecPath.lastPathComponent;
-				infoPlist[@"CFBundleIdentifier"] = NSBundle.mainBundle.bundleIdentifier;
-				[infoPlist writeToFile:infoPath atomically:YES];
+		infoPlist[@"LCBundleExecutable"] = infoPlist[@"CFBundleExecutable"];
+		infoPlist[@"LCBundleIdentifier"] = infoPlist[@"CFBundleIdentifier"];
+		infoPlist[@"CFBundleExecutable"] = tmpExecPath.lastPathComponent;
+		infoPlist[@"CFBundleIdentifier"] = NSBundle.mainBundle.bundleIdentifier;
+		[infoPlist writeToFile:infoPath atomically:YES];
+	}
+	infoPlist[@"CFBundleExecutable"] = infoPlist[@"LCBundleExecutable"];
+	infoPlist[@"CFBundleIdentifier"] = infoPlist[@"LCBundleIdentifier"];
+	[infoPlist removeObjectForKey:@"LCBundleExecutable"];
+	[infoPlist removeObjectForKey:@"LCBundleIdentifier"];
+
+	void (^signCompletionHandler)(BOOL success, NSError* error) = ^(BOOL success, NSError* _Nullable error) {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			// Remove fake main executable
+			[fm removeItemAtPath:tmpExecPath error:nil];
+			// Save sign ID and restore bundle ID
+			[self save];
+			[infoPlist writeToFile:infoPath atomically:YES];
+			if (!success) {
+				completetionHandler(NO, error.localizedDescription);
+			} else {
+				bool signatureValid = checkCodeSignature(executablePath.UTF8String);
+				if (signatureValid) {
+					completetionHandler(YES, nil);
+				} else {
+					completetionHandler(NO, @"Invalid signature");
+				}
 			}
-			infoPlist[@"CFBundleExecutable"] = infoPlist[@"LCBundleExecutable"];
-			infoPlist[@"CFBundleIdentifier"] = infoPlist[@"LCBundleIdentifier"];
-			[infoPlist removeObjectForKey:@"LCBundleExecutable"];
-			[infoPlist removeObjectForKey:@"LCBundleIdentifier"];
+		});
+	};
+	__block NSProgress* progress = [LCUtils signAppBundleWithZSign:appPathURL completionHandler:signCompletionHandler];
 
-			void (^signCompletionHandler)(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* error) =
-				^(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* _Nullable error) {
-					dispatch_async(dispatch_get_main_queue(), ^{
-						if (success) {
-							info[@"LCJITLessSignID"] = @(signID);
-						}
-
-						// Remove fake main executable
-						[NSFileManager.defaultManager removeItemAtPath:tmpExecPath error:nil];
-
-						if (success && expirationDate) {
-							info[@"LCExpirationDate"] = expirationDate;
-						}
-						if (success && teamId) {
-							info[@"LCTeamId"] = teamId;
-						}
-						// Save sign ID and restore bundle ID
-						[self save];
-						[infoPlist writeToFile:infoPath atomically:YES];
-						completetionHandler(success, error.localizedDescription);
-					});
-				};
-
-			__block NSProgress* progress;
-
-			Signer currentSigner = [[Utils getPrefs] boolForKey:@"LCCertificateImported"] ? ZSign : [self signer];
-			switch (currentSigner) {
-			case ZSign:
-				progress = [LCUtils signAppBundleWithZSign:appPathURL completionHandler:signCompletionHandler];
-				break;
-			case AltSign:
-				progress = [LCUtils signAppBundle:appPathURL completionHandler:signCompletionHandler];
-				break;
-			default:
-				completetionHandler(NO, @"Signer Not Found");
-				break;
-			}
-
-			if (progress) {
-				progressHandler(progress);
-			}
-		}];
-
-	} else {
-		// no need to sign again
-		completetionHandler(YES, nil);
-		return;
+	if (progress) {
+		progressHandler(progress);
 	}
 }
 
@@ -295,26 +280,6 @@
 }
 - (void)setIgnoreDlopenError:(bool)ignoreDlopenError {
 	_info[@"ignoreDlopenError"] = [NSNumber numberWithBool:ignoreDlopenError];
-	[self save];
-}
-
-- (bool)bypassAssertBarrierOnQueue {
-	if (_info[@"bypassAssertBarrierOnQueue"] != nil) {
-		return [_info[@"bypassAssertBarrierOnQueue"] boolValue];
-	} else {
-		return NO;
-	}
-}
-- (void)setBypassAssertBarrierOnQueue:(bool)enabled {
-	_info[@"bypassAssertBarrierOnQueue"] = [NSNumber numberWithBool:enabled];
-	[self save];
-}
-
-- (Signer)signer {
-	return (Signer)[((NSNumber*)_info[@"signer"])intValue];
-}
-- (void)setSigner:(Signer)newSigner {
-	_info[@"signer"] = [NSNumber numberWithInt:(int)newSigner];
 	[self save];
 }
 

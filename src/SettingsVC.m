@@ -16,7 +16,11 @@
 
 @interface SettingsVC () <UIDocumentPickerDelegate>
 @property(nonatomic, strong) NSArray* creditsArray;
+@property(nonatomic, assign) BOOL isImportCert;
+@property(nonatomic, assign) BOOL isImportIPA;
 @end
+
+#define JITLESS 0
 
 @implementation SettingsVC
 - (void)viewDidLoad {
@@ -70,15 +74,26 @@
 	case 1: // Gameplay
 		return 4;
 	case 2: // JIT
-		if ([[Utils getPrefs] integerForKey:@"JIT_ENABLER"] == 4) {
-			return 3;
-		} else if ([[Utils getPrefs] integerForKey:@"JIT_ENABLER"] == 3) {
-			return 2;
+		if ([Utils isSandboxed]) {
+			if ([[Utils getPrefs] integerForKey:@"JIT_ENABLER"] == 4) {
+				return 3;
+			} else if ([[Utils getPrefs] integerForKey:@"JIT_ENABLER"] == 3) {
+				return 2;
+			}
+		} else {
+			return 0;
 		}
 		return 1;
 	case 3: // JIT-Less
-		// return 6;
-		return 0;
+		if ([Utils isSandboxed]) {
+			if (JITLESS == 1) {
+				return 5;
+			} else {
+				return 0; // 5;
+			}
+		} else {
+			return 0;
+		}
 	case 4: // Advanced
 		return 5;
 	case 5: // About
@@ -102,7 +117,7 @@
 }
 
 - (void)showDevMode:(UILongPressGestureRecognizer*)gestureRecognizer {
-	if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+	if (gestureRecognizer.state == UIGestureRecognizerStateBegan && ![[Utils getPrefs] boolForKey:@"DEVELOPER_MODE"]) {
 		UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"developer.warning.title".loc message:@"developer.warning.msg".loc
 																preferredStyle:UIAlertControllerStyleAlert];
 		UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"common.yes".loc style:UIAlertActionStyleDefault handler:^(UIAlertAction* _Nonnull action) {
@@ -235,7 +250,7 @@
 		if (indexPath.row == 0) {
 			cellval1.selectionStyle = UITableViewCellSelectionStyleNone;
 			cellval1.textLabel.text = @"Enable JIT-Less";
-			if (![Utils isSandboxed]) {
+			if (![Utils isSandboxed] || NSClassFromString(@"LCSharedUtils")) {
 				cellval1.textLabel.textColor = [UIColor systemGrayColor];
 			}
 			cellval1.accessoryView = [self createSwitch:[[Utils getPrefs] boolForKey:@"JITLESS"] tag:9 disable:![Utils isSandboxed]];
@@ -243,6 +258,7 @@
 		} else if (indexPath.row == 1) {
 			cell.textLabel.text = [NSString stringWithFormat:@"Patch %@", [LCUtils getStoreName]];
 			if (![LCUtils isAppGroupAltStoreLike]) {
+				cell.selectionStyle = UITableViewCellSelectionStyleNone;
 				cell.textLabel.textColor = [UIColor systemGrayColor];
 			} else {
 				cell.textLabel.textColor = [Theming getAccentColor];
@@ -257,20 +273,17 @@
 			cell.textLabel.textColor = [Theming getAccentColor];
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			if ([LCUtils isAppGroupAltStoreLike]) {
+				cell.selectionStyle = UITableViewCellSelectionStyleNone;
 				cellval1.textLabel.textColor = [UIColor systemGrayColor];
 			}
 		} else if (indexPath.row == 3) {
-			cellval1.selectionStyle = UITableViewCellSelectionStyleNone;
-			cellval1.textLabel.text = @"Use ZSign";
-			cellval1.accessoryView = [self createSwitch:[[Utils getPrefs] boolForKey:@"USE_ZSIGN"] tag:10 disable:NO];
-			return cellval1;
-		} else if (indexPath.row == 4) {
 			cell.textLabel.text = @"Test JIT-Less Mode";
 			cell.textLabel.textColor = [Theming getAccentColor];
 			cell.accessoryType = UITableViewCellAccessoryNone;
-		} else if (indexPath.row == 5) {
+		} else if (indexPath.row == 4) {
 			cell.textLabel.text = @"Force Resign";
 			if (![[Utils getPrefs] boolForKey:@"JITLESS"]) {
+				cell.selectionStyle = UITableViewCellSelectionStyleNone;
 				cell.textLabel.textColor = [UIColor systemGrayColor];
 			} else {
 				cell.textLabel.textColor = [Theming getAccentColor];
@@ -408,9 +421,17 @@
 	case 1:
 		return @"gameplay".loc;
 	case 2:
-		return @"jit".loc;
+		if ([Utils isSandboxed]) {
+			return @"jit".loc;
+		} else {
+			return @"";
+		}
 	case 3:
-		return @""; //@"jitless".loc;
+		if ([Utils isSandboxed] && JITLESS == 1) {
+			return @"jitless".loc;
+		} else {
+			return @"";
+		}
 	case 4:
 		return @"advanced".loc;
 	case 5:
@@ -424,6 +445,7 @@
 	}
 }
 
+// TODO: Replace Manual Reopen with JIT to be in the JIT Enabler
 - (NSArray*)getJITEnablerOptions {
 	NSString* tsPath = [NSString stringWithFormat:@"%@/../_TrollStore", [NSBundle mainBundle].bundlePath];
 	if (NSClassFromString(@"LCSharedUtils")) {
@@ -473,8 +495,10 @@
 		if (NSClassFromString(@"LCSharedUtils"))
 			return @"jit.footer.livecontainer".loc;
 		return [self getJITEnablerFooter];
-	// case 3:
-	// return @"jitless.footer".loc;
+	case 3:
+		if (JITLESS == 0)
+			return @"";
+		return @"jitless.footer".loc;
 	case 6:
 		return @"credits.footer".loc;
 	default:
@@ -526,6 +550,7 @@
 			[self presentViewController:navCtrl animated:YES completion:nil];
 			break;
 		}
+			// TODO: Replace Manual Reopen with JIT to be in the JIT Enabler
 		case 1: {
 			[[Utils getPrefs] removeObjectForKey:@"accentColor"];
 			[self.root updateState];
@@ -678,6 +703,7 @@
 				[self presentViewController:alert animated:YES completion:nil];
 				break;
 			}
+			_isImportCert = true;
 			// https://developer.apple.com/documentation/uniformtypeidentifiers/uttype-swift.struct/pkcs12
 			// public.x509-certificate
 			UTType* type = [UTType typeWithIdentifier:@"com.rsa.pkcs-12"];
@@ -688,7 +714,7 @@
 			[self presentViewController:picker animated:YES completion:nil];
 			break;
 		}
-		case 4: { // Test JIT-Less
+		case 3: { // Test JIT-Less
 			if (![LCUtils isAppGroupAltStoreLike] && ![[Utils getPrefs] boolForKey:@"LCCertificateImported"]) {
 				[Utils showError:self title:@"You did not sideload this app with AltStore or SideStore! Or you didn't import a certificate." error:nil];
 				break;
@@ -696,33 +722,38 @@
 			NSURL* appGroupURL = [LCUtils appGroupPath];
 			if (!appGroupURL)
 				break;
-			NSURL* patchPath;
-			if ([LCUtils store] == AltStore) {
-				patchPath = [appGroupURL URLByAppendingPathComponent:@"Apps/com.rileytestut.AltStore/App.app/Frameworks/AltStoreTweak.dylib"];
+			if ([LCUtils certificateData]) {
+				[LCUtils validateCertificate:^(int status, NSDate* expirationDate, NSString* errorC) {
+					if (errorC) {
+						return [Utils showError:self title:[NSString stringWithFormat:@"Couldn't validate certificate: %@", errorC] error:nil];
+					}
+					if (status != 0) {
+						return [Utils showError:self title:@"Certificate Status Invalid" error:nil];
+					}
+					[LCUtils validateJITLessSetup:^(BOOL success, NSError* error) {
+						if (success) {
+							return [Utils
+								showNotice:self
+									 title:[NSString stringWithFormat:@"JIT-Less Mode Test Passed!\nApp Group ID: %@\nStore: %@", [LCUtils appGroupID], [LCUtils getStoreName]]];
+						} else {
+							AppLog(@"JIT-Less test failed: %@", error);
+							return [Utils
+								showError:self
+									title:[NSString stringWithFormat:@"The test library has failed to load. This means your certificate may be having issue. Please try to: 1. "
+																	 @"Reopen %@; 2. Refresh all apps in %@; 3. Re-patch %@ and try again.\n\nIf you imported certificate, "
+																	 @"please ensure the certificate is valid, and it is NOT an enterprise certificate.",
+																	 [LCUtils getStoreName], [LCUtils getStoreName], [LCUtils getStoreName]]
+									error:nil];
+						}
+					}];
+				}];
 			} else {
-				patchPath = [appGroupURL URLByAppendingPathComponent:@"Apps/com.SideStore.SideStore/App.app/Frameworks/AltStoreTweak.dylib"];
-			}
-			if (![fm fileExistsAtPath:patchPath.path] && ![[Utils getPrefs] boolForKey:@"LCCertificateImported"]) {
-				[Utils showError:self title:@"You must patch before testing JIT-Less mode." error:nil];
+				[Utils showError:self title:@"Invalid Certificate Data" error:nil];
 				break;
 			}
-			[LCUtils validateJITLessSetupWithSigner:([[Utils getPrefs] boolForKey:@"USE_ZSIGN"] ? 1 : 0) completionHandler:^(BOOL success, NSError* error) {
-				if (success) {
-					return [Utils showNotice:self
-									   title:[NSString stringWithFormat:@"JIT-Less Mode Test Passed!\nApp Group ID: %@\nStore: %@", [LCUtils appGroupID], [LCUtils getStoreName]]];
-				} else {
-					AppLog(@"JIT-Less test failed: %@", error);
-					return [Utils showError:self
-									  title:[NSString stringWithFormat:@"The test library has failed to load. This means your certificate may be having issue. Please try to: 1. "
-																	   @"Reopen %@; 2. Refresh all apps in %@; 3. Re-patch %@ and try again.\n\nIf you imported certificate, "
-																	   @"please ensure the certificate is valid, and it is NOT an enterprise certificate.",
-																	   [LCUtils getStoreName], [LCUtils getStoreName], [LCUtils getStoreName]]
-									  error:nil];
-				}
-			}];
 			break;
 		}
-		case 5: { // Force Resign
+		case 4: { // Force Resign
 			if (![[Utils getPrefs] boolForKey:@"JITLESS"])
 				break;
 			return [_root signApp:YES completionHandler:^(BOOL success, NSString* error) {
@@ -766,6 +797,7 @@
 			break;
 		}
 		case 5: { // Import IPA
+			_isImportIPA = true;
 			UTType* type = [UTType typeWithIdentifier:@"com.apple.itunes.ipa"];
 			UIDocumentPickerViewController* picker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[ type ] asCopy:YES];
 			picker.delegate = self;
@@ -831,7 +863,6 @@
 		[self.tableView reloadData];
 		break;
 	case 10:
-		[Utils toggleKey:@"USE_ZSIGN"];
 		break;
 	case 11:
 		[Utils toggleKey:@"USE_NIGHTLY"];
@@ -917,60 +948,67 @@
 
 #pragma mark - Document Delegate Funcs (for importing cert mainly)
 - (void)documentPicker:(UIDocumentPickerViewController*)controller didPickDocumentAtURL:(NSURL*)url {
-	if (url) {
-		[self dismissViewControllerAnimated:YES completion:nil];
-		dispatch_async(dispatch_get_main_queue(), ^{
-			AppLog(@"start installing ipa!");
-			_root.optionalTextLabel.text = @"launcher.status.extracting".loc;
-			[_root progressCancelVisibility:NO];
-		});
-		[VerifyInstall startGDInstall:_root url:url];
-	}
 }
-/*
-- (void)documentPicker:(UIDocumentPickerViewController*)controller didPickDocumentsAtURLs:(nonnull NSArray<NSURL*>*)urls {
-	if (urls.count != 2)
-		return [Utils showError:self title:@"2 files must be selected! (p12 & mobileprovision)" error:nil];
-	NSString* extension1 = urls.firstObject.pathExtension;
-	NSString* extension2 = urls.lastObject.pathExtension;
-	if ([extension1 isEqualToString:extension2])
-		return [Utils showError:self title:@"You must only select 2 different files! Both the certificate (.p12) and the mobile provision profile! (.mobileprovision)" error:nil];
-	AppLog(@"Selected URLs: %@", urls);
-	UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Input the password of the Certificate." message:@"This will be used for signing."
-															preferredStyle:UIAlertControllerStyleAlert];
-	[alert addTextFieldWithConfigurationHandler:^(UITextField* _Nonnull textField) {
-		textField.placeholder = @"Certificate Password";
-		textField.secureTextEntry = YES;
-	}];
-	UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* _Nonnull action) {
-		NSError* err;
-		NSURL* provisionURL;
-		if (![extension1 isEqualToString:@"p12"]) {
-			provisionURL = urls.firstObject;
-		} else {
-			provisionURL = urls.lastObject;
-		}
-		NSURL* newURL = [[LCPath docPath] URLByAppendingPathComponent:@"embedded.mobileprovision"];
-		if ([[NSFileManager defaultManager] fileExistsAtPath:newURL.path]) {
-			[[NSFileManager defaultManager] removeItemAtURL:newURL error:&err];
-			if (err)
-				return [Utils showError:self title:@"Couldn't remove mobile provision from documents" error:err];
-		}
-		[[NSFileManager defaultManager] moveItemAtURL:provisionURL toURL:newURL error:&err];
-		if (err)
-			return [Utils showError:self title:@"Couldn't move mobile provision to documents" error:err]; // when would this error realistically happen
-		UITextField* field = alert.textFields.firstObject;
-		if ([extension1 isEqualToString:@"p12"]) {
-			[self certPass:field.text url:urls.firstObject];
-		} else {
-			[self certPass:field.text url:urls.lastObject];
-		}
-	}];
 
-	UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-	[alert addAction:okAction];
-	[alert addAction:cancelAction];
-	[self presentViewController:alert animated:YES completion:nil];
+- (void)documentPicker:(UIDocumentPickerViewController*)controller didPickDocumentsAtURLs:(nonnull NSArray<NSURL*>*)urls {
+	if (_isImportCert) {
+		_isImportCert = NO;
+		if (urls.count != 2)
+			return [Utils showError:self title:@"2 files must be selected! (p12 & mobileprovision)" error:nil];
+		NSString* extension1 = urls.firstObject.pathExtension;
+		NSString* extension2 = urls.lastObject.pathExtension;
+		if ([extension1 isEqualToString:extension2])
+			return [Utils showError:self title:@"You must only select 2 different files! Both the certificate (.p12) and the mobile provision profile! (.mobileprovision)"
+							  error:nil];
+		AppLog(@"Selected URLs: %@", urls);
+		UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Input the password of the Certificate." message:@"This will be used for signing."
+																preferredStyle:UIAlertControllerStyleAlert];
+		[alert addTextFieldWithConfigurationHandler:^(UITextField* _Nonnull textField) {
+			textField.placeholder = @"Certificate Password";
+			textField.secureTextEntry = YES;
+		}];
+		UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* _Nonnull action) {
+			NSError* err;
+			NSURL* provisionURL;
+			if (![extension1 isEqualToString:@"p12"]) {
+				provisionURL = urls.firstObject;
+			} else {
+				provisionURL = urls.lastObject;
+			}
+			NSURL* newURL = [[LCPath docPath] URLByAppendingPathComponent:@"embedded.mobileprovision"];
+			if ([[NSFileManager defaultManager] fileExistsAtPath:newURL.path]) {
+				[[NSFileManager defaultManager] removeItemAtURL:newURL error:&err];
+				if (err)
+					return [Utils showError:self title:@"Couldn't remove mobile provision from documents" error:err];
+			}
+			[[NSFileManager defaultManager] moveItemAtURL:provisionURL toURL:newURL error:&err];
+			if (err)
+				return [Utils showError:self title:@"Couldn't move mobile provision to documents" error:err]; // when would this error realistically happen
+			UITextField* field = alert.textFields.firstObject;
+			if ([extension1 isEqualToString:@"p12"]) {
+				[self certPass:field.text url:urls.firstObject];
+			} else {
+				[self certPass:field.text url:urls.lastObject];
+			}
+		}];
+
+		UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+		[alert addAction:okAction];
+		[alert addAction:cancelAction];
+		[self presentViewController:alert animated:YES completion:nil];
+	} else if (_isImportIPA) {
+		_isImportIPA = NO;
+		NSURL* url = urls.firstObject;
+		if (url) {
+			[self dismissViewControllerAnimated:YES completion:nil];
+			dispatch_async(dispatch_get_main_queue(), ^{
+				AppLog(@"start installing ipa!");
+				_root.optionalTextLabel.text = @"launcher.status.extracting".loc;
+				[_root progressCancelVisibility:NO];
+			});
+			[VerifyInstall startGDInstall:_root url:url];
+		}
+	}
 }
 
 - (void)certPass:(NSString*)certPass url:(NSURL*)url {
@@ -995,5 +1033,4 @@
 	[Utils showNotice:self title:@"Certificate Imported!"];
 	[self.tableView reloadData];
 }
-*/
 @end

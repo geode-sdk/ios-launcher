@@ -406,19 +406,18 @@
 	if (![[Utils getPrefs] boolForKey:@"JITLESS"])
 		return completionHandler(YES, nil);
 	LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
-	app.signer = [[Utils getPrefs] boolForKey:@"USE_ZSIGN"] ? 1 : 0;
 	[app patchExecAndSignIfNeedWithCompletionHandler:^(BOOL signSuccess, NSString* signError) {
 		if (signError)
 			return completionHandler(NO, signError);
-		[LCUtils signTweaks:[LCPath tweakPath] force:force signer:app.signer progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+		[LCUtils signTweaks:[LCPath tweakPath] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
 			if (error != nil) {
 				AppLog(@"Detailed error for signing tweaks: %@", error);
 				return completionHandler(
 					NO, [NSString stringWithFormat:@"Couldn't sign tweaks. Please make sure that you have either patched %@, or imported a certificate in settings.",
 												   [LCUtils getStoreName]]);
 			}
-			[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"GeometryDash/Documents/game/geode"] force:force signer:app.signer
-				progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+			[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"GeometryDash/Documents/game/geode"] force:force progressHandler:^(NSProgress* progress) {}
+				completion:^(NSError* error) {
 					if (error != nil) {
 						AppLog(@"Detailed error for signing mods: %@", error);
 						return completionHandler(

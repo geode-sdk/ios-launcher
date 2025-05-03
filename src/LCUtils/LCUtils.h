@@ -1,17 +1,17 @@
 #import <Foundation/Foundation.h>
 
-typedef void (^LCParseMachOCallback)(const char* path, struct mach_header_64* header);
+typedef void (^LCParseMachOCallback)(const char* path, struct mach_header_64* header, int fd, void* filePtr);
 
-typedef NS_ENUM(NSInteger, Store) { SideStore, AltStore };
+typedef NS_ENUM(NSInteger, Store) { SideStore, AltStore, Unknown };
 
-typedef NS_ENUM(NSInteger, Signer) { AltSign = 0, ZSign = 1 };
-
-NSString* LCParseMachO(const char* path, LCParseMachOCallback callback);
+NSString* LCParseMachO(const char* path, bool readOnly, LCParseMachOCallback callback);
 void LCPatchAddRPath(const char* path, struct mach_header_64* header);
 void LCPatchExecSlice(const char* path, struct mach_header_64* header);
 void LCPatchLibrary(const char* path, struct mach_header_64* header);
 void LCChangeExecUUID(struct mach_header_64* header);
 void LCPatchAltStore(const char* path, struct mach_header_64* header);
+bool checkCodeSignature(const char* path);
+void refreshFile(NSString* execPath);
 
 @interface PKZipArchiver : NSObject
 
@@ -21,7 +21,7 @@ void LCPatchAltStore(const char* path, struct mach_header_64* header);
 
 @interface LCUtils : NSObject
 
-+ (void)validateJITLessSetupWithSigner:(Signer)signer completionHandler:(void (^)(BOOL success, NSError* error))completionHandler;
++ (void)validateJITLessSetup:(void (^)(BOOL success, NSError* error))completionHandler;
 + (NSURL*)archiveTweakedAltStoreWithError:(NSError**)error;
 + (NSData*)certificateData;
 + (NSString*)certificatePassword;
@@ -29,11 +29,10 @@ void LCPatchAltStore(const char* path, struct mach_header_64* header);
 + (BOOL)askForJIT;
 + (BOOL)launchToGuestApp;
 
-+ (void)removeCodeSignatureFromBundleURL:(NSURL*)appURL;
-+ (NSProgress*)signAppBundle:(NSURL*)path completionHandler:(void (^)(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* error))completionHandler;
-+ (NSProgress*)signAppBundleWithZSign:(NSURL*)path completionHandler:(void (^)(BOOL success, NSDate* expirationDate, NSString* teamId, NSError* error))completionHandler;
++ (NSProgress*)signAppBundleWithZSign:(NSURL*)path completionHandler:(void (^)(BOOL success, NSError* error))completionHandler;
 + (BOOL)isAppGroupAltStoreLike;
 + (NSString*)getCertTeamIdWithKeyData:(NSData*)keyData password:(NSString*)password;
++ (int)validateCertificate:(void (^)(int status, NSDate* expirationDate, NSString* error))completionHandler;
 + (Store)store;
 + (NSString*)teamIdentifier;
 + (NSString*)appGroupID;
@@ -46,18 +45,7 @@ void LCPatchAltStore(const char* path, struct mach_header_64* header);
 + (NSString*)getStoreName;
 + (NSString*)getAppRunningLCScheme:(NSString*)bundleId;
 
-+ (void)signFilesInFolder:(NSURL*)url
-				   signer:(Signer)signer
-		onProgressCreated:(void (^)(NSProgress* progress))onProgressCreated
-			   completion:(void (^)(NSString* error, NSDate* expirationDate))completion;
-+ (void)signTweaks:(NSURL*)tweakFolderUrl
-			  force:(BOOL)force
-			 signer:(Signer)signer
-	progressHandler:(void (^)(NSProgress* progress))progressHandler
-		 completion:(void (^)(NSError* error))completion;
-+ (void)signMods:(NSURL*)geodeUrl
-			  force:(BOOL)force
-			 signer:(Signer)signer
-	progressHandler:(void (^)(NSProgress* progress))progressHandler
-		 completion:(void (^)(NSError* error))completion;
++ (void)signFilesInFolder:(NSURL*)url onProgressCreated:(void (^)(NSProgress* progress))onProgressCreated completion:(void (^)(NSString* error))completion;
++ (void)signTweaks:(NSURL*)tweakFolderUrl force:(BOOL)force progressHandler:(void (^)(NSProgress* progress))progressHandler completion:(void (^)(NSError* error))completion;
++ (void)signMods:(NSURL*)geodeUrl force:(BOOL)force progressHandler:(void (^)(NSProgress* progress))progressHandler completion:(void (^)(NSError* error))completion;
 @end

@@ -1,8 +1,8 @@
 #pragma once
 #include <mach/machine.h>
-// typedef int cpu_type_t;
-// typedef int cpu_subtype_t;
-// typedef int	vm_prot_t;
+typedef int cpu_type_t;
+typedef int cpu_subtype_t;
+typedef int	vm_prot_t;
 
 // /*
 //  * Capability bits used in the definition of cpu_type.

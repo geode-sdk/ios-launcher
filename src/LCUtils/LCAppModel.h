@@ -21,7 +21,6 @@
 @property NSString* uiTweakFolder;
 @property BOOL uiDoSymlinkInbox;
 @property BOOL uiBypassAssertBarrierOnQueue;
-@property Signer* uiSigner;
 
 @property id<LCAppModelDelegate> delegate;
 

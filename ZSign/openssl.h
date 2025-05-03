@@ -1,6 +1,10 @@
 #pragma once
 #include "common/json.h"
 
+extern const char *appleDevCACert;
+extern const char *appleDevCACertG3;
+extern const char *appleRootCACert;
+
 bool GetCertSubjectCN(const string &strCertData, string &strSubjectCN);
 bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput);
 bool GetCMSContent(const string &strCMSDataInput, string &strContentOutput);
@@ -23,7 +27,6 @@ public:
 	string m_strEntitlementsData;
     time_t expirationDate;
 
-private:
 	void *m_evpPKey;
 	void *m_x509Cert;
 };
