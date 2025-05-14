@@ -9,10 +9,6 @@ Hello! This page **will help you install Geode on your iDevice**. This page exis
 
 To get started, choose an installation guide for your iOS version.
 
-[iOS 15 to 16.6.1](/OLD-IOS-INSTALL.md)
-
-[iOS 16.7 (excluding 16.7.1 and above)](/OLD-IOS-INSTALL.md)
-
-[iOS 17.0 (excluding 17.1 and above)](/OLD-IOS-INSTALL.md) (requires computer)
+[iOS 14 to iOS 16.7 (excluding 16.7.1 and above) to 17.0 (excluding 17.1 and above)](/OLD-IOS-INSTALL.md) (iOS 17.0 requires computer) 
 
 [iOS 17.4-18](/MODERN-IOS-INSTALL.md) (SideStore, requires computer)
