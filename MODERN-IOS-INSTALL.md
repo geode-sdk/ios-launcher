@@ -17,15 +17,15 @@
 
 ## Install SideStore
 
-1. **Enabling Developer Mode (iOS 16+)**
+1. **Installing SideStore**
+	- Follow the steps provided here: https://sidestore.io/#get-started
+
+2. **Enabling Developer Mode**
 	- You will need to enable **Developer Mode** in order to launch third party apps like SideStore, otherwise you will encounter this error when attempting to sideload SideStore or any app:
 	- ![](screenshots/install-1.png)
 	- To enable **Developer Mode** on your iOS device, navigate to `Settings -> Privacy & Security -> Developer Mode`. Do note that this will require restarting your device.
 	- ![](https://faq.altstore.io/~gitbook/image?url=https%3A%2F%2F2606795771-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FAfe8qEztjcTjsjjaMBY2%252Fuploads%252FWSvXhUTj8UZyGd1ex652%252FFcejvMRXgAE8k3R.jpg%3Falt%3Dmedia%26token%3D5e380cd0-be4e-406a-914b-8fa0519e1196&width=768&dpr=2&quality=100&sign=8860eb96&sv=2)
 	- After your device restarts, you will be prompted to "Turn on Developer Mode", press "Turn On", and **Developer Mode** should be enabled!
-
-2. **Installing SideStore**
-	- Follow the steps provided here: https://sidestore.io/#get-started
 
 ## Installing Geode through SideStore
 > [!NOTE]
