@@ -7,8 +7,14 @@ Hello! This page **will help you install Geode on your iDevice**. This page exis
 > [!TIP]
 > If you **don't know which iOS version you're on**, follow [this page from Apple](https://support.apple.com/en-us/109065) to check your iOS version.
 
+> [!WARNING]
+> TrollStore and the jailbreak method will only work on versions listed [here](https://ios.cfw.guide/installing-trollstore/), and SideStore method will work on iOS 17.4 and above.
+
+> [!WARNING]
+> Installing TrollStore on iOS 17.0 or installing SideStore **will require the usage of a computer**.
+
 To get started, choose an installation guide for your iOS version.
 
-[iOS 14 to iOS 16.7 (excluding 16.7.1 and above) to 17.0 (excluding 17.1 and above)](/OLD-IOS-INSTALL.md) (iOS 17.0 requires computer) 
+[TrollStore (and optionally jailbreak)](/OLD-IOS-INSTALL.md)  
 
-[iOS 17.4-18](/MODERN-IOS-INSTALL.md) (SideStore, requires computer)
+[SideStore](/MODERN-IOS-INSTALL.md)
