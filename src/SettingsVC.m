@@ -40,6 +40,7 @@
 		@{ @"name" : @"km7dev", @"url" : @"https://github.com/Kingminer7" },
 		@{ @"name" : @"Anh", @"url" : @"https://github.com/AnhNguyenlost13" },
 		@{ @"name" : @"pengubow", @"url" : @"https://github.com/pengubow" },
+		@{ @"name" : @"Cooper (coopeeo)", @"url" : @"https://github.com/coopeeo" },
 	];
 
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];

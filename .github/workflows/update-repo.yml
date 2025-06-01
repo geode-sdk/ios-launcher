@@ -1,0 +1,23 @@
+name: Update iOS Repository (ios-repo)
+
+on:
+  release:
+    types: [ published, unpublished, edited ]
+  workflow_dispatch:
+    # mainly for testing
+
+jobs:
+  the-activation-of-the-action-of-all-time:
+    name: Trigger Action
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GEODE_BOT_PUSH_BIN_TOKEN }}
+        script: |
+          await github.rest.actions.createWorkflowDispatch({
+            owner: 'geode-sdk',
+            repo: 'ios-repo',
+            workflow_id: 'static.yml',
+            ref: 'main'
+          })
