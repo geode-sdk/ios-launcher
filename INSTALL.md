@@ -6,7 +6,7 @@
 > Do **not** use enterprise certificates in sideloaders **like ESign and Scarlet.** Those certificates **do not have the entitlements for enabling JIT** (`get-task-allow`). You **won't be able to enable JIT** if you use them. If you want to use ESign, buy a developer certificate.
 
 ## Prerequisites
-- iOS/iPadOS 14.0 or later
+- iOS/iPadOS 14.0 up to 18.5
 - PC (Windows, Linux) or Mac OS
 - Apple ID (Secondary / Throwaway Recommended)
 - USB Cable to connect your device (Lightning / USB C)
