@@ -52,7 +52,6 @@
 "color.green" = "Green";
 "color.blue" = "Blue";
 "color.brightness" = "Brightness";
-"color.done" = "Done";
 
 // Main Screen
 "launcher.launch" = "Launch";
@@ -92,6 +91,9 @@
 "launcher.error.download-not-found" = "Download failed, couldn't find ZIP archive. Please try again or enable nightly.";
 "launcher.error.req-failed" = "Request failed";
 "launcher.error.json-failed" = "JSON parsing failed";
+"launcher.error.sign.invalidcert" = "Couldn't validate certificate: %@";
+"launcher.error.sign.invalidcert2" = "Certificate Status Invalid";
+"launcher.error.sign.invalidcert3" = "Invalid Certificate Data";
 
 "launcher.progress.download.text" = "Downloading... {percent}%";
 "launcher.progress.extract.text" = "Extracting... {percent}%";
@@ -109,6 +111,7 @@
 "general.theme.system" = "System";
 "general.theme.light" = "Light";
 "general.theme.dark" = "Dark";
+"general.change-icon" = "Change Icon";
 
 "gameplay" = "Gameplay";
 "gameplay.safe-mode" = "Launch in Safe Mode";
@@ -128,6 +131,7 @@
 "jit.jit-enabler.trollstore" = "TrollStore";
 "jit.jit-enabler.sidestore" = "SideStore JIT";
 "jit.jit-enabler.livecontainer" = "LiveContainer";
+"jit.warning" = "You should only launch Geode with JIT if you want to launch Geometry Dash! Opening the launcher with JIT is only necessary in that case. If this app is opened with JIT no matter what, you can disable this notice in settings.";
 
 "jit.footer.default" = "Geode will figure out what method of JIT to use based on certain conditions. This default option is recommended.";
 "jit.footer.jitstreamereb" = "Set up your JITStreamer-EB server. Local Network permission is required.";
@@ -138,7 +142,14 @@
 "jit.footer.livecontainer" = "Ensure that you enabled \"Launch with JIT\" for the Geode app in LiveContainer.";
 
 "jitless" = "JIT-Less";
-"jitless.footer" = "JIT-less allows you to use Geode without enabling JIT! You will need to patch AltStore or SideStore to enable, or use ZSign. If you signed Geode with a Developer / Enterprise Certificate, you may need to import the certificate.";
+"jitless.footer" = "JIT-less allows you to use Geode without enabling JIT! You will need to import a certificate.";
+"jitless.certstatus" = "Certificate Status";
+"jitless.certstatus.valid" = "Valid (%ld days)";
+"jitless.certstatus.invalid" = "Invalid / Revoked";
+"jitless.certstatus.notimport" = "Not Imported";
+"jitless.cert.readerror" = "Couldn't read certificate.";
+"jitless.cert.invalidcert" = "Couldn't validate certificate. Please ensure the password is correct, the certificate was used to sign this app, and that the certificate is not revoked.";
+"jitless.cert.success" = "Certificate Imported! Be sure to run the JIT-Less test first to ensure it works!";
 
 "advanced" = "Advanced";
 "advanced.dev-mode" = "Developer Mode";
@@ -149,6 +160,7 @@
 "advanced.view-recent-logs" = "View Last Game Logs";
 "advanced.view-app-logs" = "View Last App Logs";
 "advanced.view-recent-crash" = "View Last Game Crash";
+"advanced.warn-launcher-jit" = "Show JIT Warning";
 
 "about" = "About";
 "about.launcher" = "iOS Launcher";

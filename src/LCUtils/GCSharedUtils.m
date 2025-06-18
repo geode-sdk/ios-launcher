@@ -125,7 +125,7 @@ extern NSBundle* gcMainBundle;
 		exit(0);
 		return;
 	}
-	if ([gcUserDefaults boolForKey:@"JITLESS_REMOVEMEANDTHEUNDERSCORE"]) {
+	if ([gcUserDefaults boolForKey:@"JITLESS"]) {
 		[LCUtils signMods:[[LCPath docPath] URLByAppendingPathComponent:@"game/geode"] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
 			if (error != nil) {
 				AppLog(@"Detailed error for signing mods: %@", error);
@@ -152,13 +152,13 @@ extern NSBundle* gcMainBundle;
 		NSString* tsPath = [NSString stringWithFormat:@"%@/../_TrollStore", gcMainBundle.bundlePath];
 		if ((jitEnabler == 0 && !access(tsPath.UTF8String, F_OK)) || jitEnabler == 1) {
 			urlScheme = @"apple-magnifier://enable-jit?bundle-id=%@";
+		} else if (self.certificatePassword && [gcUserDefaults boolForKey:@"JITLESS"]) {
+			tries = 2;
+			urlScheme = [NSString stringWithFormat:@"%@://geode-relaunch", gcAppUrlScheme];
 		} else if ((jitEnabler == 0 && [application canOpenURL:[NSURL URLWithString:@"stikjit://"]]) || jitEnabler == 2) {
 			urlScheme = @"stikjit://enable-jit?bundle-id=%@";
 		} else if ((jitEnabler == 0 && [application canOpenURL:[NSURL URLWithString:@"sidestore://"]]) || jitEnabler == 5) {
 			urlScheme = @"sidestore://sidejit-enable?bid=%@";
-		} else if (self.certificatePassword) {
-			tries = 2;
-			urlScheme = [NSString stringWithFormat:@"%@://geode-relaunch", gcAppUrlScheme];
 		} else {
 			tries = 2;
 			urlScheme = [NSString stringWithFormat:@"%@://geode-relaunch", gcAppUrlScheme];

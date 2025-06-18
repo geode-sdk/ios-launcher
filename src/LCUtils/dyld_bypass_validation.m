@@ -63,6 +63,7 @@ static bool redirectFunction(char* name, void* patchAddr, void* target) {
 static bool searchAndPatch(char* name, char* base, char* signature, int length, void* target) {
 	char* patchAddr = NULL;
 
+	AppLog(@"searching for %s...", name, patchAddr);
 	// TODO: maybe add a condition for if the user really has dopamine, considering that I may need to look further into the address space
 	// but it crashes if I have it too big!? wacky
 	// for(int i=0; i < 0x100000; i++) {

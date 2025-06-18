@@ -70,7 +70,7 @@ Class LCSharedUtilsClass = nil;
 		[[LSApplicationWorkspace defaultWorkspace] openApplicationWithBundleID:appBundleIdentifier];
 		return YES;
 	}
-	if (![[Utils getPrefs] boolForKey:@"JITLESS_REMOVEMEANDTHEUNDERSCORE"] && ![LCUtils askForJIT])
+	if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![LCUtils askForJIT])
 		return YES;
 	return [LCSharedUtilsClass launchToGuestApp];
 }
@@ -199,13 +199,22 @@ Class LCSharedUtilsClass = nil;
 + (int)validateCertificate:(void (^)(int status, NSDate* expirationDate, NSString* error))completionHandler {
 	NSError* error;
 	NSURL* profilePath = [NSBundle.mainBundle URLForResource:@"embedded" withExtension:@"mobileprovision"];
-	NSData* profileData = [NSData dataWithContentsOfURL:profilePath];
+	if (!profilePath) {
+		profilePath = [[LCPath docPath] URLByAppendingPathComponent:@"embedded.mobileprovision"];
+	}
+	if (!profilePath) {
+		int ans = 0;
+		completionHandler(2, nil, @"Error loading cert or issuer");
+		return ans;
+	}
+	NSData* profileData = [NSData dataWithContentsOfURL:profilePath options:0 error:&error];
 	NSData* certData = [LCUtils certificateData];
 	if (error) {
 		return -6;
 	}
 	[self loadStoreFrameworksWithError2:&error];
-	int ans = [NSClassFromString(@"ZSigner") checkCertWithProv:profileData key:certData pass:[LCUtils certificatePassword] completionHandler:completionHandler];
+	int ans = [NSClassFromString(@"ZSigner") checkCertWithProv:profileData key:certData pass:[LCUtils certificatePassword] ocsp:![[Utils getPrefs] boolForKey:@"JITLESS_OCSP"]
+											 completionHandler:completionHandler];
 	return ans;
 }
 
@@ -225,9 +234,9 @@ Class LCSharedUtilsClass = nil;
 		}
 		if (ans != Unknown)
 			return;
-		if ([[self appGroupID] containsString:@"AltStore"]) {
+		if ([[self appGroupID] containsString:@"AltStore"] && ![[self appGroupID] isEqualToString:@"group.com.rileytestut.AltStore"]) {
 			ans = AltStore;
-		} else if ([[self appGroupID] containsString:@"SideStore"]) {
+		} else if ([[self appGroupID] containsString:@"SideStore"] && ![[self appGroupID] isEqualToString:@"group.com.SideStore.SideStore"]) {
 			ans = SideStore;
 		} else {
 			ans = Unknown;
@@ -574,45 +583,46 @@ Class LCSharedUtilsClass = nil;
 	if (!force) {
 		NSMutableDictionary* tweakFileINodeRecord = [NSMutableDictionary dictionaryWithDictionary:[tweakSignInfo objectForKey:@"files"]];
 		NSArray* fileURLs = [fm contentsOfDirectoryAtURL:[tweakFolderUrl URLByAppendingPathComponent:@"unzipped"] includingPropertiesForKeys:nil options:0 error:nil];
-
-		for (NSURL* url in fileURLs) {
-			NSError* error = nil;
-			NSDictionary* attributes = [fm attributesOfItemAtPath:url.path error:&error];
-			if (error)
-				continue;
-			NSString* fileType = attributes[NSFileType];
-			if (![fileType isEqualToString:NSFileTypeDirectory])
-				continue;
-			NSArray* modContents = [fm contentsOfDirectoryAtURL:url includingPropertiesForKeys:nil options:0 error:nil];
-			for (NSURL* fileURL in modContents) {
-				NSDictionary* attributes = [fm attributesOfItemAtPath:fileURL.path error:&error];
+		if (fileURLs) {
+			for (NSURL* url in fileURLs) {
+				NSError* error = nil;
+				NSDictionary* attributes = [fm attributesOfItemAtPath:url.path error:&error];
 				if (error)
 					continue;
 				NSString* fileType = attributes[NSFileType];
-				if (![fileType isEqualToString:NSFileTypeDirectory] && ![fileType isEqualToString:NSFileTypeRegular])
+				if (![fileType isEqualToString:NSFileTypeDirectory])
 					continue;
-				if ([fileType isEqualToString:NSFileTypeDirectory] && ![[fileURL lastPathComponent] hasSuffix:@".framework"])
-					continue;
-				if ([fileType isEqualToString:NSFileTypeRegular] && ![[fileURL lastPathComponent] hasSuffix:@".dylib"])
-					continue;
-				if ([[fileURL lastPathComponent] isEqualToString:@"TweakInfo.plist"])
-					continue;
+				NSArray* modContents = [fm contentsOfDirectoryAtURL:url includingPropertiesForKeys:nil options:0 error:nil];
+				for (NSURL* fileURL in modContents) {
+					NSDictionary* attributes = [fm attributesOfItemAtPath:fileURL.path error:&error];
+					if (error)
+						continue;
+					NSString* fileType = attributes[NSFileType];
+					if (![fileType isEqualToString:NSFileTypeDirectory] && ![fileType isEqualToString:NSFileTypeRegular])
+						continue;
+					if ([fileType isEqualToString:NSFileTypeDirectory] && ![[fileURL lastPathComponent] hasSuffix:@".framework"])
+						continue;
+					if ([fileType isEqualToString:NSFileTypeRegular] && ![[fileURL lastPathComponent] hasSuffix:@".dylib"])
+						continue;
+					if ([[fileURL lastPathComponent] isEqualToString:@"TweakInfo.plist"])
+						continue;
 
-				NSNumber* inodeNumber = [fm attributesOfItemAtPath:fileURL.path error:nil][NSFileSystemNumber];
-				if ([tweakFileINodeRecord objectForKey:fileURL.lastPathComponent] != inodeNumber || checkCodeSignature([fileURL.path UTF8String])) {
-					signNeeded = YES;
-					break;
-				}
-				if (![self modifiedAtDifferent:fileURL.path
-									 geodePath:[tweakFolderUrl
-												   URLByAppendingPathComponent:[NSString stringWithFormat:@"mods/%@.geode", [[[url lastPathComponent] stringByDeletingPathExtension]
-																																stringByDeletingPathExtension]]]
-												   .path]) {
-					signNeeded = YES;
-					break;
-				}
+					NSNumber* inodeNumber = [fm attributesOfItemAtPath:fileURL.path error:nil][NSFileSystemNumber];
+					if ([tweakFileINodeRecord objectForKey:fileURL.lastPathComponent] != inodeNumber || checkCodeSignature([fileURL.path UTF8String])) {
+						signNeeded = YES;
+						break;
+					}
+					if (![self modifiedAtDifferent:fileURL.path
+										 geodePath:[tweakFolderUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"mods/%@.geode",
+																														  [[[url lastPathComponent] stringByDeletingPathExtension]
+																															  stringByDeletingPathExtension]]]
+													   .path]) {
+						signNeeded = YES;
+						break;
+					}
 
-				AppLog(@"%@", [fileURL lastPathComponent]);
+					AppLog(@"%@", [fileURL lastPathComponent]);
+				}
 			}
 		}
 	} else {
@@ -625,9 +635,9 @@ Class LCSharedUtilsClass = nil;
 		[fm removeItemAtURL:tmpDir error:nil];
 	}
 	[fm createDirectoryAtURL:tmpDir withIntermediateDirectories:YES attributes:nil error:nil];
+	// crashes around here? not sure, stack trace says soemthing about mutable array here
 	NSMutableArray* tmpPaths = [NSMutableArray array];
 	NSArray* fileURLs = [fm contentsOfDirectoryAtURL:[tweakFolderUrl URLByAppendingPathComponent:@"unzipped"] includingPropertiesForKeys:nil options:0 error:nil];
-
 	for (NSURL* url in fileURLs) {
 		NSError* error = nil;
 		NSDictionary* attributes = [fm attributesOfItemAtPath:url.path error:&error];
@@ -654,8 +664,10 @@ Class LCSharedUtilsClass = nil;
 				continue;
 
 			NSURL* tmpPath = [tmpDir URLByAppendingPathComponent:fileURL.lastPathComponent];
-			[tmpPaths addObject:tmpPath];
-			[fm copyItemAtURL:fileURL toURL:tmpPath error:nil];
+			if (tmpPath) {
+				[tmpPaths addObject:tmpPath];
+				[fm copyItemAtURL:fileURL toURL:tmpPath error:nil];
+			}
 		}
 	}
 	if ([tmpPaths count] == 0) {
@@ -678,8 +690,10 @@ Class LCSharedUtilsClass = nil;
 			}
 			[fm moveItemAtURL:tmpFile toURL:toPath error:nil];
 			NSNumber* inodeNumber = [fm attributesOfItemAtPath:toPath.path error:nil][NSFileSystemNumber];
-			[fileInodes addObject:inodeNumber];
-			[newTweakSignInfo setObject:inodeNumber forKey:tmpFile.lastPathComponent];
+			if (inodeNumber) {
+				[fileInodes addObject:inodeNumber];
+				[newTweakSignInfo setObject:inodeNumber forKey:tmpFile.lastPathComponent];
+			}
 		}
 		[fm removeItemAtURL:tmpDir error:nil];
 		[newTweakSignInfo writeToURL:[tweakFolderUrl URLByAppendingPathComponent:@"ModInfo.plist"] atomically:YES];

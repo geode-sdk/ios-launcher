@@ -151,25 +151,11 @@
 
 - (void)displayLayer:(CALayer *)layer
 {
-    CGFloat dimension = MIN(CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
-    NSDictionary* parameters = @{@"inputColorSpace": (__bridge_transfer id)CGColorSpaceCreateDeviceRGB(),
-                            @"inputDither": @0,
-                            @"inputRadius": @(dimension),
-                            @"inputSoftness": @0,
-                            @"inputValue": @1};
-    CIFilter* filter = [CIFilter filterWithName:@"CIHueSaturationValueGradient" withInputParameters:parameters];
-    CIImage *outputImage = [filter outputImage];
-    CIContext *context;
-    if ([Utils isSandboxed]) {
-        context = [CIContext contextWithOptions:nil];
-    } else {
-        id<MTLDevice> device = MTLCreateSystemDefaultDevice(); // so apparently we need to create with Metal, yeah that sure wont go wrong, but it fixed crashes...
-                                                               // unfortunately though, it wont render the color wheel, ill have to fix that later
-                                                               // TODO: use UIImage instead for color wheel
-        context = [CIContext contextWithMTLDevice:device options:nil];
+    UIImage *image = [UIImage imageNamed:@"ColorWheel.png"];
+    if (image) {
+        self.layer.contents = (__bridge id)image.CGImage;
     }
-    CGImageRef cgimg = [context createCGImage:outputImage fromRect:[outputImage extent]];
-    self.layer.contents = (__bridge_transfer id)cgimg;
+    self.layer.contentsGravity = kCAGravityResizeAspect;
 }
 
 - (void)layoutSublayersOfLayer:(CALayer *)layer

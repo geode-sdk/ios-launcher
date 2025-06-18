@@ -27,7 +27,7 @@
 + (NSString*)archName;
 + (void)toggleKey:(NSString*)key;
 + (NSString*)sha256sum:(NSString*)path;
-+ (NSString*)getGDBinaryHash;
++ (NSString*)sha256sumWithData:(NSData*)data;
 + (NSString*)getGDDocPath;
 + (NSString*)getGDBinaryPath;
 + (NSString*)getGDBundlePath;

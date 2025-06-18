@@ -182,18 +182,17 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 		}
 		if (data) {
 			NSError* jsonError;
-			// id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-			NSArray* jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+			id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
 			if (jsonError) {
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[Utils showError:_root title:@"launcher.error.json-failed".loc error:jsonError];
 					AppLog(@"Error parsing JSON: %@", jsonError);
 				});
 			} else {
-				// if ([jsonObject isKindOfClass:[NSDictionary class]]) {
-				if ([jsonObject isKindOfClass:[NSArray class]]) {
-					// NSDictionary* jsonDict = (NSDictionary*)jsonObject;
-					NSDictionary* jsonDict = jsonObject[0];
+				if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+				// if ([jsonObject isKindOfClass:[NSArray class]]) {
+					NSDictionary* jsonDict = (NSDictionary*)jsonObject;
+					// NSDictionary* jsonDict = jsonObject[0];
 					NSString* tagName = jsonDict[@"tag_name"];
 					if (tagName && [tagName isKindOfClass:[NSString class]]) {
 						NSString* launcherVer = [NSString stringWithFormat:@"v%@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];

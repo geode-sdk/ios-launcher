@@ -61,7 +61,7 @@ void UIAGuestHooksInit();
 static BOOL checkJITEnabled() {
 	if (access("/Users", R_OK) == 0)
 		return YES;
-	if ([gcUserDefaults boolForKey:@"JITLESS_REMOVEMEANDTHEUNDERSCORE"])
+	if ([gcUserDefaults boolForKey:@"JITLESS"])
 		return NO;
 	// check if jailbroken
 	if (access("/var/mobile", R_OK) == 0) {
@@ -233,7 +233,7 @@ void* new_dlsym(void* __handle, const char* __symbol) {
 
 static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContainer, BOOL safeMode, int argc, char* argv[]) {
 	NSString* appError = nil;
-	if (![gcUserDefaults boolForKey:@"JITLESS_REMOVEMEANDTHEUNDERSCORE"]) {
+	if (![gcUserDefaults boolForKey:@"JITLESS"]) {
 		// First of all, let's check if we have JIT
 		for (int i = 0; i < 10 && !checkJITEnabled(); i++) {
 			usleep(1000 * 100);
@@ -307,7 +307,6 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 		AppLog(@"[invokeAppMain] Couldn't find tweak folder!");
 	}
 	// If JIT is enabled, bypass library validation so we can load arbitrary binaries
-
 	if (!usingLiveContainer) {
 		if (checkJITEnabled()) { // lc already hooks it so it's unnecessary to do it again...
 			init_bypassDyldLibValidation();

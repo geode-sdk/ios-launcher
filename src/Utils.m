@@ -41,40 +41,79 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	[[Utils getPrefs] setInteger:(currentCount + 1) forKey:@"LAUNCH_COUNT"];
 }
 
++ (NSData*)getTweakData {
+	if (![Utils isSandboxed]) {
+		NSString* applicationSupportDirectory = [[Utils getGDDocPath] stringByAppendingString:@"Library/Application Support"];
+		if (applicationSupportDirectory != nil) {
+			return [NSData dataWithContentsOfFile:[applicationSupportDirectory stringByAppendingString:@"/GeometryDash/game/geode/Geode.ios.dylib"] options:0 error:nil];
+		}
+	} else {
+		return [NSData dataWithContentsOfFile:[[LCPath tweakPath].path stringByAppendingPathComponent:@"Geode.ios.dylib"] options:0 error:nil];
+	}
+	return nil;
+}
+
 + (NSString*)getGeodeVersion {
-	// NSString* verTag = [[Utils getPrefs] stringForKey:@"CURRENT_VERSION_TAG"];
-	if (cachedVersion) {
-		if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
-			return @"Nightly";
-		} else {
-			return cachedVersion;
+	NSFileManager* fm = NSFileManager.defaultManager;
+	if (![Utils isSandboxed]) {
+		NSString* applicationSupportDirectory = [[Utils getGDDocPath] stringByAppendingString:@"Library/Application Support"];
+		if (applicationSupportDirectory != nil) {
+			if (![fm fileExistsAtPath:[applicationSupportDirectory stringByAppendingString:@"/GeometryDash/game/geode/Geode.ios.dylib"]]) {
+				return @"Geode is not installed";
+			}
+		}
+	} else {
+		if (![fm fileExistsAtPath:[[LCPath tweakPath].path stringByAppendingPathComponent:@"Geode.ios.dylib"]]) {
+			return @"Geode is not installed";
 		}
 	}
-	NSError* error;
-	NSData* data;
-	if ([Utils isContainerized]) {
-		data = [NSData dataWithContentsOfFile:[[LCPath docPath].path stringByAppendingPathComponent:@"save/geode/mods/geode.loader/saved.json"] options:0 error:&error];
-	} else {
-		data = [NSData dataWithContentsOfFile:[[Utils docPath] stringByAppendingPathComponent:@"save/geode/mods/geode.loader/saved.json"] options:0 error:&error];
+	// no need to calculate anything if we're nightly...
+	if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
+		return @"Nightly";
+	} else if (cachedVersion) {
+		if ([cachedVersion hasPrefix:@"v"]) {
+			return cachedVersion;
+		} else {
+			return [NSString stringWithFormat:@"v%@", cachedVersion];
+		}
 	}
-	if (data && !error) {
-		id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-		if (jsonObject && !error) {
-			if ([jsonObject isKindOfClass:[NSDictionary class]]) {
-				NSDictionary* jsonDict = (NSDictionary*)jsonObject;
-				NSString* tagName = jsonDict[@"latest-version-auto-update-check"];
-				if (tagName && [tagName isKindOfClass:[NSString class]]) {
-					if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
-						return @"Nightly";
+	NSString* currentHash = [[Utils getPrefs] stringForKey:@"CURRENT_TWEAK_HASH"];
+	NSData* data = [Utils getTweakData];
+	NSString* newHash = [Utils sha256sumWithData:data];
+	if (data && ![currentHash isEqualToString:newHash]) {
+		AppLog(@"Hash mismatch (%@ vs %@)", currentHash, newHash);
+		NSError* error;
+		NSString* stringData = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+		if (stringData) {
+			// https://developer.apple.com/documentation/foundation/nsregularexpression
+			// "version":(?: )?"((?:\\.|[^"\\])*)"
+			NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:@"\"version\":(?: )?\"((?:\\\\.|[^\"\\\\])*)\""
+																				   options:NSRegularExpressionCaseInsensitive
+																					 error:&error];
+			if (regex && !error) {
+				NSTextCheckingResult* match = [regex firstMatchInString:stringData options:0 range:NSMakeRange(0, stringData.length)];
+				if (match && match.numberOfRanges > 1) {
+					cachedVersion = [stringData substringWithRange:[match rangeAtIndex:1]];
+					[[Utils getPrefs] setObject:cachedVersion forKey:@"CURRENT_VERSION_TAG"];
+					[[Utils getPrefs] setObject:newHash forKey:@"CURRENT_TWEAK_HASH"];
+					AppLog(@"Set new version to %@ and hash to %@", cachedVersion, newHash);
+					if ([cachedVersion hasPrefix:@"v"]) {
+						return cachedVersion;
 					} else {
-						cachedVersion = tagName;
-						return tagName;
+						return [NSString stringWithFormat:@"v%@", cachedVersion];
 					}
 				}
 			}
 		}
+	} else {
+		cachedVersion = [[Utils getPrefs] stringForKey:@"CURRENT_VERSION_TAG"];
+		if ([cachedVersion hasPrefix:@"v"]) {
+			return cachedVersion;
+		} else {
+			return [NSString stringWithFormat:@"v%@", cachedVersion];
+		}
 	}
-	return @"Geode not installed";
+	return @"Couldn't fetch version";
 }
 
 + (void)updateGeodeVersion:(NSString*)newVer {
@@ -90,11 +129,10 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	}
 }
 + (NSString*)getGeodeLauncherURL {
-	// return @"https://api.github.com/repos/geode-sdk/ios-launcher/releases/latest";
-	return @"https://api.github.com/repos/geode-sdk/ios-launcher/releases";
+	return @"https://api.github.com/repos/geode-sdk/ios-launcher/releases/latest";
 }
 + (NSString*)getGeodeLauncherRedirect {
-	return @"https://github.com/geode-sdk/ios-launcher/releases";
+	return @"https://github.com/geode-sdk/ios-launcher/releases/latest";
 }
 
 // ai generated because i cant figure this out
@@ -296,22 +334,21 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 
 // https://appideas.com/checksum-files-in-ios/
 + (NSString*)sha256sum:(NSString*)path {
+	if (!path)
+		return nil;
 	NSData* data = [NSData dataWithContentsOfFile:path];
-
-	// getting the half only because the first few bytes are overwritten for some unknown reason, i blame ios!
-	NSUInteger startData = data.length / 2;
-	NSData* subdata = [data subdataWithRange:NSMakeRange(startData, data.length - startData)];
+	return [Utils sha256sumWithData:data];
+}
++ (NSString*)sha256sumWithData:(NSData*)data {
+	if (!data)
+		return nil;
 	unsigned char digest[CC_SHA256_DIGEST_LENGTH];
-	CC_SHA256(subdata.bytes, (CC_LONG)subdata.length, digest);
+	CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
 	NSMutableString* output = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
 	for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) {
 		[output appendFormat:@"%02x", digest[i]];
 	}
 	return output;
-}
-+ (NSString*)getGDBinaryHash {
-	// TODO: change this to check for bundle version instead
-	return [Utils sha256sum:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app/Info.plist"].path];
 }
 + (BOOL)isContainerized {
 	return [[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.robtop.geometryjump"];

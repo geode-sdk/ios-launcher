@@ -9,6 +9,7 @@ old/
 build.sh
 build-ts.sh
 build-alt.sh
+build-lc.sh
 build-without.sh
 build-debug.sh
 .git

@@ -8,6 +8,7 @@ extern const char *appleRootCACert;
 bool GetCertSubjectCN(const string &strCertData, string &strSubjectCN);
 bool GetCMSInfo(uint8_t *pCMSData, uint32_t uCMSLength, JValue &jvOutput);
 bool GetCMSContent(const string &strCMSDataInput, string &strContentOutput);
+bool GetCMSContent2(const void* strCMSDataInput, int size, string &strContentOutput);
 bool GenerateCMS(const string &strSignerCertData, const string &strSignerPKeyData, const string &strCDHashData, const string &strCDHashPlist, string &strCMSOutput);
 
 class ZSignAsset

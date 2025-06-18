@@ -8,6 +8,10 @@
 #import "components/LogUtils.h"
 #import <spawn.h>
 
+static ImportCertHandler importCertFunc = nil;
+static NSData* certData = nil;
+static NSString* certPassword = nil;
+
 // https://www.uicolor.io/
 @implementation AppDelegate
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
@@ -156,7 +160,7 @@
 			}
 			return NO;
 		}
-		if ([url.host isEqualToString:@"relaunch"] && [[Utils getPrefs] boolForKey:@"JITLESS_REMOVEMEANDTHEUNDERSCORE"]) {
+		if ([url.host isEqualToString:@"relaunch"] && [[Utils getPrefs] boolForKey:@"JITLESS"]) {
 			[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"GeometryDash/Documents/game/geode"] force:NO progressHandler:^(NSProgress* progress) {}
 				completion:^(NSError* error) {
 					if (error != nil) {
@@ -176,8 +180,44 @@
 		[[Utils getPrefs] setValue:@"GeometryDash" forKey:@"selectedContainer"];
 		[[Utils getPrefs] setBool:YES forKey:@"safemode"];
 		[LCUtils launchToGuestApp];
+	} else if ([url.host isEqualToString:@"certificate"]) {
+		NSURLComponents* components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+		if (components) {
+			NSMutableDictionary<NSString*, NSString*>* queryItems = [[NSMutableDictionary alloc] init];
+			for (NSURLQueryItem* item in components.queryItems) {
+				if (item.value) {
+					// i could also do setObject but...
+					queryItems[item.name.lowercaseString] = item.value;
+				}
+			}
+			NSString* encodedCert = queryItems[@"cert"];
+			NSString* password = queryItems[@"password"];
+			if (encodedCert && password) {
+				NSData* certData = [[NSData alloc] initWithBase64EncodedString:[encodedCert stringByRemovingPercentEncoding] options:0];
+				if (certData) {
+					[AppDelegate importSideStoreCert:certData password:password];
+				}
+			}
+		}
 	}
 	return NO;
+}
+
++ (void)setImportSideStoreCertFunc:(ImportCertHandler)handler;
+{
+	importCertFunc = handler;
+	if (certData && certPassword) {
+		handler(certData, certPassword);
+	}
+}
+
++ (void)importSideStoreCert:(NSData*)certDataN password:(NSString*)passwordN {
+	if (importCertFunc == nil) {
+		certData = certDataN;
+		certPassword = passwordN;
+	} else {
+		importCertFunc(certDataN, passwordN);
+	}
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
