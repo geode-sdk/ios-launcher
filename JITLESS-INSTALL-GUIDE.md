@@ -1,4 +1,4 @@
-# Installation Guide (JIT-Less, iOS 26 or below)
+# Installation Guide (JIT-Less)
 
 This tutorial is mainly for iOS 26 as Apple broke enabling JIT on iOS 26, but it should theoretically work for any iOS version.
 
