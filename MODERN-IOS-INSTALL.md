@@ -1,4 +1,4 @@
-# iOS 17.4+ Installation Guide (SideStore)
+# Installation Guide (SideStore)
 
 > [!WARNING]
 > For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, **JIT** is a **__requirement__** to run Geode.
