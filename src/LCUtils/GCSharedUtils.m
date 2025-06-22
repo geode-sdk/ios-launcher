@@ -1,3 +1,4 @@
+#import "FoundationPrivate.h"
 #import "GCSharedUtils.h"
 #import "UIKitPrivate.h"
 #import "src/LCUtils/LCAppInfo.h"
@@ -28,7 +29,13 @@ extern NSBundle* gcMainBundle;
 + (NSString*)teamIdentifier {
 	static NSString* ans = nil;
 	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{ ans = [[gcMainBundle.bundleIdentifier componentsSeparatedByString:@"."] lastObject]; });
+	dispatch_once(&onceToken, ^{
+		void* taskSelf = SecTaskCreateFromSelf(NULL);
+		ans = SecTaskCopyTeamIdentifier(taskSelf, nil);
+		CFRelease(taskSelf);
+		if (!ans)
+			ans = [[gcMainBundle.bundleIdentifier componentsSeparatedByString:@"."] lastObject];
+	});
 	return ans;
 }
 
@@ -87,8 +94,10 @@ extern NSBundle* gcMainBundle;
 }
 
 + (void)relaunchApp {
-	[gcUserDefaults setValue:[Utils gdBundleName] forKey:@"selected"];
-	[gcUserDefaults setValue:@"GeometryDash" forKey:@"selectedContainer"];
+	if (![gcUserDefaults boolForKey:@"JITLESS"]) {
+		[gcUserDefaults setValue:[Utils gdBundleName] forKey:@"selected"];
+		[gcUserDefaults setValue:@"GeometryDash" forKey:@"selectedContainer"];
+	}
 	if (NSClassFromString(@"LCSharedUtils")) {
 		[gcUserDefaults synchronize];
 		NSFileManager* fm = [NSFileManager defaultManager];
@@ -126,12 +135,28 @@ extern NSBundle* gcMainBundle;
 		return;
 	}
 	if ([gcUserDefaults boolForKey:@"JITLESS"]) {
-		[LCUtils signMods:[[LCPath docPath] URLByAppendingPathComponent:@"game/geode"] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+		/*[LCUtils signMods:[[LCPath docPath] URLByAppendingPathComponent:@"game/geode"] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
 			if (error != nil) {
 				AppLog(@"Detailed error for signing mods: %@", error);
 			}
 			[LCUtils launchToGuestApp];
+		}];*/
+
+		UIWindowScene* scene = (id)[UIApplication.sharedApplication.connectedScenes allObjects].firstObject;
+		UIWindow* window = scene.windows.firstObject;
+
+		UIAlertController* alert = [UIAlertController
+			alertControllerWithTitle:@"Geode"
+							 message:@"Restarting is not available while in JIT-Less. You will need to manually exit and reopen Geode. Pressing OK will automatically exit."
+					  preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+			//[UIApplication.sharedApplication suspend];
+			exit(0);
 		}];
+		[alert addAction:okAction];
+		if (window != nil) {
+			[window.rootViewController presentViewController:alert animated:YES completion:nil];
+		}
 	} else {
 		if (![GCSharedUtils askForJIT])
 			return;
@@ -171,6 +196,10 @@ extern NSBundle* gcMainBundle;
 		for (int i = 0; i < tries; i++) {
 			[application openURL:launchURL options:@{} completionHandler:^(BOOL b) { exit(0); }];
 		}
+		// ios 26+
+		/*if(@available(iOS 19.0, *)) {
+			[[NSClassFromString(@"LSApplicationWorkspace") defaultWorkspace] openApplicationWithBundleID:@"com.apple.springboard"];
+		}*/
 		return YES;
 	}
 	return NO;

@@ -128,29 +128,6 @@ void LCChangeExecUUID(struct mach_header_64* header) {
 	}
 }
 
-void LCPatchAltStore(const char* path, struct mach_header_64* header) {
-	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
-	const char* tweakPath = "@rpath/AltStoreTweak.dylib";
-	BOOL hasLoaderCommand = NO;
-
-	struct load_command* command = (struct load_command*)imageHeaderPtr;
-	for (int i = 0; i < header->ncmds; i++) {
-		if (command->cmd == LC_LOAD_DYLIB) {
-			struct dylib_command* dylib = (struct dylib_command*)command;
-			char* dylibName = (void*)dylib + dylib->dylib.name.offset;
-			if (!strncmp(dylibName, tweakPath, strlen(tweakPath))) {
-				hasLoaderCommand = YES;
-			}
-		}
-		command = (struct load_command*)((void*)command + command->cmdsize);
-	}
-
-	if (!hasLoaderCommand) {
-
-		insertDylibCommand(LC_LOAD_DYLIB, tweakPath, header);
-	}
-}
-
 struct code_signature_command {
 	uint32_t cmd;
 	uint32_t cmdsize;

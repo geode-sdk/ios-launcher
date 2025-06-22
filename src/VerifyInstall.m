@@ -12,8 +12,6 @@
 
 #import <objc/runtime.h>
 
-typedef void (^DecompressCompletion)(int error);
-
 BOOL hasDoneUpdate = NO;
 
 @implementation VerifyInstall
@@ -84,13 +82,6 @@ BOOL hasDoneUpdate = NO;
 	return NO;
 }
 
-+ (void)decompress:(NSString*)fileToExtract extractionPath:(NSString*)extractionPath completion:(DecompressCompletion)completion {
-	AppLog(@"Starting decomp of %@ to %@", fileToExtract, extractionPath);
-	[[NSFileManager defaultManager] createDirectoryAtPath:extractionPath withIntermediateDirectories:YES attributes:nil error:nil];
-	int res = extract(fileToExtract, extractionPath, nil);
-	return completion(res);
-}
-
 // I CANT (return BOOL instead?)
 + (void)startGDInstall:(RootViewController*)root url:(NSURL*)url {
 	@autoreleasepool {
@@ -125,7 +116,7 @@ BOOL hasDoneUpdate = NO;
 			}];
 		});
 
-		[VerifyInstall decompress:url.path extractionPath:[[fm temporaryDirectory] path] completion:^(int decompError) {
+		[Utils decompress:url.path extractionPath:[[fm temporaryDirectory] path] completion:^(int decompError) {
 			if (decompError != 0) {
 				return dispatch_async(dispatch_get_main_queue(), ^{
 					[root updateState];

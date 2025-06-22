@@ -6,200 +6,161 @@
 #define B2(a) (a >> 16 & 0xFF)
 #define B3(a) (a >> 24 & 0xFF)
 
-ZBase64::ZBase64(void)
+jbase64::jbase64()
 {
 }
 
-ZBase64::~ZBase64(void)
+jbase64::~jbase64()
 {
-	if (!m_arrEnc.empty())
-	{
-		for (size_t i = 0; i < m_arrEnc.size(); i++)
-		{
-			delete[] m_arrEnc[i];
+	if (!m_array_encodes.empty()) {
+		for (size_t i = 0; i < m_array_encodes.size(); i++) {
+			delete[] m_array_encodes[i];
 		}
-		m_arrEnc.clear();
+		m_array_encodes.clear();
 	}
 
-	if (!m_arrDec.empty())
-	{
-		for (size_t i = 0; i < m_arrDec.size(); i++)
-		{
-			delete[] m_arrDec[i];
+	if (!m_array_decodes.empty()) {
+		for (size_t i = 0; i < m_array_decodes.size(); i++) {
+			delete[] m_array_decodes[i];
 		}
-		m_arrDec.clear();
+		m_array_decodes.clear();
 	}
 }
 
-char ZBase64::GetB64char(int nIndex)
+char jbase64::get_b64_char(int index)
 {
-	static const char szTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	if (nIndex >= 0 && nIndex < 64)
-	{
-		return szTable[nIndex];
+	static const char table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	if (index >= 0 && index < 64) {
+		return table[index];
 	}
 	return '=';
 }
 
-int ZBase64::GetB64Index(char ch)
+int jbase64::get_b64_index(char ch)
 {
 	int index = -1;
-	if (ch >= 'A' && ch <= 'Z')
-	{
+	if (ch >= 'A' && ch <= 'Z') {
 		index = ch - 'A';
-	}
-	else if (ch >= 'a' && ch <= 'z')
-	{
+	} else if (ch >= 'a' && ch <= 'z') {
 		index = ch - 'a' + 26;
-	}
-	else if (ch >= '0' && ch <= '9')
-	{
+	} else if (ch >= '0' && ch <= '9') {
 		index = ch - '0' + 52;
-	}
-	else if (ch == '+')
-	{
+	} else if (ch == '+') {
 		index = 62;
-	}
-	else if (ch == '/')
-	{
+	} else if (ch == '/') {
 		index = 63;
 	}
 	return index;
 }
 
-const char *ZBase64::Encode(const char *szSrc, int nSrcLen)
+const char* jbase64::encode(const char* src, int src_len)
 {
-	if (0 == nSrcLen)
-	{
-		nSrcLen = (int)strlen(szSrc);
+	if (0 == src_len) {
+		src_len = (int)strlen(src);
 	}
 
-	if (nSrcLen <= 0)
-	{
+	if (src_len <= 0) {
 		return "";
 	}
 
-	char *szEnc = new char[nSrcLen * 3 + 128];
-	m_arrEnc.push_back(szEnc);
+	char* enc = new char[src_len * 3 + 128];
+	m_array_encodes.push_back(enc);
 
 	int i = 0;
-	int len = 0;
-	printf("%i\n", len); // or else it errors??
-	unsigned char *psrc = (unsigned char *)szSrc;
-	char *p64 = szEnc;
-	for (i = 0; i < nSrcLen - 3; i += 3)
-	{
-		unsigned long ulTmp = *(unsigned long *)psrc;
-		int b0 = GetB64char((B0(ulTmp) >> 2) & 0x3F);
-		int b1 = GetB64char((B0(ulTmp) << 6 >> 2 | B1(ulTmp) >> 4) & 0x3F);
-		int b2 = GetB64char((B1(ulTmp) << 4 >> 2 | B2(ulTmp) >> 6) & 0x3F);
-		int b3 = GetB64char((B2(ulTmp) << 2 >> 2) & 0x3F);
-		*((unsigned long *)p64) = b0 | b1 << 8 | b2 << 16 | b3 << 24;
-		len += 4;
+	char* p64 = enc;
+	unsigned char* pcursor = (unsigned char*)src;
+	for (i = 0; i < src_len - 3; i += 3) {
+		unsigned long temp = *(unsigned long*)pcursor;
+		int b0 = get_b64_char((B0(temp) >> 2) & 0x3F);
+		int b1 = get_b64_char((B0(temp) << 6 >> 2 | B1(temp) >> 4) & 0x3F);
+		int b2 = get_b64_char((B1(temp) << 4 >> 2 | B2(temp) >> 6) & 0x3F);
+		int b3 = get_b64_char((B2(temp) << 2 >> 2) & 0x3F);
+		*((unsigned long*)p64) = b0 | b1 << 8 | b2 << 16 | b3 << 24;
 		p64 += 4;
-		psrc += 3;
+		pcursor += 3;
 	}
 
-	if (i < nSrcLen)
-	{
-		int rest = nSrcLen - i;
-		unsigned long ulTmp = 0;
-		for (int j = 0; j < rest; ++j)
-		{
-			*(((unsigned char *)&ulTmp) + j) = *psrc++;
+	if (i < src_len) {
+		int rest = src_len - i;
+		unsigned long temp = 0;
+		for (int j = 0; j < rest; ++j) {
+			*(((unsigned char*)&temp) + j) = *pcursor++;
 		}
-		p64[0] = GetB64char((B0(ulTmp) >> 2) & 0x3F);
-		p64[1] = GetB64char((B0(ulTmp) << 6 >> 2 | B1(ulTmp) >> 4) & 0x3F);
-		p64[2] = rest > 1 ? GetB64char((B1(ulTmp) << 4 >> 2 | B2(ulTmp) >> 6) & 0x3F) : '=';
-		p64[3] = rest > 2 ? GetB64char((B2(ulTmp) << 2 >> 2) & 0x3F) : '=';
+		p64[0] = get_b64_char((B0(temp) >> 2) & 0x3F);
+		p64[1] = get_b64_char((B0(temp) << 6 >> 2 | B1(temp) >> 4) & 0x3F);
+		p64[2] = rest > 1 ? get_b64_char((B1(temp) << 4 >> 2 | B2(temp) >> 6) & 0x3F) : '=';
+		p64[3] = rest > 2 ? get_b64_char((B2(temp) << 2 >> 2) & 0x3F) : '=';
 		p64 += 4;
-		len += 4;
 	}
 	*p64 = '\0';
-	return szEnc;
+	return enc;
 }
 
-const char *ZBase64::Encode(const string &strInput)
+const char* jbase64::encode(const string& input)
 {
-	return Encode(strInput.data(), strInput.size());
+	return encode(input.data(), (int)input.size());
 }
 
-const char *ZBase64::Decode(const char *szSrc, int nSrcLen, int *pDecLen)
+const char* jbase64::decode(const char* src, int src_len, int* pdecode_len)
 {
-	if (0 == nSrcLen)
-	{
-		nSrcLen = (int)strlen(szSrc);
+	if (0 == src_len) {
+		src_len = (int)strlen(src);
 	}
 
-	if (nSrcLen <= 0)
-	{
+	if (src_len <= 0) {
 		return "";
 	}
 
-	char *szDec = new char[nSrcLen];
-	m_arrDec.push_back(szDec);
+	char* dec = new char[src_len];
+	m_array_decodes.push_back(dec);
 
 	int i = 0;
-	int len = 0;
-	printf("%i\n", len); // or else it errors??
-	unsigned char *psrc = (unsigned char *)szSrc;
-	char *pbuf = szDec;
-	for (i = 0; i < nSrcLen - 4; i += 4)
-	{
-		unsigned long ulTmp = *(unsigned long *)psrc;
-
-		int b0 = (GetB64Index((char)B0(ulTmp)) << 2 | GetB64Index((char)B1(ulTmp)) << 2 >> 6) & 0xFF;
-		int b1 = (GetB64Index((char)B1(ulTmp)) << 4 | GetB64Index((char)B2(ulTmp)) << 2 >> 4) & 0xFF;
-		int b2 = (GetB64Index((char)B2(ulTmp)) << 6 | GetB64Index((char)B3(ulTmp)) << 2 >> 2) & 0xFF;
-
-		*((unsigned long *)pbuf) = b0 | b1 << 8 | b2 << 16;
+	char* pbuf = dec;
+	unsigned char* psrc = (unsigned char*)src;
+	for (i = 0; i < src_len - 4; i += 4) {
+		unsigned long temp = *(unsigned long*)psrc;
+		int b0 = (get_b64_index((char)B0(temp)) << 2 | get_b64_index((char)B1(temp)) << 2 >> 6) & 0xFF;
+		int b1 = (get_b64_index((char)B1(temp)) << 4 | get_b64_index((char)B2(temp)) << 2 >> 4) & 0xFF;
+		int b2 = (get_b64_index((char)B2(temp)) << 6 | get_b64_index((char)B3(temp)) << 2 >> 2) & 0xFF;
+		*((unsigned long*)pbuf) = b0 | b1 << 8 | b2 << 16;
 		psrc += 4;
 		pbuf += 3;
-		len += 3;
 	}
 
-	if (i < nSrcLen)
-	{
-		int rest = nSrcLen - i;
-		unsigned long ulTmp = 0;
-		for (int j = 0; j < rest; ++j)
-		{
-			*(((unsigned char *)&ulTmp) + j) = *psrc++;
+	if (i < src_len) {
+		int rest = src_len - i;
+		unsigned long temp = 0;
+		for (int j = 0; j < rest; ++j) {
+			*(((unsigned char*)&temp) + j) = *psrc++;
 		}
 
-		int b0 = (GetB64Index((char)B0(ulTmp)) << 2 | GetB64Index((char)B1(ulTmp)) << 2 >> 6) & 0xFF;
+		int b0 = (get_b64_index((char)B0(temp)) << 2 | get_b64_index((char)B1(temp)) << 2 >> 6) & 0xFF;
 		*pbuf++ = b0;
-		len++;
 
-		if ('=' != B1(ulTmp) && '=' != B2(ulTmp))
-		{
-			int b1 = (GetB64Index((char)B1(ulTmp)) << 4 | GetB64Index((char)B2(ulTmp)) << 2 >> 4) & 0xFF;
+		if ('=' != B1(temp) && '=' != B2(temp)) {
+			int b1 = (get_b64_index((char)B1(temp)) << 4 | get_b64_index((char)B2(temp)) << 2 >> 4) & 0xFF;
 			*pbuf++ = b1;
-			len++;
 		}
 
-		if ('=' != B2(ulTmp) && '=' != B3(ulTmp))
-		{
-			int b2 = (GetB64Index((char)B2(ulTmp)) << 6 | GetB64Index((char)B3(ulTmp)) << 2 >> 2) & 0xFF;
+		if ('=' != B2(temp) && '=' != B3(temp)) {
+			int b2 = (get_b64_index((char)B2(temp)) << 6 | get_b64_index((char)B3(temp)) << 2 >> 2) & 0xFF;
 			*pbuf++ = b2;
-			len++;
 		}
 	}
 	*pbuf = '\0';
 
-	if (NULL != pDecLen)
-	{
-		*pDecLen = (int)(pbuf - szDec);
+	if (NULL != pdecode_len) {
+		*pdecode_len = (int)(pbuf - dec);
 	}
 
-	return szDec;
+	return dec;
 }
 
-const char *ZBase64::Decode(const char *szSrc, string &strOutput)
+const char* jbase64::decode(const char* src, string& output)
 {
-	strOutput.clear();
-	int nDecLen = 0;
-	const char *p = Decode(szSrc, 0, &nDecLen);
-	strOutput.append(p, nDecLen);
-	return strOutput.data();
+	output.clear();
+	int dec_len = 0;
+	const char* p = decode(src, 0, &dec_len);
+	output.append(p, dec_len);
+	return output.data();
 }

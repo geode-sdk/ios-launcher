@@ -5,6 +5,7 @@ packages/
 .clangd
 compile_commands.json
 old/
+old2/
 .cache/
 build.sh
 build-ts.sh
@@ -13,6 +14,6 @@ build-lc.sh
 build-without.sh
 build-debug.sh
 .git
-Resources/Frameworks/OpenSSL.framework
 /.vscode
 sec/
+macho-patcher/venv/

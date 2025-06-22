@@ -28,6 +28,7 @@
 + (void)toggleKey:(NSString*)key;
 + (NSString*)sha256sum:(NSString*)path;
 + (NSString*)sha256sumWithData:(NSData*)data;
++ (NSString*)sha256sumWithString:(NSString*)data;
 + (NSString*)getGDDocPath;
 + (NSString*)getGDBinaryPath;
 + (NSString*)getGDBundlePath;
@@ -39,7 +40,14 @@
 + (void)increaseLaunchCount;
 + (void)tweakLaunch_withSafeMode:(BOOL)safemode;
 + (NSString*)colorToHex:(UIColor*)color;
++ (NSData*)getTweakData;
++ (NSString*)getTweakDir;
++ (NSArray<NSString*>*)strings:(NSData*)data;
++ (BOOL)isDevCert;
 
 + (NSData*)encryptData:(NSData*)data withKey:(NSString*)key;
 + (NSData*)decryptData:(NSData*)data withKey:(NSString*)key;
+// completionHandler:(void (^)(BOOL success, NSString* error))completionHandler;
+
++ (void)decompress:(NSString*)fileToExtract extractionPath:(NSString*)extractionPath completion:(void (^)(int))completion;
 @end

@@ -303,79 +303,7 @@ Class LCSharedUtilsClass = nil;
 }
 
 + (NSURL*)archiveTweakedAltStoreWithError:(NSError**)error {
-	if (*error)
-		return nil;
-
-	NSFileManager* manager = NSFileManager.defaultManager;
-	NSURL* appGroupPath = [NSFileManager.defaultManager containerURLForSecurityApplicationGroupIdentifier:self.appGroupID];
-	if (!appGroupPath) {
-		NSDictionary* userInfo = @{ NSLocalizedDescriptionKey : @"Unable to access App Group. Please check JITLess diagnose page for more information." };
-		*error = [NSError errorWithDomain:@"Unable to Access App Group" code:-1 userInfo:userInfo];
-		return nil;
-	}
-
-	NSURL* lcBundlePath = [appGroupPath URLByAppendingPathComponent:@"Apps/com.geode.launcher"];
-	NSURL* bundlePath;
-	if ([self store] == SideStore) {
-		bundlePath = [appGroupPath URLByAppendingPathComponent:@"Apps/com.SideStore.SideStore"];
-	} else {
-		bundlePath = [appGroupPath URLByAppendingPathComponent:@"Apps/com.rileytestut.AltStore"];
-	}
-
-	NSURL* tmpPath = [appGroupPath URLByAppendingPathComponent:@"tmp"];
-	[manager removeItemAtURL:tmpPath error:nil];
-
-	NSURL* tmpPayloadPath = [tmpPath URLByAppendingPathComponent:@"Payload"];
-	NSURL* tmpIPAPath = [appGroupPath URLByAppendingPathComponent:@"tmp.ipa"];
-
-	[manager createDirectoryAtURL:tmpPath withIntermediateDirectories:YES attributes:nil error:error];
-	if (*error)
-		return nil;
-
-	[manager copyItemAtURL:bundlePath toURL:tmpPayloadPath error:error];
-	if (*error)
-		return nil;
-
-	// copy altstore tweak
-	NSURL* tweakToURL = [tmpPayloadPath URLByAppendingPathComponent:@"App.app/Frameworks/AltStoreTweak.dylib"];
-	if ([manager fileExistsAtPath:tweakToURL.path]) {
-		[manager removeItemAtURL:tweakToURL error:error];
-	}
-
-	[manager copyItemAtURL:[lcBundlePath URLByAppendingPathComponent:@"App.app/Frameworks/AltStoreTweak.dylib"] toURL:tweakToURL error:error];
-	NSURL* execToPatch;
-	if ([self store] == SideStore) {
-		execToPatch = [tmpPayloadPath URLByAppendingPathComponent:@"App.app/SideStore"];
-	} else {
-		execToPatch = [tmpPayloadPath URLByAppendingPathComponent:@"App.app/AltStore"];
-		;
-	}
-
-	NSString* errorPatchAltStore = LCParseMachO(
-		[execToPatch.path UTF8String], false, ^(const char* path, struct mach_header_64* header, int fd, void* filePtr) { LCPatchAltStore(execToPatch.path.UTF8String, header); });
-	if (errorPatchAltStore) {
-		NSMutableDictionary* details = [NSMutableDictionary dictionary];
-		[details setValue:errorPatchAltStore forKey:NSLocalizedDescriptionKey];
-		// populate the error object with the details
-		*error = [NSError errorWithDomain:@"world" code:200 userInfo:details];
-		AppLog(@"%@", errorPatchAltStore);
-		return nil;
-	}
-
-	dlopen("/System/Library/PrivateFrameworks/PassKitCore.framework/PassKitCore", RTLD_GLOBAL);
-	NSData* zipData = [[NSClassFromString(@"PKZipArchiver") new] zippedDataForURL:tmpPayloadPath.URLByDeletingLastPathComponent];
-	if (!zipData)
-		return nil;
-
-	[manager removeItemAtURL:tmpPath error:error];
-	if (*error)
-		return nil;
-
-	[zipData writeToURL:tmpIPAPath options:0 error:error];
-	if (*error)
-		return nil;
-
-	return tmpIPAPath;
+	return nil;
 }
 
 #pragma mark - Extensions of LCUtils
@@ -577,7 +505,9 @@ Class LCSharedUtilsClass = nil;
 		// completion([NSError errorWithDomain:@"InvalidModFolder" code:0 userInfo:nil]);
 		return;
 	}
-
+	if (force) {
+		[fm removeItemAtURL:[tweakFolderUrl URLByAppendingPathComponent:@"ModInfo.plist"] error:nil];
+	}
 	NSMutableDictionary* tweakSignInfo = [NSMutableDictionary dictionaryWithContentsOfURL:[tweakFolderUrl URLByAppendingPathComponent:@"ModInfo.plist"]];
 	BOOL signNeeded = force;
 	if (!force) {
@@ -600,11 +530,9 @@ Class LCSharedUtilsClass = nil;
 					NSString* fileType = attributes[NSFileType];
 					if (![fileType isEqualToString:NSFileTypeDirectory] && ![fileType isEqualToString:NSFileTypeRegular])
 						continue;
-					if ([fileType isEqualToString:NSFileTypeDirectory] && ![[fileURL lastPathComponent] hasSuffix:@".framework"])
+					if ([fileType isEqualToString:NSFileTypeRegular] && ![[fileURL lastPathComponent] hasSuffix:@".ios.dylib"])
 						continue;
-					if ([fileType isEqualToString:NSFileTypeRegular] && ![[fileURL lastPathComponent] hasSuffix:@".dylib"])
-						continue;
-					if ([[fileURL lastPathComponent] isEqualToString:@"TweakInfo.plist"])
+					if ([[fileURL lastPathComponent] isEqualToString:@"ModInfo.plist"])
 						continue;
 
 					NSNumber* inodeNumber = [fm attributesOfItemAtPath:fileURL.path error:nil][NSFileSystemNumber];
@@ -635,8 +563,7 @@ Class LCSharedUtilsClass = nil;
 		[fm removeItemAtURL:tmpDir error:nil];
 	}
 	[fm createDirectoryAtURL:tmpDir withIntermediateDirectories:YES attributes:nil error:nil];
-	// crashes around here? not sure, stack trace says soemthing about mutable array here
-	NSMutableArray* tmpPaths = [NSMutableArray array];
+	NSMutableArray<NSURL*>* tmpPaths = [NSMutableArray array];
 	NSArray* fileURLs = [fm contentsOfDirectoryAtURL:[tweakFolderUrl URLByAppendingPathComponent:@"unzipped"] includingPropertiesForKeys:nil options:0 error:nil];
 	for (NSURL* url in fileURLs) {
 		NSError* error = nil;
@@ -651,22 +578,12 @@ Class LCSharedUtilsClass = nil;
 			NSDictionary* attributes = [fm attributesOfItemAtPath:fileURL.path error:&error];
 			if (error)
 				continue;
-
-			NSString* fileType = attributes[NSFileType];
-
-			if (![fileType isEqualToString:NSFileTypeDirectory] && ![fileType isEqualToString:NSFileTypeRegular])
-				continue;
-			if ([fileType isEqualToString:NSFileTypeDirectory] && ![[fileURL lastPathComponent] hasSuffix:@".framework"])
-				continue;
-			if ([fileType isEqualToString:NSFileTypeRegular] && ![[fileURL lastPathComponent] hasSuffix:@".dylib"])
-				continue;
-			if ([[fileURL lastPathComponent] isEqualToString:@"TweakInfo.plist"])
-				continue;
-
-			NSURL* tmpPath = [tmpDir URLByAppendingPathComponent:fileURL.lastPathComponent];
-			if (tmpPath) {
-				[tmpPaths addObject:tmpPath];
-				[fm copyItemAtURL:fileURL toURL:tmpPath error:nil];
+			if ([attributes[NSFileType] isEqualToString:NSFileTypeRegular] && [[fileURL lastPathComponent] hasSuffix:@"ios.dylib"]) {
+				NSURL* tmpPath = [tmpDir URLByAppendingPathComponent:fileURL.lastPathComponent];
+				if (tmpPath) {
+					[tmpPaths addObject:tmpPath];
+					[fm copyItemAtURL:fileURL toURL:tmpPath error:nil];
+				}
 			}
 		}
 	}
@@ -685,6 +602,7 @@ Class LCSharedUtilsClass = nil;
 				[tweakFolderUrl URLByAppendingPathComponent:[NSString stringWithFormat:@"unzipped/%@/%@",
 																					   [[[tmpFile lastPathComponent] stringByDeletingPathExtension] stringByDeletingPathExtension],
 																					   tmpFile.lastPathComponent]];
+			AppLog(@"Signing %@", tmpFile.lastPathComponent);
 			if ([fm fileExistsAtPath:toPath.path]) {
 				[fm removeItemAtURL:toPath error:nil];
 			}

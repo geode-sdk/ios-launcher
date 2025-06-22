@@ -4,128 +4,6 @@ typedef int cpu_type_t;
 typedef int cpu_subtype_t;
 typedef int	vm_prot_t;
 
-// /*
-//  * Capability bits used in the definition of cpu_type.
-//  */
-// #define	CPU_ARCH_MASK				0xff000000		/* mask for architecture bits */
-// #define CPU_ARCH_ABI64				0x01000000		/* 64 bit ABI */
-// #define CPU_ARCH_ABI64_32 			0x02000000		
-
-// /*
-//  *	Machine types known by all.
-//  */
-// #define CPU_TYPE_ANY				 -1
-// #define CPU_TYPE_VAX				 1
-// #define	CPU_TYPE_MC680x0			 6
-// #define	CPU_TYPE_X86				 7
-// #define CPU_TYPE_I386				CPU_TYPE_X86		/* compatibility */
-// #define CPU_TYPE_MIPS				 8
-// #define CPU_TYPE_MC98000			 10
-// #define CPU_TYPE_HPPA       		 11
-// #define CPU_TYPE_ARM				 12
-// #define CPU_TYPE_MC88000			 13
-// #define CPU_TYPE_SPARC				 14
-// #define CPU_TYPE_I860				 15
-// #define CPU_TYPE_ALPHA				 16
-// #define CPU_TYPE_POWERPC			 18
-// #define CPU_TYPE_X86_64				(CPU_TYPE_X86 | CPU_ARCH_ABI64)
-// #define CPU_TYPE_ARM64  			(CPU_TYPE_ARM | CPU_ARCH_ABI64)
-// #define CPU_TYPE_ARM64_32   		(CPU_TYPE_ARM | CPU_ARCH_ABI64_32)
-// #define CPU_TYPE_POWERPC64			(CPU_TYPE_POWERPC | CPU_ARCH_ABI64)
-
-// /*
-//  *	Machine subtypes (these are defined here, instead of in a machine
-//  *	dependent directory, so that any program can get all definitions
-//  *	regardless of where is it compiled).
-//  */
-
-// /*
-//  * Capability bits used in the definition of cpu_subtype.
-//  */
-// #define CPU_SUBTYPE_MASK	0xff000000	/* mask for feature flags */
-// #define CPU_SUBTYPE_LIB64	0x80000000	/* 64 bit libraries */
-
-// /*
-//  *	Object files that are hand-crafted to run on any
-//  *	implementation of an architecture are tagged with
-//  *	CPU_SUBTYPE_MULTIPLE.  This functions essentially the same as
-//  *	the "ALL" subtype of an architecture except that it allows us
-//  *	to easily find object files that may need to be modified
-//  *	whenever a new implementation of an architecture comes out.
-//  *
-//  *	It is the responsibility of the implementor to make sure the
-//  *	software handles unsupported implementations elegantly.
-//  */
-// #define	CPU_SUBTYPE_MULTIPLE			 -1
-// #define CPU_SUBTYPE_LITTLE_ENDIAN		 0
-// #define CPU_SUBTYPE_BIG_ENDIAN			 1
-
-// /*
-//  *	I386 subtypes
-//  */
-
-// #define CPU_SUBTYPE_INTEL(f, m)			((f) + ((m) << 4))
-
-// #define	CPU_SUBTYPE_I386_ALL			CPU_SUBTYPE_INTEL(3, 0)
-// #define CPU_SUBTYPE_386					CPU_SUBTYPE_INTEL(3, 0)
-// #define CPU_SUBTYPE_486					CPU_SUBTYPE_INTEL(4, 0)
-// #define CPU_SUBTYPE_486SX				CPU_SUBTYPE_INTEL(4, 8)	// 8 << 4 = 128
-// #define CPU_SUBTYPE_586					CPU_SUBTYPE_INTEL(5, 0)
-// #define CPU_SUBTYPE_PENT				CPU_SUBTYPE_INTEL(5, 0)
-// #define CPU_SUBTYPE_PENTPRO				CPU_SUBTYPE_INTEL(6, 1)
-// #define CPU_SUBTYPE_PENTII_M3			CPU_SUBTYPE_INTEL(6, 3)
-// #define CPU_SUBTYPE_PENTII_M5			CPU_SUBTYPE_INTEL(6, 5)
-// #define CPU_SUBTYPE_CELERON				CPU_SUBTYPE_INTEL(7, 6)
-// #define CPU_SUBTYPE_CELERON_MOBILE		CPU_SUBTYPE_INTEL(7, 7)
-// #define CPU_SUBTYPE_PENTIUM_3			CPU_SUBTYPE_INTEL(8, 0)
-// #define CPU_SUBTYPE_PENTIUM_3_M			CPU_SUBTYPE_INTEL(8, 1)
-// #define CPU_SUBTYPE_PENTIUM_3_XEON		CPU_SUBTYPE_INTEL(8, 2)
-// #define CPU_SUBTYPE_PENTIUM_M			CPU_SUBTYPE_INTEL(9, 0)
-// #define CPU_SUBTYPE_PENTIUM_4			CPU_SUBTYPE_INTEL(10, 0)
-// #define CPU_SUBTYPE_PENTIUM_4_M			CPU_SUBTYPE_INTEL(10, 1)
-// #define CPU_SUBTYPE_ITANIUM				CPU_SUBTYPE_INTEL(11, 0)
-// #define CPU_SUBTYPE_ITANIUM_2			CPU_SUBTYPE_INTEL(11, 1)
-// #define CPU_SUBTYPE_XEON				CPU_SUBTYPE_INTEL(12, 0)
-// #define CPU_SUBTYPE_XEON_MP				CPU_SUBTYPE_INTEL(12, 1)
-
-// #define CPU_SUBTYPE_INTEL_FAMILY(x)	((x) & 15)
-// #define CPU_SUBTYPE_INTEL_FAMILY_MAX	15
-
-// #define CPU_SUBTYPE_INTEL_MODEL(x)	((x) >> 4)
-// #define CPU_SUBTYPE_INTEL_MODEL_ALL	0
-
-// /*
-//  *	X86 subtypes.
-//  */
-
-// #define CPU_SUBTYPE_X86_ALL			3
-// #define CPU_SUBTYPE_X86_64_ALL		3
-// #define CPU_SUBTYPE_X86_ARCH1		4
-// #define	CPU_SUBTYPE_X86_64_H  		8
-
-// #define CPU_SUBTYPE_ARM_ALL 		0
-// #define CPU_SUBTYPE_ARM_A500_ARCH 	1
-// #define CPU_SUBTYPE_ARM_A500 		2
-// #define CPU_SUBTYPE_ARM_A440 		3
-// #define CPU_SUBTYPE_ARM_M4 			4
-// #define CPU_SUBTYPE_ARM_V4T 		5
-// #define CPU_SUBTYPE_ARM_V6 			6
-// #define CPU_SUBTYPE_ARM_V5 			7
-// #define CPU_SUBTYPE_ARM_V5TEJ 		7
-// #define CPU_SUBTYPE_ARM_XSCALE 		8
-// #define CPU_SUBTYPE_ARM_V7 			9
-// #define CPU_SUBTYPE_ARM_V7S 		11
-// #define CPU_SUBTYPE_ARM_V7K 		12
-// #define CPU_SUBTYPE_ARM_V8 			13
-// #define CPU_SUBTYPE_ARM_V6M 		14
-// #define CPU_SUBTYPE_ARM_V7M 		15
-// #define CPU_SUBTYPE_ARM_V7EM 		16
-
-// #define CPU_SUBTYPE_ARM64_ALL 		0
-// #define CPU_SUBTYPE_ARM64_V8 		1
-// #define CPU_SUBTYPE_ARM64E 			2
-// #define CPU_SUBTYPE_ARM64_32_V8		1
-
 
 #define FAT_MAGIC 		0xcafebabe
 #define FAT_CIGAM 		0xbebafeca
@@ -230,60 +108,60 @@ typedef int	vm_prot_t;
 #define LC_VERSION_MIN_TVOS         0x0000002F
 #define LC_VERSION_MIN_WATCHOS      0x00000030
 
-// /* Constants for the flags field of the segment_command */
-// #define	SG_HIGHVM	0x00000001 	/* the file contents for this segment is for
-// 				   the high part of the VM space, the low part
-// 				   is zero filled (for stacks in core files) */
-// #define	SG_FVMLIB	0x00000002 	/* this segment is the VM that is allocated by
-// 				   a fixed VM library, for overlap checking in
-// 				   the link editor */
-// #define	SG_NORELOC	0x00000004	/* this segment has nothing that was relocated
-// 				   in it and nothing relocated to it, that is
-// 				   it maybe safely replaced without relocation*/
-// #define SG_PROTECTED_VERSION_1  0x00000008  // Segment is encryption protected
+/* Constants for the flags field of the segment_command */
+#define	SG_HIGHVM	0x00000001 	/* the file contents for this segment is for
+				   the high part of the VM space, the low part
+				   is zero filled (for stacks in core files) */
+#define	SG_FVMLIB	0x00000002 	/* this segment is the VM that is allocated by
+				   a fixed VM library, for overlap checking in
+				   the link editor */
+#define	SG_NORELOC	0x00000004	/* this segment has nothing that was relocated
+				   in it and nothing relocated to it, that is
+				   it maybe safely replaced without relocation*/
+#define SG_PROTECTED_VERSION_1  0x00000008  // Segment is encryption protected
 
 
-// // Section flag masks
-// #define SECTION_TYPE            0x000000ff  // Section type mask
-// #define SECTION_ATTRIBUTES      0xffffff00  // Section attributes mask
+// Section flag masks
+#define SECTION_TYPE            0x000000ff  // Section type mask
+#define SECTION_ATTRIBUTES      0xffffff00  // Section attributes mask
 
-// // Section type (use SECTION_TYPE mask)
+// Section type (use SECTION_TYPE mask)
 
-// #define S_REGULAR                              0x00
-// #define S_ZEROFILL                             0x01
-// #define S_CSTRING_LITERALS                     0x02
-// #define S_4BYTE_LITERALS                       0x03
-// #define S_8BYTE_LITERALS                       0x04
-// #define S_LITERAL_POINTERS                     0x05
-// #define S_NON_LAZY_SYMBOL_POINTERS             0x06
-// #define S_LAZY_SYMBOL_POINTERS                 0x07
-// #define S_SYMBOL_STUBS                         0x08
-// #define S_MOD_INIT_FUNC_POINTERS               0x09
-// #define S_MOD_TERM_FUNC_POINTERS               0x0a
-// #define S_COALESCED                            0x0b
-// #define S_GB_ZEROFILL                          0x0c
-// #define S_INTERPOSING                          0x0d
-// #define S_16BYTE_LITERALS                      0x0e
-// #define S_DTRACE_DOF                           0x0f
-// #define S_LAZY_DYLIB_SYMBOL_POINTERS           0x10
-// #define S_THREAD_LOCAL_REGULAR                 0x11
-// #define S_THREAD_LOCAL_ZEROFILL                0x12
-// #define S_THREAD_LOCAL_VARIABLES               0x13
-// #define S_THREAD_LOCAL_VARIABLE_POINTERS       0x14
-// #define S_THREAD_LOCAL_INIT_FUNCTION_POINTERS  0x15
+#define S_REGULAR                              0x00
+#define S_ZEROFILL                             0x01
+#define S_CSTRING_LITERALS                     0x02
+#define S_4BYTE_LITERALS                       0x03
+#define S_8BYTE_LITERALS                       0x04
+#define S_LITERAL_POINTERS                     0x05
+#define S_NON_LAZY_SYMBOL_POINTERS             0x06
+#define S_LAZY_SYMBOL_POINTERS                 0x07
+#define S_SYMBOL_STUBS                         0x08
+#define S_MOD_INIT_FUNC_POINTERS               0x09
+#define S_MOD_TERM_FUNC_POINTERS               0x0a
+#define S_COALESCED                            0x0b
+#define S_GB_ZEROFILL                          0x0c
+#define S_INTERPOSING                          0x0d
+#define S_16BYTE_LITERALS                      0x0e
+#define S_DTRACE_DOF                           0x0f
+#define S_LAZY_DYLIB_SYMBOL_POINTERS           0x10
+#define S_THREAD_LOCAL_REGULAR                 0x11
+#define S_THREAD_LOCAL_ZEROFILL                0x12
+#define S_THREAD_LOCAL_VARIABLES               0x13
+#define S_THREAD_LOCAL_VARIABLE_POINTERS       0x14
+#define S_THREAD_LOCAL_INIT_FUNCTION_POINTERS  0x15
 
-// // Section attributes (use SECTION_ATTRIBUTES mask)
+// Section attributes (use SECTION_ATTRIBUTES mask)
 
-// #define S_ATTR_PURE_INSTRUCTIONS    0x80000000  // Only pure instructions
-// #define S_ATTR_NO_TOC               0x40000000  // Contains coalesced symbols
-// #define S_ATTR_STRIP_STATIC_SYMS    0x20000000  // Can strip static symbols
-// #define S_ATTR_NO_DEAD_STRIP        0x10000000  // No dead stripping
-// #define S_ATTR_LIVE_SUPPORT         0x08000000  // Live blocks support
-// #define S_ATTR_SELF_MODIFYING_CODE  0x04000000  // Self modifying code
-// #define S_ATTR_DEBUG                0x02000000  // Debug section
-// #define S_ATTR_SOME_INSTRUCTIONS    0x00000400  // Some machine instructions
-// #define S_ATTR_EXT_RELOC            0x00000200  // Has external relocations
-// #define S_ATTR_LOC_RELOC            0x00000100  // Has local relocations
+#define S_ATTR_PURE_INSTRUCTIONS    0x80000000  // Only pure instructions
+#define S_ATTR_NO_TOC               0x40000000  // Contains coalesced symbols
+#define S_ATTR_STRIP_STATIC_SYMS    0x20000000  // Can strip static symbols
+#define S_ATTR_NO_DEAD_STRIP        0x10000000  // No dead stripping
+#define S_ATTR_LIVE_SUPPORT         0x08000000  // Live blocks support
+#define S_ATTR_SELF_MODIFYING_CODE  0x04000000  // Self modifying code
+#define S_ATTR_DEBUG                0x02000000  // Debug section
+#define S_ATTR_SOME_INSTRUCTIONS    0x00000400  // Some machine instructions
+#define S_ATTR_EXT_RELOC            0x00000200  // Has external relocations
+#define S_ATTR_LOC_RELOC            0x00000100  // Has local relocations
 
 
 //struct define
@@ -450,7 +328,8 @@ struct dylib_command {
 
 //////CodeSignature
 
-enum {
+enum eCSFLAGS
+{
 	CSMAGIC_REQUIREMENT = 0xfade0c00,		/* single Requirement blob */
 	CSMAGIC_REQUIREMENTS = 0xfade0c01,		/* Requirements vector (internal requirements) */
 	CSMAGIC_CODEDIRECTORY = 0xfade0c02,		/* CodeDirectory blob */
@@ -498,6 +377,10 @@ enum {
 	CS_SIGNER_TYPE_UNKNOWN = 0,
 	CS_SIGNER_TYPE_LEGACYVPN = 5,
 
+/*
+ * Flags that can be specified in `CS_CodeDirectory::flags`.
+ */
+	CS_SEC_CODESIGNATURE_ADHOC = 0x0002,				/* kSecCodeSignatureAdhoc */
 };
 
 #pragma pack(push, 1)

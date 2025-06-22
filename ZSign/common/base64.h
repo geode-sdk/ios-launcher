@@ -1,27 +1,30 @@
-#pragma once
+#ifndef BASE64_INCLUDED
+#define BASE64_INCLUDED
 
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class ZBase64
+class jbase64
 {
 public:
-	ZBase64(void);
-	~ZBase64(void);
+	jbase64();
+	~jbase64();
 
 public:
-	const char *Encode(const char *szSrc, int nSrcLen = 0);
-	const char *Encode(const string &strInput);
-	const char *Decode(const char *szSrc, int nSrcLen = 0, int *pDecLen = NULL);
-	const char *Decode(const char *szSrc, string &strOutput);
+	const char* encode(const char* src, int src_len = 0);
+	const char* encode(const string& input);
+	const char* decode(const char* src, int src_len = 0, int* pdecode_len = NULL);
+	const char* decode(const char* src, string& output);
 
 private:
-	inline int GetB64Index(char ch);
-	inline char GetB64char(int nIndex);
+	inline int get_b64_index(char ch);
+	inline char get_b64_char(int index);
 
 private:
-	vector<char *> m_arrDec;
-	vector<char *> m_arrEnc;
+	vector<char*> m_array_decodes;
+	vector<char*> m_array_encodes;
 };
+
+#endif // BASE64_INCLUDED

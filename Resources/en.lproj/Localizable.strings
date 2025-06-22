@@ -82,6 +82,8 @@
 "launcher.status.update-available" = "Update available!";
 "launcher.status.download-geode" = "Downloading Geode...";
 "launcher.status.extracting" = "Extracting...";
+"launcher.status.patching" = "Patching...";
+"launcher.status.signing" = "Signing...";
 
 "launcher.error.non" = "Please use the release from the original github page to download Geometry Dash.";
 "launcher.error.gd" = "Geode couldn't load Geometry Dash: %@";
@@ -94,6 +96,7 @@
 "launcher.error.sign.invalidcert" = "Couldn't validate certificate: %@";
 "launcher.error.sign.invalidcert2" = "Certificate Status Invalid";
 "launcher.error.sign.invalidcert3" = "Invalid Certificate Data";
+"launcher.error.patch.origsign" = "The original binary had been signed! Please reinstall Geometry Dash.";
 
 "launcher.progress.download.text" = "Downloading... {percent}%";
 "launcher.progress.extract.text" = "Extracting... {percent}%";
@@ -142,13 +145,17 @@
 "jit.footer.livecontainer" = "Ensure that you enabled \"Launch with JIT\" for the Geode app in LiveContainer.";
 
 "jitless" = "JIT-Less";
+"jitless.enable" = "Enable JIT-Less";
 "jitless.footer" = "JIT-less allows you to use Geode without enabling JIT! You will need to import a certificate.";
 "jitless.certstatus" = "Certificate Status";
 "jitless.certstatus.valid" = "Valid (%ld days)";
+"jitless.certstatus.expired" = "Expired (%ld days)";
 "jitless.certstatus.invalid" = "Invalid / Revoked";
 "jitless.certstatus.notimport" = "Not Imported";
 "jitless.cert.readerror" = "Couldn't read certificate.";
 "jitless.cert.invalidcert" = "Couldn't validate certificate. Please ensure the password is correct, the certificate was used to sign this app, and that the certificate is not revoked.";
+"jitless.cert.dev-cert.unused" = "Certificate Imported! However, Geode will not work as it was signed without the \"get-task-allow\" entitlement. You must use a Development Certificate, or Geode will not load.";
+"jitless.cert.dev-cert" = "Application signed without the \"get-task-allow\" entitlement. You must use a Development Certificate with that entitlement for Geode. Please wait for a future update for this to be possible.\nYou can verify if Geode was signed with the entitlement by seeing if it's visible in an app like StikDebug.";
 "jitless.cert.success" = "Certificate Imported! Be sure to run the JIT-Less test first to ensure it works!";
 
 "advanced" = "Advanced";

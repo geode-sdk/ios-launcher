@@ -15,6 +15,8 @@
 #include <OpenSSL/ssl.h>
 #include <OpenSSL/err.h>
 #include <OpenSSL/asn1.h>
+#include "common/timer.h"
+#include "common/log.h"
 
 NSString* getTmpDir() {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -22,123 +24,6 @@ NSString* getTmpDir() {
 }
 
 extern "C" {
-
-bool InjectDyLib(NSString *filePath, NSString *dylibPath, bool weakInject, bool bCreate) {
-	ZTimer gtimer;
-	@autoreleasepool {
-		// Convert NSString to std::string
-		std::string filePathStr = [filePath UTF8String];
-		std::string dylibPathStr = [dylibPath UTF8String];
-
-		ZMachO machO;
-		bool initSuccess = machO.Init(filePathStr.c_str());
-		if (!initSuccess) {
-			gtimer.Print(">>> Failed to initialize ZMachO.");
-			return false;
-		}
-
-		bool success = machO.InjectDyLib(weakInject, dylibPathStr.c_str(), bCreate);
-
-		machO.Free();
-
-		if (success) {
-			gtimer.Print(">>> Dylib injected successfully!");
-			return true;
-		} else {
-			gtimer.Print(">>> Failed to inject dylib.");
-			return false;
-		}
-	}
-}
-
-bool ListDylibs(NSString *filePath, NSMutableArray *dylibPathsArray) {
-	ZTimer gtimer;
-	@autoreleasepool {
-		// Convert NSString to std::string
-		std::string filePathStr = [filePath UTF8String];
-
-		ZMachO machO;
-		bool initSuccess = machO.Init(filePathStr.c_str());
-		if (!initSuccess) {
-			gtimer.Print(">>> Failed to initialize ZMachO.");
-			return false;
-		}
-
-		std::vector<std::string> dylibPaths = machO.ListDylibs();
-
-		if (!dylibPaths.empty()) {
-			gtimer.Print(">>> List of dylibs in the Mach-O file:");
-            for (vector<std::string>::iterator it = dylibPaths.begin(); it < dylibPaths.end(); ++it) {
-                std::string dylibPath = *it;
-				NSString *dylibPathStr = [NSString stringWithUTF8String:dylibPath.c_str()];
-				[dylibPathsArray addObject:dylibPathStr];
-			}
-		} else {
-			gtimer.Print(">>> No dylibs found in the Mach-O file.");
-		}
-
-		machO.Free();
-
-		return true;
-	}
-}
-
-bool UninstallDylibs(NSString *filePath, NSArray<NSString *> *dylibPathsArray) {
-	ZTimer gtimer;
-	@autoreleasepool {
-		std::string filePathStr = [filePath UTF8String];
-		std::set<std::string> dylibsToRemove;
-
-		for (NSString *dylibPath in dylibPathsArray) {
-			dylibsToRemove.insert([dylibPath UTF8String]);
-		}
-
-		ZMachO machO;
-		bool initSuccess = machO.Init(filePathStr.c_str());
-		if (!initSuccess) {
-			gtimer.Print(">>> Failed to initialize ZMachO.");
-			return false;
-		}
-
-		machO.RemoveDylib(dylibsToRemove);
-
-		machO.Free();
-
-		gtimer.Print(">>> Dylibs uninstalled successfully!");
-		return true;
-	}
-}
-
-
-
-bool ChangeDylibPath(NSString *filePath, NSString *oldPath, NSString *newPath) {
-	ZTimer gtimer;
-	@autoreleasepool {
-		// Convert NSString to std::string
-		std::string filePathStr = [filePath UTF8String];
-		std::string oldPathStr = [oldPath UTF8String];
-		std::string newPathStr = [newPath UTF8String];
-
-		ZMachO machO;
-		bool initSuccess = machO.Init(filePathStr.c_str());
-		if (!initSuccess) {
-			gtimer.Print(">>> Failed to initialize ZMachO.");
-			return false;
-		}
-
-		bool success = machO.ChangeDylibPath(oldPathStr.c_str(), newPathStr.c_str());
-
-		machO.Free();
-
-		if (success) {
-			gtimer.Print(">>> Dylib path changed successfully!");
-			return true;
-		} else {
-			gtimer.Print(">>> Failed to change dylib path.");
-			return false;
-		}
-	}
-}
 
 NSError* makeErrorFromLog(const std::vector<std::string>& vec) {
     NSMutableString *result = [NSMutableString string];
@@ -205,7 +90,7 @@ void zsign(NSString *appPath,
 	bool bEnableCache = true;
 	string strFolder = strPath;
 	
-	__block ZAppBundle bundle;
+	__block ZBundle bundle;
 	bool success = bundle.ConfigureFolderSign(&zSignAsset, strFolder, "", "", "", strDyLibFile, bForce, bWeakInject, bEnableCache, bDontGenerateEmbeddedMobileProvision);
 
     if(!success) {
@@ -287,9 +172,9 @@ int checkCert(NSData *prov,
     BIO *brother1;
     unsigned long issuerHash = X509_issuer_name_hash((X509*)cert);
     if (0x817d2f7a == issuerHash) {
-        brother1 = BIO_new_mem_buf(appleDevCACert, (int)strlen(appleDevCACert));
+        brother1 = BIO_new_mem_buf(ZSignAsset::s_szAppleDevCACert, (int)strlen(ZSignAsset::s_szAppleDevCACert));
     } else if (0x9b16b75c == issuerHash) {
-        brother1 = BIO_new_mem_buf(appleDevCACertG3, (int)strlen(appleDevCACertG3));
+        brother1 = BIO_new_mem_buf(ZSignAsset::s_szAppleDevCACertG3, (int)strlen(ZSignAsset::s_szAppleDevCACertG3));
     } else {
         completionHandler(2, nil, @"Unable to determine issuer of the certificate. It is signed by Apple Developer?");
         return -2;
@@ -310,8 +195,17 @@ int checkCert(NSData *prov,
 
 
     if (!ocsp) {
-        ZLog::Warn("Not testing the OCSP url, expiration date will not be shown.");
-        completionHandler(0, [NSDate now], nil);
+        ZLog::Warn("Not testing the OCSP url, instead getting based on expiration");
+        ASN1_TIME *expirationDateAsn1 = X509_get_notAfter(cert);
+        NSString *fullDateString = [NSString stringWithFormat:@"20%s", expirationDateAsn1->data];
+
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = @"yyyyMMddHHmmss'Z'";
+        formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        formatter.locale = NSLocale.currentLocale;
+        NSDate *expirationDate = [formatter dateFromString:fullDateString];
+        completionHandler(0, expirationDate, nil);
+        //completionHandler(0, [NSDate now], nil);
         return 1;
     }
 

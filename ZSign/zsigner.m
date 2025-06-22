@@ -24,6 +24,7 @@ NSProgress* currentZSignProgress;
     return getTeamId(prov, key, pass);
 }
 + (int)checkCertWithProv:(NSData *)prov key:(NSData *)key pass:(NSString *)pass ocsp:(BOOL)ocsp completionHandler:(void(^)(int status, NSDate* expirationDate, NSString *error))completionHandler {
-    return checkCert(prov, key, pass, ocsp, completionHandler);
+    //return checkCert(prov, key, pass, ocsp, completionHandler);
+    return checkCert(prov, key, pass, NO, completionHandler);
 }
 @end

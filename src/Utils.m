@@ -1,5 +1,6 @@
 #import "LCUtils/GCSharedUtils.h"
 #import "LCUtils/Shared.h"
+#import "LCUtils/unarchive.h"
 #import "Utils.h"
 #import "components/LogUtils.h"
 #import "src/LCUtils/UIKitPrivate.h"
@@ -51,6 +52,39 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 		return [NSData dataWithContentsOfFile:[[LCPath tweakPath].path stringByAppendingPathComponent:@"Geode.ios.dylib"] options:0 error:nil];
 	}
 	return nil;
+}
++ (NSString*)getTweakDir {
+	if (![Utils isSandboxed]) {
+		NSString* applicationSupportDirectory = [[Utils getGDDocPath] stringByAppendingString:@"Library/Application Support"];
+		if (applicationSupportDirectory != nil) {
+			return [applicationSupportDirectory stringByAppendingString:@"/GeometryDash/game/geode/Geode.ios.dylib"];
+		}
+	} else {
+		return [[LCPath tweakPath].path stringByAppendingPathComponent:@"Geode.ios.dylib"];
+	}
+	return nil;
+}
+
+// replicate unix "strings" because
++ (NSArray<NSString*>*)strings:(NSData*)data {
+	const uint8_t* bytes = data.bytes;
+	NSMutableArray<NSString*>* results = [NSMutableArray array];
+	NSMutableData* current = [NSMutableData data];
+	for (NSUInteger i = 0; i < data.length; i++) {
+		unsigned char byte = bytes[i];
+		if (byte >= 32 && byte <= 126) {
+			[current appendBytes:&byte length:1];
+		} else {
+			if (current.length >= 4) {
+				NSString* str = [[NSString alloc] initWithData:current encoding:NSASCIIStringEncoding];
+				if (str) {
+					[results addObject:str];
+				}
+			}
+			[current setLength:0];
+		}
+	}
+	return results;
 }
 
 + (NSString*)getGeodeVersion {
@@ -185,7 +219,7 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 															 error:&error];
 
 	if (error) {
-		AppLog(@"Couldn't read %@, Error reading directory: %@", directoryPath, error.localizedDescription);
+		AppLogError(@"Couldn't read %@, Error reading directory: %@", directoryPath, error.localizedDescription);
 		return nil;
 	}
 
@@ -217,7 +251,7 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	NSArray* dirs = [fm contentsOfDirectoryAtPath:@"/var/mobile/Containers/Data/Application" error:&err];
 	if (err) {
 		// assume we arent on jb or trollstore
-		AppLog(@"Couldn't get doc path %@", err);
+		AppLogError(@"Couldn't get doc path %@", err);
 		return nil;
 	}
 	// probably the most inefficient way of getting a bundle id, i need to figure out another way of doing this because this is just bad...
@@ -339,6 +373,11 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	NSData* data = [NSData dataWithContentsOfFile:path];
 	return [Utils sha256sumWithData:data];
 }
++ (NSString*)sha256sumWithString:(NSString*)data {
+	if (!data)
+		return nil;
+	return [Utils sha256sumWithData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+}
 + (NSString*)sha256sumWithData:(NSData*)data {
 	if (!data)
 		return nil;
@@ -383,6 +422,17 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	}
 	sandboxValue = NO;
 	return NO;
+}
++ (BOOL)isDevCert {
+	SecTaskRef task = SecTaskCreateFromSelf(nil);
+	if (task == nil) {
+		return NO;
+	}
+	CFTypeRef value = SecTaskCopyValueForEntitlement(task, CFSTR("get-task-allow"), NULL);
+	if (value)
+		CFRelease(value);
+	CFRelease(task);
+	return ((value && CFBooleanGetValue(value) == true));
 }
 
 + (NSUserDefaults*)getPrefs {
@@ -523,6 +573,13 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 
 	free(buffer);
 	return nil;
+}
+
++ (void)decompress:(NSString*)fileToExtract extractionPath:(NSString*)extractionPath completion:(void (^)(int))completion {
+	AppLog(@"Starting decomp of %@ to %@", fileToExtract, extractionPath);
+	[[NSFileManager defaultManager] createDirectoryAtPath:extractionPath withIntermediateDirectories:YES attributes:nil error:nil];
+	int res = extract(fileToExtract, extractionPath, nil);
+	return completion(res);
 }
 @end
 

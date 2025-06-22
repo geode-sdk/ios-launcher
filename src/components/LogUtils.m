@@ -22,6 +22,25 @@ static dispatch_queue_t loggingQueue;
 }
 
 + (void)log:(NSString*)format, ... {
+	[LogUtils logWithLevel:LogUnk log:format];
+}
+
++ (NSString*)logEnumToString:(LogLevel)level {
+	switch (level) {
+	default:
+		return @"Unknown";
+	case LogInfo:
+		return @"Info";
+	case LogWarn:
+		return @"Warn";
+	case LogError:
+		return @"Error";
+	case LogDebug:
+		return @"Debug";
+	}
+}
+
++ (void)logWithLevel:(LogLevel)level log:(NSString*)format, ... {
 	NSString* callSource = [[NSThread callStackSymbols] objectAtIndex:1];
 	if (!callSource)
 		callSource = @"[Unknown]";
@@ -32,7 +51,13 @@ static dispatch_queue_t loggingQueue;
 	if (parts.count > 1)
 		srcFunc = [parts objectAtIndex:1];
 
-	NSString* prefix = [NSString stringWithFormat:@"[GeodeLauncher/%@] ", [srcFunc substringToIndex:MIN([srcFunc rangeOfString:@" "].location, srcFunc.length)]];
+	NSString* prefix;
+	if (![[Utils getPrefs] boolForKey:@"LOG_LEVELS"]) {
+		prefix = [NSString stringWithFormat:@"[GeodeLauncher/%@] ", [srcFunc substringToIndex:MIN([srcFunc rangeOfString:@" "].location, srcFunc.length)]];
+	} else {
+		prefix = [NSString
+			stringWithFormat:@"[GeodeLauncher/%@] [%@] ", [srcFunc substringToIndex:MIN([srcFunc rangeOfString:@" "].location, srcFunc.length)], [LogUtils logEnumToString:level]];
+	}
 	format = [prefix stringByAppendingString:format];
 
 	va_list args;
@@ -40,6 +65,10 @@ static dispatch_queue_t loggingQueue;
 	NSString* message = [[NSString alloc] initWithFormat:format arguments:args];
 	va_end(args);
 	NSLog(@"%@", message);
+	if (level == LogDebug) {
+		if (![[Utils getPrefs] boolForKey:@"DEBUG_LOGS"])
+			return;
+	}
 	dispatch_async(loggingQueue, ^{
 		[self checkLogFileSize];
 		NSFileHandle* fileHandle = [NSFileHandle fileHandleForWritingAtPath:[self logFilePath]];
@@ -66,8 +95,8 @@ static dispatch_queue_t loggingQueue;
 	}
 }
 
-+ (void)clearLogs {
-	if ([[Utils getPrefs] integerForKey:@"LAUNCH_COUNT"] % 5 == 0) {
++ (void)clearLogs:(BOOL)force {
+	if ([[Utils getPrefs] integerForKey:@"LAUNCH_COUNT"] % 5 == 0 || force) {
 		dispatch_sync(loggingQueue, ^{
 			NSError* error = nil;
 			[@"" writeToFile:[self logFilePath] atomically:YES encoding:NSUTF8StringEncoding error:&error];

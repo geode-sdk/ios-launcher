@@ -25,7 +25,7 @@ static char mmapSig[] = { 0xB0, 0x18, 0x80, 0xD2, 0x01, 0x10, 0x00, 0xD4 };
 static char fcntlSig[] = { 0x90, 0x0B, 0x80, 0xD2, 0x01, 0x10, 0x00, 0xD4 };
 static char syscallSig[] = { 0x01, 0x10, 0x00, 0xD4 };
 
-static int (*dopamineFcntlHookAddr)(int fildes, int cmd, void* param) = 0;
+static int (*orig_fcntl)(int fildes, int cmd, void* param) = 0;
 
 extern void* __mmap(void* addr, size_t len, int prot, int flags, int fd, off_t offset);
 extern int __fcntl(int fildes, int cmd, void* param);
@@ -117,23 +117,20 @@ static void* hooked_mmap(void* addr, size_t len, int prot, int flags, int fd, of
 
 static int hooked___fcntl(int fildes, int cmd, void* param) {
 	if (cmd == F_ADDFILESIGS_RETURN) {
-		char filePath[PATH_MAX];
-		bzero(filePath, PATH_MAX);
-
-		// Check if the file is our "in-memory" file
-		if (__fcntl(fildes, F_GETPATH, filePath) != -1) {
-			const char* homeDir = getenv("GC_HOME_PATH");
-			if (!strncmp(filePath, homeDir, strlen(homeDir))) {
-				fsignatures_t* fsig = (fsignatures_t*)param;
-				// called to check that cert covers file.. so we'll make it cover everything ;)
-				fsig->fs_file_start = 0xFFFFFFFF;
-				return 0;
-			}
+		if (access("/Users", F_OK) != 0) {
+			// attempt to attach code signature on iOS only as the binaries may have been signed
+			// on macOS, attaching on unsigned binaries without CS_DEBUGGED will crash
+			orig_fcntl(fildes, cmd, param);
 		}
+		fsignatures_t* fsig = (fsignatures_t*)param;
+		// called to check that cert covers file.. so we'll make it cover everything ;)
+		fsig->fs_file_start = 0xFFFFFFFF;
+		return 0;
 	}
 
 	// Signature sanity check by dyld
 	else if (cmd == F_CHECK_LV) {
+		orig_fcntl(fildes, cmd, param);
 		// Just say everything is fine
 		return 0;
 	}
@@ -142,11 +139,7 @@ static int hooked___fcntl(int fildes, int cmd, void* param) {
 	// return __fcntl(fildes, cmd, param);
 
 	// dopamine already hooks fcntl?? so i guess we will call their func instead...
-	if (dopamineFcntlHookAddr) {
-		return dopamineFcntlHookAddr(fildes, cmd, param);
-	} else {
-		return __fcntl(fildes, cmd, param);
-	}
+	return orig_fcntl(fildes, cmd, param);
 }
 
 void init_bypassDyldLibValidation() {
@@ -160,6 +153,7 @@ void init_bypassDyldLibValidation() {
 	// Modifying exec page during execution may cause SIGBUS, so ignore it now
 	// Only comment this out if only one thread (main) is running
 	// signal(SIGBUS, SIG_IGN);
+	orig_fcntl = __fcntl;
 	char* dyldBase = getDyldBase();
 	// redirectFunction("mmap", mmap, hooked_mmap);
 	// redirectFunction("fcntl", fcntl, hooked_fcntl);
@@ -184,7 +178,7 @@ void init_bypassDyldLibValidation() {
 			uint32_t* inst = (uint32_t*)fcntlAddr;
 			int32_t offset = ((int32_t)((*inst) << 6)) >> 4;
 			AppLog(@"Dopamine hook offset = %x", offset);
-			dopamineFcntlHookAddr = (void*)((char*)fcntlAddr + offset);
+			orig_fcntl = (void*)((char*)fcntlAddr + offset);
 			redirectFunction("dyld_fcntl (Dopamine)", fcntlAddr, hooked___fcntl);
 		} else {
 			AppLog(@"Dopamine hook not found");

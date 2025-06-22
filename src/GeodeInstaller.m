@@ -190,7 +190,7 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 				});
 			} else {
 				if ([jsonObject isKindOfClass:[NSDictionary class]]) {
-				// if ([jsonObject isKindOfClass:[NSArray class]]) {
+					// if ([jsonObject isKindOfClass:[NSArray class]]) {
 					NSDictionary* jsonDict = (NSDictionary*)jsonObject;
 					// NSDictionary* jsonDict = jsonObject[0];
 					NSString* tagName = jsonDict[@"tag_name"];
@@ -274,15 +274,6 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 	[dataTask resume];
 }
 
-- (void)decompress:(NSString*)fileToExtract extractionPath:(NSString*)extractionPath completion:(DecompressCompletion)completion {
-	AppLog(@"Starting decomp of %@ to %@", fileToExtract, extractionPath);
-	[[NSFileManager defaultManager] createDirectoryAtPath:extractionPath withIntermediateDirectories:YES attributes:nil error:nil];
-	int res = extract(fileToExtract, extractionPath, nil);
-	if (res != 0)
-		return completion([NSError errorWithDomain:@"DecompressError" code:res userInfo:nil]);
-	return completion(nil);
-}
-
 // updating
 - (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)downloadTask didFinishDownloadingToURL:(NSURL*)url {
 	NSFileManager* fm = [NSFileManager defaultManager];
@@ -310,13 +301,13 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 	} else {
 		[Utils updateGeodeVersion:updateDate];
 	}
-	[self decompress:url.path extractionPath:[[fm temporaryDirectory] path] completion:^(NSError* _Nullable decompError) {
+	[Utils decompress:url.path extractionPath:[[fm temporaryDirectory] path] completion:^(int decompError) {
 		if (decompError) {
 			dispatch_async(dispatch_get_main_queue(), ^{
-				[Utils showError:_root title:@"Decompressing ZIP failed" error:decompError];
+				[Utils showError:_root title:[NSString stringWithFormat:@"Decompressing ZIP failed.\nStatus Code: %d\nView app logs for more information.", decompError] error:nil];
 				[_root updateState];
 			});
-			return AppLog(@"Error trying to decompress ZIP: %@", decompError);
+			return AppLog(@"Error trying to decompress ZIP: (Code %@)", decompError);
 		}
 		NSError* error;
 		NSURL* dylibPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"Geode.ios.dylib"];

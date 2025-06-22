@@ -215,8 +215,10 @@ BOOL canAppOpenItself(NSURL* url) {
 }
 
 - (void)hook__connectUISceneFromFBSScene:(id)scene transitionContext:(UIApplicationSceneTransitionContext*)context {
-    context.payload = nil;
-    context.actions = nil;
+    if (access("/Users", F_OK) != 0) {
+        context.payload = nil;
+        context.actions = nil;
+    }
     [self hook__connectUISceneFromFBSScene:scene transitionContext:context];
 }
 
@@ -246,14 +248,18 @@ BOOL canAppOpenItself(NSURL* url) {
     if ([url.host isEqualToString:@"relaunch"]) { // assume restart 
         //[NSClassFromString(@"GCSharedUtils") launchToGuestApp];
         if (!usingLiveContainer) {
-            UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-            window.rootViewController = [UIViewController new];
-            window.windowLevel = UIApplication.sharedApplication.windows.lastObject.windowLevel + 1;
-            window.windowScene = (id)UIApplication.sharedApplication.connectedScenes.anyObject;
-            [window makeKeyAndVisible];
+            if (![NSUserDefaults.gcUserDefaults boolForKey:@"JITLESS"]) {
+                UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+                window.rootViewController = [UIViewController new];
+                window.windowLevel = UIApplication.sharedApplication.windows.lastObject.windowLevel + 1;
+                window.windowScene = (id)UIApplication.sharedApplication.connectedScenes.anyObject;
+                [window makeKeyAndVisible];
 
-            [NSClassFromString(@"GCSharedUtils") relaunchApp];
-            window.windowScene = nil;
+                [NSClassFromString(@"GCSharedUtils") relaunchApp];
+                window.windowScene = nil;
+            } else {
+                [NSClassFromString(@"GCSharedUtils") relaunchApp];
+            }
         } else {
             [NSClassFromString(@"GCSharedUtils") relaunchApp];
         }
