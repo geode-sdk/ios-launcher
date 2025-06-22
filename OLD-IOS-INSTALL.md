@@ -1,4 +1,4 @@
-# Installation Guide (iOS 14-16.6.1, 16.7 RC and iOS 17.0)
+# Installation Guide (TrollStore / Jailbreak, iOS 16.7 RC, iOS 17.0 and Below)
 
 This guide is for devices that are compatible with TrollStore (and optionally a jailbreak)
 
