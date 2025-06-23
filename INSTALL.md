@@ -18,10 +18,15 @@ To get started, choose an installation guide for your iOS version.
 > [!TIP]
 > If you don't have a PC, and are above iOS 17.4+, and you're willing to spend money, follow the [JIT-less guide](/JITLESS-INSTALL-GUIDE.md).
 
+> [!TIP]
+> If you previously used JIT-Less Mode and want to switch to JIT, refer to the **"Switch From JIT-Less to JIT"** guide linked in this page.
+
 [iOS 16.7 RC, iOS 17.0 and Below (TrollStore / Jailbreak)](/OLD-IOS-INSTALL.md)
 
 [iOS 17.4+ (SideStore)](/MODERN-IOS-INSTALL.md)
 
 [iOS 26 (JIT-Less)](/JITLESS-INSTALL-GUIDE.md)
+
+[Switch From JIT-Less to JIT](/JITLESS-TO-JIT.md)
 
 [LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md)
