@@ -16,7 +16,7 @@ To get started, choose an installation guide for your iOS version.
 > If you **don't know which iOS version you're on**, follow [this page from Apple](https://support.apple.com/en-us/109065) to check your iOS version.
 
 > [!TIP]
-> If you don't have a PC, and are above iOS 17.4+, and you're willing to spend money, follow the [JIT-less guide](/JITLESS-INSTALL-GUIDE.md). This guide can be used without money, as long as you have a PC and use SideStore.
+> If you don't have a PC, and are above iOS 17.4+, and you're willing to spend money, follow the [JIT-less guide](/JITLESS-INSTALL-GUIDE.md). This guide can be used without spending money, as long as you have a PC and use SideStore.
 
 [iOS 16.7 RC, iOS 17.0 and Below (TrollStore / Jailbreak)](/OLD-IOS-INSTALL.md)
 
