@@ -27,6 +27,9 @@ This tutorial is mainly for iOS 26, as Apple broke enabling JIT on iOS 26, but i
 > [!WARNING]
 > When you get an Apple developer certificate, **make sure to ask your provider to give your certificate the `get-task-allow` entitlement.** (Usually called "Developer" or "Distribution" certificate)
 
+> [!WARNING]
+> Follow [this guide](/SIGNULOUS-CERTIFICATE-FILE-GUIDE.md) to get the certificate files of your Signulous certificate
+
 - **Full version of Geometry Dash installed**
 - **An internet connection**
 - An **Apple developer certificate** (you can get one from services like [KravaSign](https://kravasign.com) or [Signulous](https://www.signulous.com))
