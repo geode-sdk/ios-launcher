@@ -1,7 +1,7 @@
 # Installation Guide (SideStore)
 
 > [!WARNING]
-> For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, on iOS **14 to 18**, **JIT** is a **__requirement__** to run Geode. On **iOS 26 Developer Beta**, you need to follow the [Jit-Less](https://github.com/geode-sdk/ios-launcher/JITLESS-INSTALL-GUIDE.md) Guide **after** installing Geode.
+> For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, on iOS **14 to 18**, **JIT** is a **__requirement__** to run Geode. On **iOS 26 Developer Beta**, you need to follow the [Jit-Less](https://github.com/geode-sdk/ios-launcher/JITLESS-INSTALL-GUIDE.md) guide **after** installing Geode.
 > \
 > This guide assumes you will be installing SideStore. Using enterprise certificates to install SideStore **will not work**, as the usage of a PC is required to sideload SideStore.
 
