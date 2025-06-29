@@ -12,7 +12,7 @@
 - Full version of Geometry Dash installed
 - An internet connection
 - A passcode on your device (required for pairing file)
-- IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases)
+- IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases) (If you don't want to use this follow the **AltSource** method below)
 
 ## Install SideStore
 
@@ -31,9 +31,13 @@
 > [!NOTE]
 > You will need to **refresh** both the store and Geode every week, otherwise you will not be able to run the app.
 
-Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
+Here you have 2 options:
 
+1: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
 ![](screenshots/install-sidestore.png)
+
+2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource. In the input box, type `https://ios-repo.geode-sdk.org/altsource/main.json`, then press the `+` button. Now go to the **Browse** tab,then **Games** then find Geode and press `Free`.
+![](screenshots/altsource-install.png)
 
 ## Post Installation
 After going through the setup process, you may have seen the warning that **Just-In-Time** (JIT) compilation is required. This is true if you want to run Geode since Apple restricts how apps can manage memory.
