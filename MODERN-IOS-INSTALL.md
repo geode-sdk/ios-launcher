@@ -12,7 +12,7 @@
 - Full version of Geometry Dash installed
 - An internet connection
 - A passcode on your device (required for pairing file)
-- IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases) (If you don't want to use this follow the **AltSource** method below)
+- IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases) (If you don't want to use this, follow the **AltSource** method below)
 
 ## Install SideStore
 
@@ -36,7 +36,7 @@ Here you have 2 options:
 1: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
 ![](screenshots/install-sidestore.png)
 
-2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource. In the input box, type `https://ios-repo.geode-sdk.org/altsource/main.json`, then press the `+` button. Now go to the **Browse** tab,then **Games** then find Geode and press `Free`.
+2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource. In the input box, type `https://ios-repo.geode-sdk.org/altsource/main.json`, then press the `+` button. Now go to the **Browse** tab, then **Games**, and you will find Geode. Press `Free` to install it.
 ![](screenshots/altsource-install.png)
 
 ## Post Installation
