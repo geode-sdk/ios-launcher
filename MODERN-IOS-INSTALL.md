@@ -48,6 +48,11 @@ After going through the setup process, you may have seen the warning that **Just
 > JIT also requires you to have **Wi-Fi** connection or **Airplane Mode** enabled on your iOS device. Cellular will **not work**.
 
 ## Installing and Using StikDebug to Enable JIT
+
+> [!TIP]
+> Skip this **if you're on iOS 16**. SideStore lets you enable JIT **directly from it**. To do so, go to the **My Apps** section in SideStore, hold Geode, and press **"Enable JIT"** (you need to have StosVPN enabled for this).
+
+
 > [!NOTE]
 > For the first time setup, you will need a computer to get a pairing file. If you installed SideStore, you likely already have a pairing file, meaning there is no need to reinstall iDevice Pair.
 
