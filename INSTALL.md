@@ -1,27 +1,26 @@
 # Getting Started on Installing Geode
-This page **will help you install Geode on your iDevice**. This page exists because unfortunately, it's more difficult to install Geode on iOS compared to other platforms due to the limitations of Apple.
-
+This page **will help you install Geode on your iDevice**. Unlike other platforms, installing Geode on iOS is not straightforward due to how locked down the operating system is, so this guide exists for you to find the best methods to install Geode on your iDevice.
 > [!WARNING]
-> For all installation guides, excluding the JIT-less install guides, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and/or sideloading TrollStore. If you can't get TrollStore, you will also need a PC to obtain a pairing file for **JIT**. \
-> \
-> Geode **only works from iOS 14 to the latest iOS version**. Geode will not work on iOS versions below 14. \
-> \
-> TrollStore and the jailbreak method will only work on versions listed [here](https://ios.cfw.guide/installing-trollstore/), and SideStore method will work on iOS 17.4 and above.
-
-To get started, choose an installation guide for your iOS version.
-
-[iOS 16.7 RC, iOS 17.0 and Below (TrollStore / Jailbreak)](/OLD-IOS-INSTALL.md)
-
-[iOS 17.4+ (SideStore)](/MODERN-IOS-INSTALL.md)
-
-[iOS 26 (JIT-Less)](/JITLESS-INSTALL-GUIDE.md)
-
-[LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md)
+> Geode **only works from iOS 14 to the latest iOS version**. Geode will not work on iOS versions below iOS 14.
 
 > [!TIP]
-> If you **don't know which iOS version you're on**, follow [this page from Apple](https://support.apple.com/en-us/109065) to check your iOS version.\
-> \
-> If you **don't have a PC**, **are on iOS 17.4 or later (especially iOS 26)**, and are **willing to spend money on an Apple developer certificate**, you can follow the [JIT-less](/JITLESS-INSTALL-GUIDE.md) guide to use Geode **without a PC**. If you **have a PC**, as long as **you're not on iOS 26**, you can use the [SideStore](/MODERN-IOS-INSTALL.md) method. If **you are on iOS 26 and have a PC**, follow the [SideStore](/MODERN-IOS-INSTALL.md) guide but **instead of setting up StikDebug**, follow the [JIT-less](/JITLESS-INSTALL-GUIDE.md) guide and **import the SideStore certificate** (the steps to import the certificate are **available in the JIT-less guide**) and make sure that you have **the versions of SideStore listed in the JIT-less guide**.
-> \
-> \
-> Otherwise if you **don't have a PC**, **are on iOS 17.4 or later**, **can't spend money on an Apple developer certificate**, you can follow the not recommended guide for setting up [Enterprise Mode](./ENTERPRISE-INSTALL-GUIDE.md) to use Geode **without a PC** or any money. However, this method is not recommended and can **__lead to your iDevice being blacklisted from using any other certificate__**
+> If you **don't know the iOS version of your iDevice**, follow [this page from Apple](https://support.apple.com/en-us/109065) to check your iOS version.
+
+To get started, choose an installation guide for your iOS version from the table:
+
+| Method                         | Supported iOS Versions                      | Requires Computer                                          | Mod Compatibility | Price                                               |
+|--------------------------------|----------------------------------------------|------------------------------------------------------------|-------------------|-----------------------------------------------------|
+| TrollStore                     | iOS 14.0 – 17.0                       | Depends (iOS 17.0 requires a computer)                     | High              | Free                                                |
+| Jailbreak (mainly used together with TrollStore) | iOS 14 to any jailbreak-supported version    | Depends (The jailbreak tool might require it)              | High              | Free                                                |
+| SideStore                      | iOS 16 to 17.4 and higher    | Yes                                                        | High              | Free                                                |
+| JIT-less                       | iOS 14 and higher (mainly for iOS 26)      | Depends (SideStore method requires the usage of a computer)| Medium            | Depends (e.g., KravaSign Standard is $8.90/year)  |
+| Enterprise Certificate (“free certificates”) | iOS 14 and higher                           | No                                                         | Medium            | Free                                                |
+| LiveContainer (recommended for SideStore if you want to bypass the 3 active app limit and 10 App ID limit on SideStore) | iOS 14 and higher | Yes (SideStore requires a computer) | High (with JIT) or Medium (with JIT-Less) | Free |
+
+[TrollStore and Jailbreak](/OLD-IOS-INSTALL.md)
+
+[SideStore](/MODERN-IOS-INSTALL.md)
+
+[JIT-Less](/JITLESS-INSTALL-GUIDE.md)
+
+[LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md)
