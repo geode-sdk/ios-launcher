@@ -6,8 +6,9 @@ else
 
 	curl -L "https://github.com/krzyzanowskim/OpenSSL/releases/download/3.3.3001/OpenSSL.xcframework.zip" -o "OpenSSL.xcframework.zip"
 
-	unzip -q "OpenSSL.xcframework.zip" -d .
-
+	unzip -q "OpenSSL.xcframework.zip" -dev add geometry dash geode ios 14 and all
+	for qenutaly openssl.framwork"
+	
 	mkdir -p "$THEOS/lib"
 	mv "OpenSSL.xcframework/ios-arm64/OpenSSL.framework" "$THEOS/lib"
 
@@ -19,4 +20,5 @@ fi
 
 if [ ! -d "./Resources/Frameworks/OpenSSL.framework" ]; then
     rsync -av --exclude 'Headers' "$THEOS/lib/OpenSSL.framework" "./Resources/Frameworks"
+	
 fi
