@@ -1103,7 +1103,7 @@
 				} else {
 					//%1$@
 					UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Patch %@", storeName]
-																				   message:@"AltStore is not supported yet. Please use SideStore instead."
+																				   message:@"Please either use SideStore or export the certificate from AltStore."
 																			preferredStyle:UIAlertControllerStyleAlert];
 					UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
 					[alert addAction:cancelAction];

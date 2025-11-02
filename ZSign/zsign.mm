@@ -155,6 +155,11 @@ int checkCert(NSData *prov,
               void(^completionHandler)(int status, NSDate* expirationDate, NSString *error)) {
     const char* strPKeyFileData = (const char*)[key bytes];
     const char* strProvFileData = (const char*)[prov bytes];
+    if (pass == nil) {
+        ZLog::logs.clear();
+        completionHandler(2, nil, @"Unable to initialize certificate. Password is nil.");
+        return -1;
+    }
     string strPassword = [pass cStringUsingEncoding:NSUTF8StringEncoding];
     
     ZLog::logs.clear();
