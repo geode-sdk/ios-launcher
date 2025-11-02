@@ -370,13 +370,8 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 	}
 	if (!usingLiveContainer) {
 		if (checkJITEnabled()) {
-			if (has_txm()) {
-				// we will assume every binary is signed, since i currently cant figure out this issue blind
-				AppLog(@"[invokeAppMain] JIT pass (2/2) [Bypassed because TXM]");
-			} else {
-				init_bypassDyldLibValidation();
-				AppLog(@"[invokeAppMain] JIT pass (2/2) & Bypassed Dyld-lib validation!");
-			}
+			init_bypassDyldLibValidation();
+			AppLog(@"[invokeAppMain] JIT pass (2/2) & Bypassed Dyld-lib validation!");
 		} else {
 			AppLog(@"[invokeAppMain] JIT pass (2/2) [Bypassed because JIT-Less]");
 		}

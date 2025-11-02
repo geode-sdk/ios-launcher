@@ -635,7 +635,7 @@
 					  }
 				  });
 			  }];
-	} else if (has_txm()) {
+	} else if (false) {
 		// probably should move this... or idk
 		[Utils copyOrigBinary:^(BOOL success, NSString *error) {
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -682,7 +682,7 @@
 }
 
 - (void)signApp:(BOOL)forceSign completionHandler:(void (^)(BOOL success, NSString* error))completionHandler {
-	if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_PATCHING"] && !has_txm())
+	if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_PATCHING"])
 		return completionHandler(YES, nil);
 
 	NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
@@ -743,7 +743,7 @@
 					  }
 			});
 		}];
-	} else if (has_txm()) {
+	} else if (false) {
 		[Utils copyOrigBinary:^(BOOL success, NSString *error) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				if (success) {
@@ -1060,6 +1060,9 @@
 			[self bundleIPAWithPatch:NO withLaunch:YES];
 		}
 		return;
+	} else if (![Utils isDevCert]) {
+		[Utils showNotice:self title:@"Geode was signed without entitlements! Please follow the guide on Enterprise Mode, or sign Geode with entitlements (recommended)."];
+		return;
 	}
 	if (![Utils isSandboxed]) {
 		[self.optionalTextLabel setHidden:YES];
@@ -1069,7 +1072,7 @@
 		[Utils tweakLaunch_withSafeMode:false];
 		return;
 	}
-	if ([[Utils getPrefs] boolForKey:@"JITLESS"] || [[Utils getPrefs] boolForKey:@"FORCE_PATCHING"] || has_txm()) {
+	if ([[Utils getPrefs] boolForKey:@"JITLESS"] || [[Utils getPrefs] boolForKey:@"FORCE_PATCHING"]) {
 		[self.optionalTextLabel setHidden:NO];
 		self.launchButton.frame = CGRectMake(self.view.center.x - 95, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 140, 45);
 		self.settingsButton.frame = CGRectMake(self.view.center.x + 50, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 45, 45);
