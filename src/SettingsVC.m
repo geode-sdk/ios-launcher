@@ -1043,7 +1043,7 @@
 				[Utils showNotice:self title:@"launcher.notice.enterprise.s2".loc];
 				break;
 			}
-			if (NSClassFromString(@"LCSharedUtils")) {
+			if (NSClassFromString(@"LCSharedUtils") && ![[Utils getPrefs] boolForKey:@"MANUAL_IMPORT_CERT"]) {
 				break;
 			}
 			if (![LCUtils isAppGroupAltStoreLike] || [[Utils getPrefs] boolForKey:@"MANUAL_IMPORT_CERT"]) {
