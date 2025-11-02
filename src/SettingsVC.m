@@ -358,9 +358,18 @@
 			}
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			if (NSClassFromString(@"LCSharedUtils")) {
-				cell.textLabel.text = @"Follow the LiveContainer guide";
-				cell.selectionStyle = UITableViewCellSelectionStyleNone;
-				cell.textLabel.textColor = [UIColor systemGrayColor];
+				if ([[Utils getPrefs] boolForKey:@"LCCertificateImported"]) {
+					cell.textLabel.text = @"Remove Certificate";
+				} else {
+					cell.textLabel.text = @"Follow the guide for LiveContainer";
+					if (![[Utils getPrefs] boolForKey:@"MANUAL_IMPORT_CERT"]) {
+						cell.selectionStyle = UITableViewCellSelectionStyleNone;
+						cell.textLabel.textColor = [UIColor systemGrayColor];
+					} else {
+						cell.textLabel.textColor = [Theming getAccentColor];
+						cell.accessoryType = UITableViewCellAccessoryNone;
+					}
+				}
 			}
 		} else if (row == 4) {
 			cell.textLabel.text = @"Test JIT-Less Mode";
