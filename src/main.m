@@ -368,7 +368,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 	if (has_txm()) {
 		setenv("TXM_JIT", "1", 1);
 	}
-	if (!usingLiveContainer) {
+	if (!usingLiveContainer || has_txm()) {
 		if (checkJITEnabled()) {
 			init_bypassDyldLibValidation();
 			AppLog(@"[invokeAppMain] JIT pass (2/2) & Bypassed Dyld-lib validation!");
