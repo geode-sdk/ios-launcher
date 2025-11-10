@@ -374,7 +374,7 @@
 			cell.accessoryType = UITableViewCellAccessoryNone;
 		} else if (row == 5) {
 			cell.textLabel.text = @"Force Resign";
-			if (![[Utils getPrefs] boolForKey:@"JITLESS"]) {
+			if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"]) {
 				cell.selectionStyle = UITableViewCellSelectionStyleNone;
 				cell.textLabel.textColor = [UIColor systemGrayColor];
 			} else {
@@ -389,6 +389,11 @@
 			}
 			cellval1.accessoryView = [self createSwitch:[[Utils getPrefs] boolForKey:@"MANUAL_IMPORT_CERT"] tag:19 disable:disableJITLess];
 			return cellval1;
+		} else if (row == 7) {
+			cellval1.selectionStyle = UITableViewCellSelectionStyleNone;
+			cellval1.textLabel.text = @"Force Certificate with JIT".loc;
+			cellval1.accessoryView = [self createSwitch:[[Utils getPrefs] boolForKey:@"FORCE_CERT_JIT"] tag:22 disable:disableJITLess];
+			return cellval1;
 		}
 		break;
 	}
@@ -397,9 +402,9 @@
 			cellval1.selectionStyle = UITableViewCellSelectionStyleNone;
 			cellval1.accessoryView =
 				[self createSwitch:[[Utils getPrefs] boolForKey:@"MANUAL_REOPEN"] tag:7
-						   disable:![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"JITLESS"] || ![Utils isDevCert]];
+						   disable:![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"] || [[Utils getPrefs] integerForKey:@"JITLESS"] || ![Utils isDevCert]];
 			cellval1.textLabel.text = @"advanced.manual-reopen-jit".loc;
-			if (![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"JITLESS"] || ![Utils isDevCert]) {
+			if (![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"] || [[Utils getPrefs] integerForKey:@"JITLESS"] || ![Utils isDevCert]) {
 				cellval1.textLabel.textColor = [UIColor systemGrayColor];
 			}
 			return cellval1;
@@ -666,12 +671,12 @@
 	case 3: // JIT-Less
 		if ([Utils isSandboxed]) {
 			if ([Utils isDevCert]) {
-				return 7;
+				return 8;
 			} else {
 				if ([[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"]) {
 					return 5;
 				} else {
-					return 8;
+					return 9;
 				}
 			}
 		} else {
@@ -834,7 +839,7 @@
 				[Utils showError:self title:@"The game is already launching! Please wait." error:nil];
 				break;
 			}
-			if ([[Utils getPrefs] boolForKey:@"MANUAL_REOPEN"] && ![[Utils getPrefs] boolForKey:@"JITLESS"]) {
+			if ([[Utils getPrefs] boolForKey:@"MANUAL_REOPEN"] && ![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"]) {
 				[[Utils getPrefs] setValue:[Utils gdBundleName] forKey:@"selected"];
 				[[Utils getPrefs] setValue:@"GeometryDash" forKey:@"selectedContainer"];
 				[[Utils getPrefs] setBool:YES forKey:@"safemode"];
@@ -846,7 +851,7 @@
 					[Utils showNotice:self title:@"launcher.relaunch-notice".loc];
 				}
 			} else {
-				if ((![[Utils getPrefs] boolForKey:@"DONT_PATCH_SAFEMODE"] && ([[Utils getPrefs] boolForKey:@"JITLESS"])) && ![[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"]) {
+				if ((![[Utils getPrefs] boolForKey:@"DONT_PATCH_SAFEMODE"] && ([[Utils getPrefs] boolForKey:@"JITLESS"] || [[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"])) && ![[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"]) {
 					[_root.launchButton setEnabled:NO];
 					[_root signAppWithSafeMode:^(BOOL success, NSString* error) {
 						dispatch_async(dispatch_get_main_queue(), ^{
@@ -1150,7 +1155,7 @@
 			break;
 		}
 		case 5: { // Force Resign
-			if (![[Utils getPrefs] boolForKey:@"JITLESS"])
+			if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"])
 				break;
 			return [_root signApp:YES completionHandler:^(BOOL success, NSString* error) {
 				dispatch_async(dispatch_get_main_queue(), ^{
@@ -1631,6 +1636,13 @@
 		break;
 	case 21:
 		[Utils toggleKey:@"FORCE_TXM"];
+		break;
+	case 22:
+		[Utils toggleKey:@"FORCE_CERT_JIT"];
+		if ([sender isOn]) {
+			[[Utils getPrefs] setBool:NO forKey:@"MANUAL_REOPEN"];
+		}
+		[self.tableView reloadData];
 		break;
 	}
 }

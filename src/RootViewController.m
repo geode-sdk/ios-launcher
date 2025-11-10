@@ -635,7 +635,7 @@
 					  }
 				  });
 			  }];
-	} else if (false) {
+	} else if ([[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"]) {
 		// probably should move this... or idk
 		[Utils copyOrigBinary:^(BOOL success, NSString *error) {
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -682,7 +682,7 @@
 }
 
 - (void)signApp:(BOOL)forceSign completionHandler:(void (^)(BOOL success, NSString* error))completionHandler {
-	if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_PATCHING"])
+	if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_PATCHING"] && ![[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"])
 		return completionHandler(YES, nil);
 
 	NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
@@ -743,7 +743,7 @@
 					  }
 			});
 		}];
-	} else if (false) {
+	} else if ([[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"]) {
 		[Utils copyOrigBinary:^(BOOL success, NSString *error) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				if (success) {
@@ -1072,7 +1072,7 @@
 		[Utils tweakLaunch_withSafeMode:false];
 		return;
 	}
-	if ([[Utils getPrefs] boolForKey:@"JITLESS"] || [[Utils getPrefs] boolForKey:@"FORCE_PATCHING"]) {
+	if ([[Utils getPrefs] boolForKey:@"JITLESS"] || [[Utils getPrefs] boolForKey:@"FORCE_PATCHING"] || [[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"]) {
 		[self.optionalTextLabel setHidden:NO];
 		self.launchButton.frame = CGRectMake(self.view.center.x - 95, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 140, 45);
 		self.settingsButton.frame = CGRectMake(self.view.center.x + 50, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 45, 45);
