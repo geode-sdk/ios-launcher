@@ -346,13 +346,10 @@
 				cell.textLabel.textColor = [Theming getAccentColor];
 				cell.accessoryType = UITableViewCellAccessoryNone;
 			} else {
-				cell.textLabel.text = [NSString stringWithFormat:@"Patch %@", [LCUtils getStoreName]];
-				if ([LCUtils store] == SideStore) {
-					if ([LCUtils certificateData] != nil) {
-						cell.textLabel.text = [NSString stringWithFormat:@"Refresh Certificate from %@", [LCUtils getStoreName]];
-					} else {
-						cell.textLabel.text = [NSString stringWithFormat:@"Import Certificate from %@", [LCUtils getStoreName]];
-					}
+				if ([LCUtils certificateData] != nil) {
+					cell.textLabel.text = [NSString stringWithFormat:@"Refresh Certificate from %@", [LCUtils getStoreName]];
+				} else {
+					cell.textLabel.text = [NSString stringWithFormat:@"Import Certificate from %@", [LCUtils getStoreName]];
 				}
 				cell.textLabel.textColor = [Theming getAccentColor];
 			}
