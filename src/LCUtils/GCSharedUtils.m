@@ -137,7 +137,7 @@ extern NSBundle* gcMainBundle;
 		exit(0);
 		return;
 	}
-	if ([gcUserDefaults boolForKey:@"JITLESS"]) {
+	if ([gcUserDefaults boolForKey:@"JITLESS"] || [gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
 		/*[LCUtils signMods:[[LCPath docPath] URLByAppendingPathComponent:@"game/geode"] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
 			if (error != nil) {
 				AppLog(@"Detailed error for signing mods: %@", error);
@@ -150,7 +150,7 @@ extern NSBundle* gcMainBundle;
 
 		UIAlertController* alert = [UIAlertController
 			alertControllerWithTitle:@"Geode"
-							 message:@"Restarting is not available while in JIT-Less. You will need to manually exit and reopen Geode. Pressing OK will automatically exit."
+							 message:@"Restarting is not available while in JIT-Less or using a certificate. You will need to manually exit and reopen Geode. Pressing OK will automatically exit."
 					  preferredStyle:UIAlertControllerStyleAlert];
 		UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
 			//[UIApplication.sharedApplication suspend];

@@ -248,7 +248,7 @@ BOOL canAppOpenItself(NSURL* url) {
     if ([url.host isEqualToString:@"relaunch"]) { // assume restart 
         //[NSClassFromString(@"GCSharedUtils") launchToGuestApp];
         if (!usingLiveContainer) {
-            if (![NSUserDefaults.gcUserDefaults boolForKey:@"JITLESS"]) {
+            if (![NSUserDefaults.gcUserDefaults boolForKey:@"JITLESS"] && ![NSUserDefaults.gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
                 UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
                 window.rootViewController = [UIViewController new];
                 window.windowLevel = UIApplication.sharedApplication.windows.lastObject.windowLevel + 1;
