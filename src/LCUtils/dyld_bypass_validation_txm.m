@@ -231,7 +231,7 @@ void init_bypassDyldLibValidation() {
 		return;
 	bypassed = YES;
 
-	if (!has_txm_no_force()) { //_no_force()
+	if (!has_txm()) { //_no_force()
 		init_bypassDyldLibValidationNonTXM();
 		return;
 	}
