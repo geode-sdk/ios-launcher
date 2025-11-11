@@ -22,7 +22,7 @@
 int cache_txm = 0;
 int cache_txm2 = 0;
 
-BOOL has_txm_not() {
+BOOL has_txm() {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"FORCE_TXM"]) return YES;
 	if (@available(iOS 26.0, *)) return YES;
 	if (cache_txm > 0) return cache_txm == 2;
@@ -53,9 +53,9 @@ BOOL has_txm_not() {
 }
 
 // have someone test non-txm so i can determine whether to use this
-BOOL has_txm() {
+BOOL has_txm_no_force() {
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"FORCE_TXM"]) return YES;
-	if (cache_txm2 > 0) return cache_txm == 2;
+	if (cache_txm2 > 0) return cache_txm2 == 2;
 	if (@available(iOS 26.0, *)) {
 		if (access("/System/Volumes/Preboot/boot/usr/standalone/firmware/FUD/Ap,TrustedExecutionMonitor.img4", F_OK) == 0) {
 			cache_txm2 = 2;
@@ -231,7 +231,7 @@ void init_bypassDyldLibValidation() {
 		return;
 	bypassed = YES;
 
-	if (!has_txm()) { //_no_force()
+	if (!has_txm_no_force()) { //_no_force()
 		init_bypassDyldLibValidationNonTXM();
 		return;
 	}
