@@ -2,6 +2,10 @@
 > [!WARNING]
 > This guide will not work for Enterprise Certificates ("free certificates"), and certificates without the entitlement `get-task-allow`. A developer certficate (or one from SideStore) is required for you to follow this guide. If you wish to use certificates without entitlements, follow the [Enterprise Certificate](./ENTERPRISE-INSTALL-GUIDE.md) guide instead.
 
+| Supported on | Requires Computer? | Mod Compatibility | Price |
+|--------------|--------------------|-------------------|-------|
+| iOS 14.0 and adove (mainly for iOS 26)| Depends (SideStore method requires a computer) | *Medium* | Depends (Developer Certificate method is *not* free) |
+
 This tutorial is mainly for iOS 26, as Apple broke enabling JIT on iOS 26, but it should theoretically work for any iOS version. This guide is also for those that wish to use Geode, but don't have a computer.
 
 # Prerequisites
