@@ -10,6 +10,10 @@
 > This guide will not teach you how to go about obtaining such certificates. These certificates ("free certificates") violate [Apple's Terms of Service](https://developer.apple.com/support/terms/apple-developer-program-license-agreement/#ADPLA5), and may get your iDevice blacklisted. As such, this guide is only for educational purposes, given the consequences: Use at your own risk.
 > If you are fine with this, and acknowledge the warning, you can proceed to follow this guide.
 
+| Supported on | Requires Computer? | Mod Compatibility | Price |
+|--------------|--------------------|-------------------|-------|
+| iOS 14.0 and adove | No | *Medium* | Free |
+
 This tutorial is for people who cannot afford to purchase a Developer Certificate, and do not have a computer, but wish to use Geode.
 
 ## Prerequisites

@@ -5,6 +5,10 @@
 > \
 > This guide assumes you will be installing SideStore. Using enterprise certificates to install SideStore **will not work**, as the usage of a PC is required to sideload SideStore.
 
+| Supported on | Requires Computer? | Mod Compatibility | Price |
+|--------------|--------------------|-------------------|-------|
+| iOS 16 to 17.4 and adove | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
+
 ## Prerequisites
 - PC (Windows, Mac, Linux)
 - Apple ID (Secondary / Throwaway Recommended)
