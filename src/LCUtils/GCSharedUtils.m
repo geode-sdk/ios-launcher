@@ -1,4 +1,5 @@
 #import "FoundationPrivate.h"
+#include "src/LCUtils/utils.h"
 #import "GCSharedUtils.h"
 #import "UIKitPrivate.h"
 #import "src/LCUtils/LCAppInfo.h"
@@ -181,7 +182,23 @@ extern NSBundle* gcMainBundle;
 		tries = 2;
 		urlScheme = [NSString stringWithFormat:@"%@://geode-relaunch", gcAppUrlScheme];
 	} else if ((jitEnabler == 0 && [application canOpenURL:[NSURL URLWithString:@"stikjit://"]]) || jitEnabler == 2) {
-		urlScheme = @"stikjit://enable-jit?bundle-id=%@";
+		if (has_txm()) {
+			if (NSClassFromString(@"LCSharedUtils")) {} else {
+				NSString *scriptFilePath = [[NSBundle mainBundle] pathForResource:@"TuliphookJIT" ofType:@"js"];
+				NSError *error;
+				NSString *script = [NSString stringWithContentsOfFile:scriptFilePath encoding:NSUTF8StringEncoding error:&error];
+				NSData *scriptData = [script dataUsingEncoding:NSUTF8StringEncoding];
+				NSString *b64Script = [scriptData base64EncodedStringWithOptions:0];
+				if (error) {
+					AppLog(@"Error reading script: %@", error.localizedDescription);
+					return NO;
+				}
+				NSString *encoded = [b64Script stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+				urlScheme = [NSString stringWithFormat:@"stikjit://enable-jit?bundle-id=%@&script-data=%@", gcMainBundle.bundleIdentifier, encoded];
+			}
+		} else {
+			urlScheme = @"stikjit://enable-jit?bundle-id=%@";
+		}
 	} else if ((jitEnabler == 0 && [application canOpenURL:[NSURL URLWithString:@"sidestore://"]]) || jitEnabler == 5) {
 		urlScheme = @"sidestore://sidejit-enable?bid=%@";
 	} else {
