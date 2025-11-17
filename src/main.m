@@ -368,6 +368,10 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 	if (has_txm()) {
 		setenv("TXM_JIT", "1", 1);
 	}
+	if (![gcUserDefaults boolForKey:@"JITLESS"]) {
+		// sleep
+		usleep(5000 * 100);
+	}
 	if (!usingLiveContainer || has_txm()) {
 		if (checkJITEnabled() && ![gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
 			init_bypassDyldLibValidation();
