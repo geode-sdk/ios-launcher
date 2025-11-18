@@ -1,4 +1,5 @@
 #import "FoundationPrivate.h"
+#import "src/Patcher.h"
 #include "src/LCUtils/utils.h"
 #import "GCSharedUtils.h"
 #import "UIKitPrivate.h"
@@ -97,38 +98,82 @@ extern NSBundle* gcMainBundle;
 	return NO;
 }
 
-+ (void)relaunchApp {
-	if (![gcUserDefaults boolForKey:@"JITLESS"]) {
-		[gcUserDefaults setValue:[Utils gdBundleName] forKey:@"selected"];
-		[gcUserDefaults setValue:@"GeometryDash" forKey:@"selectedContainer"];
+// copy paste but i need to reorganize everything tbh...
++ (void)signApp:(BOOL)forceSign completionHandler:(void (^)(BOOL success, NSString* error))completionHandler {
+	if (![gcUserDefaults boolForKey:@"JITLESS"] && ![gcUserDefaults integerForKey:@"FORCE_CERT_JIT"])
+		return completionHandler(YES, nil);
+	if ([LCUtils certificateData]) {
+		[LCUtils validateCertificate:^(int status, NSDate* expirationDate, NSString* errorC) {
+			if (errorC) {
+				return completionHandler(NO, [NSString stringWithFormat:@"launcher.error.sign.invalidcert".loc, errorC]);
+			}
+			if (status != 0) {
+				return completionHandler(NO, @"launcher.error.sign.invalidcert2".loc);
+			}
+			AppLog(@"Signing mods (1/2)...");
+			[LCUtils signModsNew:[[LCPath dataPath] URLByAppendingPathComponent:@"game/geode"] force:YES progressHandler:^(NSProgress* progress) {}
+				completion:^(NSError* error) {
+					AppLog(@"Signing mods (2/2)...");
+					[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"game/geode"] force:NO
+						progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+							if (error != nil) {
+								AppLog(@"Detailed error for signing mods: %@", error);
+								return completionHandler(NO, @"Couldn't sign mods. Please make sure that you imported a certificate in settings.");
+							}
+							completionHandler(YES, nil);
+					}];
+			}];
+		}];
+	} else {
+		return completionHandler(NO, @"No certificate found.");
 	}
+}
+
++ (void)relaunchApp {
+	[gcUserDefaults setValue:[Utils gdBundleName] forKey:@"selected"];
+	[gcUserDefaults setValue:@"GeometryDash" forKey:@"selectedContainer"];
 	if (NSClassFromString(@"LCSharedUtils")) {
 		[gcUserDefaults synchronize];
 		NSFileManager* fm = [NSFileManager defaultManager];
 
 		[fm createFileAtPath:[[LCPath docPath].path stringByAppendingPathComponent:@"../../../../jitflag"] contents:[[NSData alloc] init] attributes:@{}];
-		UIApplication* application = [NSClassFromString(@"UIApplication") sharedApplication];
+		//UIApplication* application = [NSClassFromString(@"UIApplication") sharedApplication];
 		// assume livecontainer
 		NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"livecontainer://livecontainer-launch?bundle-name=%@.app", gcMainBundle.bundleIdentifier]];
-		NSURL* launchURL2 = [NSURL URLWithString:[NSString stringWithFormat:@"livecontainer2://livecontainer-launch?bundle-name=%@.app", gcMainBundle.bundleIdentifier]];
+		//NSURL* launchURL2 = [NSURL URLWithString:[NSString stringWithFormat:@"livecontainer2://livecontainer-launch?bundle-name=%@.app", gcMainBundle.bundleIdentifier]];
 		AppLog(@"Attempting to launch geode with %@", launchURL);
+		if ([gcUserDefaults boolForKey:@"JITLESS"] || [gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
+			[self signApp:YES completionHandler:^(BOOL success, NSString* error) {
+				dispatch_async(dispatch_get_main_queue(), ^{
+					if (!success) {
+						UIWindowScene* scene = (id)[UIApplication.sharedApplication.connectedScenes allObjects].firstObject;
+						UIWindow* window = scene.windows.firstObject;
 
-		// since for some reason it doesnt do a JIT check for launchToGuestAppWithURL, otherwise itll error with "jit isn't enabled! wanna enable jitless?". Fix it!
-		[NSClassFromString(@"LCSharedUtils") launchToGuestApp];
-		return;
-		if ([application canOpenURL:launchURL]) {
-			[NSClassFromString(@"LCSharedUtils") launchToGuestAppWithURL:launchURL];
-			/*dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-				[application openURL:launchURL options:@{} completionHandler:^(BOOL b) {
-					exit(0);
-					// weird trickery, never mind it causes a crash!
-					/\*if (![NSClassFromString(@"LCSharedUtils") askForJIT])
+						UIAlertController* alert = [UIAlertController
+							alertControllerWithTitle:@"Geode"
+											 message:error
+									  preferredStyle:UIAlertControllerStyleAlert];
+						UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+							exit(0);
+						}];
+						[alert addAction:okAction];
+						if (window != nil) {
+							[window.rootViewController presentViewController:alert animated:YES completion:nil];
+						}
 						return;
-					[NSClassFromString(@"LCSharedUtils") launchToGuestApp];*\/
-				}];
-			});*/
-		} else if ([application canOpenURL:launchURL2]) {
-			[NSClassFromString(@"LCSharedUtils") launchToGuestAppWithURL:launchURL2];
+					}
+					// lets keep sleeping so we are sure its signed
+					for (int i = 0; i < 10; i++) {
+						usleep(1000 * 100);
+					}
+					[gcUserDefaults setBool:YES forKey:@"RestartFlag"];
+					[gcUserDefaults synchronize];
+					[GCSharedUtils launchToGuestApp];
+				});
+			}];
+		} else {
+			//[NSClassFromString(@"LCSharedUtils") launchToGuestApp]; // this doesnt really "restart", unsure how i didnt catch this
+			[GCSharedUtils launchToGuestApp];
 		}
 		return;
 	}
@@ -139,28 +184,34 @@ extern NSBundle* gcMainBundle;
 		return;
 	}
 	if ([gcUserDefaults boolForKey:@"JITLESS"] || [gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
-		/*[LCUtils signMods:[[LCPath docPath] URLByAppendingPathComponent:@"game/geode"] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
-			if (error != nil) {
-				AppLog(@"Detailed error for signing mods: %@", error);
-			}
-			[LCUtils launchToGuestApp];
-		}];*/
+		[self signApp:YES completionHandler:^(BOOL success, NSString* error) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				if (!success) {
+					UIWindowScene* scene = (id)[UIApplication.sharedApplication.connectedScenes allObjects].firstObject;
+					UIWindow* window = scene.windows.firstObject;
 
-		UIWindowScene* scene = (id)[UIApplication.sharedApplication.connectedScenes allObjects].firstObject;
-		UIWindow* window = scene.windows.firstObject;
-
-		UIAlertController* alert = [UIAlertController
-			alertControllerWithTitle:@"Geode"
-							 message:@"Restarting is not available while in JIT-Less or using a certificate. You will need to manually exit and reopen Geode. Pressing OK will automatically exit."
-					  preferredStyle:UIAlertControllerStyleAlert];
-		UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
-			//[UIApplication.sharedApplication suspend];
-			exit(0);
+					UIAlertController* alert = [UIAlertController
+						alertControllerWithTitle:@"Geode"
+										 message:error
+								  preferredStyle:UIAlertControllerStyleAlert];
+					UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+						exit(0);
+					}];
+					[alert addAction:okAction];
+					if (window != nil) {
+						[window.rootViewController presentViewController:alert animated:YES completion:nil];
+					}
+					return;
+				}
+				// lets keep sleeping so we are sure its signed
+				for (int i = 0; i < 10; i++) {
+					usleep(1000 * 100);
+				}
+				[gcUserDefaults setBool:YES forKey:@"RestartFlag"];
+				if ([gcUserDefaults boolForKey:@"FORCE_CERT_JIT"] && ![GCSharedUtils askForJIT]) return;
+					[GCSharedUtils launchToGuestApp];
+			});
 		}];
-		[alert addAction:okAction];
-		if (window != nil) {
-			[window.rootViewController presentViewController:alert animated:YES completion:nil];
-		}
 	} else {
 		if (![GCSharedUtils askForJIT])
 			return;

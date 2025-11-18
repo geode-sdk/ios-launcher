@@ -6,7 +6,17 @@
 @implementation LCPath
 
 + (NSURL*)docPath {
-	return [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
+	NSURL* path = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
+	if (getenv("GAME")) {
+		NSArray<NSString *> *kept = [path.pathComponents subarrayWithRange:NSMakeRange(0, path.pathComponents.count - 4)];
+		NSURL *newURL = [NSURL fileURLWithPath:kept.firstObject isDirectory:YES];
+		for (NSUInteger i = 1; i < kept.count; i++) {
+			newURL = [newURL URLByAppendingPathComponent:kept[i]];
+		}
+		return newURL;
+	} else {
+		return path;
+	}
 }
 
 + (NSURL*)bundlePath {

@@ -1,4 +1,5 @@
 @import UIKit;
+//#import <UIKit/UIKit.h>
 #import "src/LCUtils/GCSharedUtils.h"
 #import "src/LCUtils/UIKitPrivate.h"
 #import "utils.h"
@@ -167,6 +168,10 @@ BOOL canAppOpenItself(NSURL* url) {
             }
         }
     });
+    if (LCSupportedUrlSchemes.count == 0) {
+        LCSupportedUrlSchemes = [[NSMutableArray alloc] init];
+        [LCSupportedUrlSchemes addObject:@"geode"];
+    }
     return [LCSupportedUrlSchemes containsObject:[url.scheme lowercaseString]];
 }
 

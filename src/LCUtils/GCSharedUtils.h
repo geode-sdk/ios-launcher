@@ -15,4 +15,5 @@
 + (NSBundle*)findBundleWithBundleId:(NSString*)bundleId;
 + (void)dumpPreferenceToPath:(NSString*)plistLocationTo dataUUID:(NSString*)dataUUID;
 + (NSString*)findDefaultContainerWithBundleId:(NSString*)bundleId;
++ (void)signApp:(BOOL)force completionHandler:(void (^)(BOOL success, NSString* error))completionHandler;
 @end

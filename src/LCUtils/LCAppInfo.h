@@ -23,5 +23,6 @@
 - (void)save;
 - (void)patchExecAndSignIfNeedWithCompletionHandler:(void (^)(bool success, NSString* errorInfo))completetionHandler
 									progressHandler:(void (^)(NSProgress* progress))progressHandler
-										  forceSign:(BOOL)forceSign;
+										  forceSign:(BOOL)forceSign
+										  blockMainThread:(BOOL)blockMainThread;
 @end

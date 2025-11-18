@@ -220,7 +220,7 @@ BOOL hasDoneUpdate = NO;
 				}
 			} progressHandler:^(NSProgress* signProgress) {
 				//[installProgress addChild:signProgress withPendingUnitCount:20];
-			} forceSign:NO];
+			} forceSign:NO blockMainThread:YES];
 		}];
 	}
 }

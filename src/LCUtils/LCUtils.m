@@ -1,6 +1,8 @@
-@import Darwin;
-@import MachO;
-@import UIKit;
+#import <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#include <dlfcn.h>
+#import <mach-o/dyld.h>
 
 #import "LCUtils.h"
 #import "Shared.h"
@@ -9,10 +11,9 @@
 #import "src/components/LogUtils.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
-// #import <mach-o/dyld.h>
-// #include <dlfcn.h>
 
 extern NSBundle* gcMainBundle;
+extern NSUserDefaults* gcUserDefaults;
 
 Class LCSharedUtilsClass = nil;
 
@@ -41,8 +42,8 @@ Class LCSharedUtilsClass = nil;
 
 + (NSData*)certificateData {
 	NSData* ans;
-	if ([NSUserDefaults.standardUserDefaults boolForKey:@"LCCertificateImported"]) {
-		ans = [NSUserDefaults.standardUserDefaults objectForKey:@"LCCertificateData"];
+	if ([gcUserDefaults boolForKey:@"LCCertificateImported"]) {
+		ans = [gcUserDefaults objectForKey:@"LCCertificateData"];
 	} else if (NSClassFromString(@"LCSharedUtils")) {
 		ans = [NSData dataWithContentsOfURL:[[LCPath realLCDocPath] URLByAppendingPathComponent:@"cert.p12"] options:0 error:nil];
 	}
@@ -211,7 +212,7 @@ Class LCSharedUtilsClass = nil;
 
 + (int)validateCertificate:(void (^)(int status, NSDate* expirationDate, NSString* error))completionHandler {
 	NSError* error;
-	NSURL* profilePath = [NSBundle.mainBundle URLForResource:@"embedded" withExtension:@"mobileprovision"];
+	NSURL* profilePath = [gcMainBundle URLForResource:@"embedded" withExtension:@"mobileprovision"];
 	if (!profilePath) {
 		if (NSClassFromString(@"LCSharedUtils")) {
 			profilePath = [[LCPath realLCDocPath] URLByAppendingPathComponent:@"embedded.mobileprovision"];
