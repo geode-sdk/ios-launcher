@@ -625,7 +625,7 @@
 										  }
 										  completionHandler(YES, nil);
 									  }];
-								  } progressHandler:^(NSProgress* signProgress) {} forceSign:force];
+								  } progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
 							  }];
 						  } else {
 							  return completionHandler(NO, @"No certificate found.");
@@ -666,7 +666,7 @@
 									}
 									completionHandler(YES, nil);
 								}];
-							} progressHandler:^(NSProgress* signProgress) {} forceSign:NO];
+							} progressHandler:^(NSProgress* signProgress) {} forceSign:NO blockMainThread:YES];
 						  }];
 					  } else {
 						  return completionHandler(NO, @"No certificate found.");
@@ -733,7 +733,7 @@
 													  }];
 											  }];
 									  }];
-								  } progressHandler:^(NSProgress* signProgress) {} forceSign:force];
+								  } progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
 							  }];
 						  } else {
 							  return completionHandler(NO, @"No certificate found.");
@@ -779,7 +779,7 @@
 										}];
 									}];
 								}];
-							} progressHandler:^(NSProgress* signProgress) {} forceSign:force];
+							} progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
 						}];
 					} else {
 						return completionHandler(NO, @"No certificate found.");

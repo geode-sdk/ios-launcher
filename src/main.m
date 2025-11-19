@@ -1,4 +1,5 @@
 #import "LCUtils/FoundationPrivate.h"
+#include "src/Patcher.h"
 #import "LCUtils/GCSharedUtils.h"
 #import "LCUtils/Shared.h"
 #import "LCUtils/UIKitPrivate.h"
@@ -341,6 +342,19 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 			symlink(target.UTF8String, tweakLoaderPath.UTF8String);
 		}
 
+		BOOL isDir = NO;
+		NSString *frameworksPath = [bundlePath stringByAppendingPathComponent:@"Frameworks"];
+		if (![fm fileExistsAtPath:frameworksPath isDirectory:&isDir]) {
+			[fm createDirectoryAtPath:frameworksPath withIntermediateDirectories:YES attributes:nil error:nil];
+		}
+		NSString* zSignPath = [frameworksPath stringByAppendingPathComponent:@"ZSign.dylib"];
+		if (![fm fileExistsAtPath:zSignPath]) {
+			AppLog(@"invokeAppMain - Creating ZSign.dylib symlink");
+			remove(zSignPath.UTF8String);
+			NSString* target = [NSBundle.mainBundle.privateFrameworksPath stringByAppendingPathComponent:@"ZSign.dylib"];
+			symlink(target.UTF8String, zSignPath.UTF8String);
+		}
+
 		if ([gcUserDefaults boolForKey:@"WEB_SERVER"]) {
 			NSString* webServerPath = [tweakFolder stringByAppendingPathComponent:@"WebServer.dylib"];
 			if (![fm fileExistsAtPath:webServerPath]) {
@@ -465,6 +479,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 			setenv("LAUNCHARGS", "--geode:safe-mode", 1);
 		}
 	}
+	setenv("GAME", "1", 1);
 
 	// Setup directories
 	NSArray* dirList = @[ @"Library/Caches", @"Documents", @"SystemData" ];
@@ -684,6 +699,79 @@ int GeodeMain(int argc, char* argv[]) {
 		}
 		NSSetUncaughtExceptionHandler(&exceptionHandler);
 		setenv("GC_HOME_PATH", getenv("HOME"), 1);
+		if ([gcUserDefaults boolForKey:@"RestartFlag"]) {
+			[gcUserDefaults removeObjectForKey:@"RestartFlag"];
+			// a hacky workaround since we cant just copy & sign the binary while its running...
+			if ([gcUserDefaults boolForKey:@"JITLESS"] && !usingLiveContainer) {
+				__block BOOL successPatch = YES;
+				dispatch_group_t group = dispatch_group_create();
+				dispatch_group_enter(group);
+				NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
+				AppLog(@"Checking if GD needs to be patched & signed...");
+				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+					[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8b8000 force:NO withSafeMode:safeMode withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
+						AppLog(@"Seeing conditions");
+						if (success) {
+							BOOL force = NO;
+							if ([error isEqualToString:@"force"]) {
+								AppLog(@"Patching was required! Now signing...");
+								force = YES;
+							} else {
+								AppLog(@"No patching needed! Skipping...");
+								dispatch_group_leave(group);
+								return;
+							}
+							AppLog(@"Sign (1/3)");
+							if ([LCUtils certificateData]) {
+								[LCUtils validateCertificate:^(int status, NSDate* expirationDate, NSString* errorC) {
+									if (errorC) {
+										[gcUserDefaults setObject:[NSString stringWithFormat:@"launcher.error.sign.invalidcert".loc, errorC] forKey:@"error"];
+										successPatch = NO;
+										dispatch_group_leave(group);
+										return;
+									}
+									if (status != 0) {
+										[gcUserDefaults setObject:@"launcher.error.sign.invalidcert2".loc forKey:@"error"];
+										successPatch = NO;
+										dispatch_group_leave(group);
+										return;
+									}
+									AppLog(@"Sign (2/3)");
+									LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
+									[app patchExecAndSignIfNeedWithCompletionHandler:^(BOOL signSuccess, NSString* signError) {
+										AppLog(@"Sign (3/3)");
+										if (signError) {
+											[gcUserDefaults setObject:signError forKey:@"error"];
+											successPatch = NO;
+										}
+										dispatch_group_leave(group);
+									} progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:NO];
+								}];
+							} else {
+								[gcUserDefaults setObject:@"No certificate found." forKey:@"error"];
+								successPatch = NO;
+								dispatch_group_leave(group);
+							}
+						  } else {
+							[gcUserDefaults setObject:error forKey:@"error"];
+							successPatch = NO;
+							dispatch_group_leave(group);
+						}
+					}];
+				});
+				dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+				AppLog(@"Out of wait.");
+				if (!successPatch) {
+					//return @"Couldn't patch successfully.";
+					return 1;
+				}
+				AppLog(@"Success patch! Now invoking main...");
+			}
+			// since zsign is being so weird
+			if ([gcUserDefaults boolForKey:@"JITLESS"] && usingLiveContainer) {
+				goto passafter;
+			}
+		}
 		NSString* appError = invokeAppMain(selectedApp, @"GeometryDash", safeMode, argc, argv);
 		if (appError) {
 			[gcUserDefaults setObject:appError forKey:@"error"];
@@ -691,6 +779,7 @@ int GeodeMain(int argc, char* argv[]) {
 			return 1;
 		}
 	}
+passafter:
 	@autoreleasepool {
 		dlopen("@executable_path/Frameworks/WebServer.dylib", RTLD_LAZY);
 		void* uikitHandle = dlopen("/System/Library/Frameworks/UIKit.framework/UIKit", RTLD_GLOBAL);

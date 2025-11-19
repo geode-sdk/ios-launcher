@@ -1,10 +1,9 @@
-@import CommonCrypto;
-
 #import "LCAppInfo.h"
 #import "LCUtils.h"
 #import "Shared.h"
 #import "src/Utils.h"
 #import "src/components/LogUtils.h"
+#import <CommonCrypto/CommonCrypto.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -131,7 +130,7 @@
 
 - (void)patchExecAndSignIfNeedWithCompletionHandler:(void (^)(bool success, NSString* errorInfo))completetionHandler
 									progressHandler:(void (^)(NSProgress* progress))progressHandler
-										  forceSign:(BOOL)forceSign {
+										  forceSign:(BOOL)forceSign blockMainThread:(BOOL)blockMainThread {
 	NSString* appPath = self.bundlePath;
 	NSString* infoPath = [NSString stringWithFormat:@"%@/Info.plist", appPath];
 	NSMutableDictionary* info = _info;
@@ -225,23 +224,45 @@
 	[infoPlist removeObjectForKey:@"LCBundleIdentifier"];
 
 	void (^signCompletionHandler)(BOOL success, NSError* error) = ^(BOOL success, NSError* _Nullable error) {
-		dispatch_async(dispatch_get_main_queue(), ^{
-			// Remove fake main executable
-			[fm removeItemAtPath:tmpExecPath error:nil];
-			// Save sign ID and restore bundle ID
-			[self save];
-			[infoPlist writeToFile:infoPath atomically:YES];
-			if (!success) {
-				completetionHandler(NO, error.localizedDescription);
-			} else {
-				bool signatureValid = checkCodeSignature(executablePath.UTF8String);
-				if (signatureValid) {
-					completetionHandler(YES, nil);
+		if (blockMainThread) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				// Remove fake main executable
+				[fm removeItemAtPath:tmpExecPath error:nil];
+				// Save sign ID and restore bundle ID
+				[self save];
+				[infoPlist writeToFile:infoPath atomically:YES];
+				if (!success) {
+					completetionHandler(NO, error.localizedDescription);
 				} else {
-					completetionHandler(NO, @"Invalid signature. Try force resigning. If that doesn't work, try refreshing the certificate, deleting the .app file, reinstalling, or use LiveContainer instead.");
+					bool signatureValid = checkCodeSignature(executablePath.UTF8String);
+					if (signatureValid) {
+						completetionHandler(YES, nil);
+					} else {
+						completetionHandler(NO, @"Invalid signature. Try force resigning. If that doesn't work, try refreshing the certificate, deleting the .app file, reinstalling, "
+												@"or use LiveContainer instead.");
+					}
 				}
-			}
-		});
+			});
+		} else {
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				// Remove fake main executable
+				[fm removeItemAtPath:tmpExecPath error:nil];
+				// Save sign ID and restore bundle ID
+				[self save];
+				[infoPlist writeToFile:infoPath atomically:YES];
+				if (!success) {
+					completetionHandler(NO, error.localizedDescription);
+				} else {
+					bool signatureValid = checkCodeSignature(executablePath.UTF8String);
+					if (signatureValid) {
+						completetionHandler(YES, nil);
+					} else {
+						completetionHandler(NO, @"Invalid signature. Try force resigning. If that doesn't work, try refreshing the certificate, deleting the .app file, reinstalling, "
+												@"or use LiveContainer instead.");
+					}
+				}
+			});
+		}
 	};
 	__block NSProgress* progress = [LCUtils signAppBundleWithZSign:appPathURL completionHandler:signCompletionHandler];
 
