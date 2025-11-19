@@ -4,7 +4,7 @@
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14.0 and adove (mainly for iOS 26)| Depends (SideStore method requires a computer) | *Medium* | Depends (Developer Certificate method is *not* free) |
+| iOS 14.0 and above (mainly for iOS 26)| Depends (SideStore method requires a computer) | *Medium* | Depends (Developer Certificate method is *not* free) |
 
 This tutorial is mainly for iOS 26, as Apple broke enabling JIT on iOS 26, but it should theoretically work for any iOS version. This guide is also for those that wish to use Geode, but don't have a computer.
 

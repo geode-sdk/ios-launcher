@@ -2,7 +2,7 @@
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14.0 and adove | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
+| iOS 14.0 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
 
 This tutorial is for people that use LiveContainer to bypass Apple's 3 active app and 10 app ID limit.
 

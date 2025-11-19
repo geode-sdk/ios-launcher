@@ -12,7 +12,7 @@
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14.0 and adove | No | *Medium* | Free |
+| iOS 14.0 and above | No | *Medium* | Free |
 
 This tutorial is for people who cannot afford to purchase a Developer Certificate, and do not have a computer, but wish to use Geode.
 
