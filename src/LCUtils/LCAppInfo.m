@@ -161,7 +161,7 @@
 
 	if (needPatch) {
 		NSString* error =
-			LCParseMachO(execPath.UTF8String, false, ^(const char* path, struct mach_header_64* header, int fd, void* filePtr) { LCPatchExecSlice(path, header, false); });
+            LCParseMachO(execPath.UTF8String, false, ^(const char* path, struct mach_header_64* header, int fd, void* filePtr) { LCPatchExecSlice(path, header, false, [[Utils getPrefs] boolForKey:@"USE_MAX_FPS"]); });
 		if (error) {
 			completetionHandler(NO, error);
 			return;

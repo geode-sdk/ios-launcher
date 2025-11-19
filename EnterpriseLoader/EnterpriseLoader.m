@@ -59,6 +59,7 @@ BOOL showNothing = NO;
 	NSLog(@"[EnterpriseLoader] application:didFinishLaunchingWithOptions swizzled!");
 	NSURL* url = launchOptions[UIApplicationLaunchOptionsURLKey];
 	BOOL forceLaunch = NO;
+	BOOL useCAHighFPS = NO;
 	NSFileManager* fm = [NSFileManager defaultManager];
 	NSURL* docDir = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
 	if (url) {
@@ -89,6 +90,8 @@ BOOL showNothing = NO;
 						if (![currChecksum isEqualToString:otherChecksum]) {
 							exitMsg = @"You must update the Helper to use any new mods. If you accidentally skipped the step to save the IPA, go back to the launcher, settings, and tap \"Install Helper\".\n\nYou will install that new helper IPA just like you installed it originally. Do not uninstall the Helper, update it like you would with any other app with your signer.";
 						}
+					} else if ([item.name isEqualToString:@"cahighfps"]) {
+						useCAHighFPS = YES;
 					}
 				}
 			} else if ([url.host isEqualToString:@"check"]) {
@@ -178,6 +181,18 @@ BOOL showNothing = NO;
 		return YES;
 	}
 	if (exitMsg == nil) {
+		if (useCAHighFPS) {
+			NSLog(@"[EnterpriseLoader] dlopen(\"@executable_path/CAHighFPS.dylib\", RTLD_LAZY | RTLD_GLOBAL)");
+			void* handle = dlopen("@executable_path/CAHighFPS.dylib", RTLD_LAZY | RTLD_GLOBAL);
+			const char* error = dlerror();
+			if (handle) {
+				NSLog(@"[EnterpriseLoader] Loaded CAHighFPS.dylib");
+			} else if (error) {
+				NSLog(@"[EnterpriseLoader] Failed to dlopen CAHighFPS.dylib: %s", error);
+			} else {
+				NSLog(@"[EnterpriseLoader] Failed to dlopen CAHighFPS.dylib: Unknown error because dlerror() returns NULL");
+			}
+		}
 		NSLog(@"[EnterpriseLoader] dlopen(\"@executable_path/Geode.ios.dylib\", RTLD_LAZY | RTLD_GLOBAL)");
 		void* handle = dlopen("@executable_path/Geode.ios.dylib", RTLD_LAZY | RTLD_GLOBAL);
 		const char* error = dlerror();

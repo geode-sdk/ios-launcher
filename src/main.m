@@ -275,6 +275,19 @@ void* new_dlsym(void* __handle, const char* __symbol) {
 	return orig_dlsym(__handle, __symbol);
 }
 
+// static void loadFramework(NSString* name) {
+// 	const char* path = [NSString stringWithFormat:@"@executable_path/Frameworks/%@.framework/%@", name, name].UTF8String;
+// 	void* handle = dlopen(path, RTLD_GLOBAL);
+// 	const char* dlerr = dlerror();
+// 	if (!handle || (uint64_t)handle > 0xf00000000000) {
+// 		if (dlerr) {
+// 			AppLog(@"Failed to load %@: %s", name, dlerr);
+// 		} else {
+// 			AppLog(@"Failed to load %@: An unknown error occured.", name);
+// 		}
+// 	}
+// }
+
 static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContainer, BOOL safeMode, int argc, char* argv[]) {
 	NSString* appError = nil;
 	if (![gcUserDefaults boolForKey:@"JITLESS"]) {
@@ -374,6 +387,23 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 				symlink(target.UTF8String, platformPath.UTF8String);
 			}
 		    setenv("SHOW_PLATFORM_CONSOLE", "1", 1);
+		}
+
+		NSString* caHighFPSPath = [tweakFolder stringByAppendingPathComponent:@"CAHighFPS.dylib"];
+		if ([gcUserDefaults boolForKey:@"USE_MAX_FPS"]) {
+			//loadFramework(@"ANGLEGLKit");
+			//loadFramework(@"libEGL");
+			//loadFramework(@"libGLESv2");
+			if (![fm fileExistsAtPath:caHighFPSPath]) {
+				AppLog(@"[invokeAppMain] Creating CAHighFPS.dylib symlink");
+				remove(caHighFPSPath.UTF8String);
+				NSString* target = [NSBundle.mainBundle.privateFrameworksPath stringByAppendingPathComponent:@"CAHighFPS.dylib"];
+				symlink(target.UTF8String, caHighFPSPath.UTF8String);
+			}
+		} else {
+			if ([fm fileExistsAtPath:caHighFPSPath]) {
+				[fm removeItemAtPath:caHighFPSPath error:nil];
+			}
 		}
 	} else {
 		AppLog(@"[invokeAppMain] Couldn't find tweak folder!");

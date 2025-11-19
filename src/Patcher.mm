@@ -583,19 +583,11 @@ for func in list:
 }
 // handler addr being that textHandlerStorage
 + (void)patchGDBinary:(NSURL*)from to:(NSURL*)to withHandlerAddress:(uint64_t)handlerAddress force:(BOOL)force withSafeMode:(BOOL)safeMode withEntitlements:(BOOL)entitlements completionHandler:(void (^)(BOOL success, NSString* error))completionHandler {
+	[Utils copyOrigBinary:^(BOOL isSuccess, NSString *errorStr) {
+	if (!isSuccess) return completionHandler(isSuccess, errorStr);
+	self.originalBytes = [NSMutableDictionary dictionary];
 	NSFileManager* fm = [NSFileManager defaultManager];
 	NSError* error;
-	self.originalBytes = [NSMutableDictionary dictionary];
-	if (![fm fileExistsAtPath:from.path]) {
-		[fm copyItemAtURL:to toURL:from error:&error];
-		if (error) {
-			return completionHandler(NO, [NSString stringWithFormat:@"Couldn't copy binary: %@", error.localizedDescription]);
-		}
-	}
-	if (![fm fileExistsAtPath:from.path]) {
-		return completionHandler(NO, @"Couldn't find original binary.");
-	}
-
 	AppLog(@"Patching Binary...");
 	if (![Patcher loadTulipHook])
 		return completionHandler(NO, @"Couldn't load TulipHook");
@@ -607,7 +599,7 @@ for func in list:
 	if (entitlements) {
 		NSString* execPath = to.path;
 		NSString* error = LCParseMachO(execPath.UTF8String, false, ^(const char* path, struct mach_header_64* header, int fd, void* filePtr) {
-			LCPatchExecSlice(path, header, true);
+			LCPatchExecSlice(path, header, true, [[Utils getPrefs] boolForKey:@"USE_MAX_FPS"]);
 		});
 		if (error) {
 			return completionHandler(NO, error);
@@ -882,7 +874,7 @@ for func in list:
 	if (entitlements) {
 		NSString* execPath = to.path;
 		NSString* error = LCParseMachO(execPath.UTF8String, false, ^(const char* path, struct mach_header_64* header, int fd, void* filePtr) {
-			LCPatchExecSlice(path, header, true);
+			LCPatchExecSlice(path, header, true, [[Utils getPrefs] boolForKey:@"USE_MAX_FPS"]);
 		});
 		if (error) {
 			return completionHandler(NO, error);
@@ -890,6 +882,7 @@ for func in list:
 	}
 	AppLog(@"Binary has been patched!");
 	return completionHandler(YES, @"force");
+	}];
 }
 + (NSString*)getPatchChecksum:(NSURL*)from withSafeMode:(BOOL)safeMode {
 	NSFileManager* fm = [NSFileManager defaultManager];

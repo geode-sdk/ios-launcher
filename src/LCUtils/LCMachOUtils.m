@@ -1,8 +1,17 @@
-@import Darwin;
-@import Foundation;
-@import MachO;
 #import "../components/LogUtils.h"
+#include <string.h>
 #import "LCUtils.h"
+#import <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
+#import <dlfcn.h>
+#import <libgen.h>
+#import <mach-o/dyld.h>
+#import <mach-o/fat.h>
+#include <mach-o/ldsyms.h>
+#import <mach-o/loader.h>
+#import <mach/mach.h>
+#import <sys/mman.h>
+#import <sys/stat.h>
 // #import <Foundation/Foundation.h>
 // #import <mach-o/dyld.h>
 // #import <mach-o/loader.h>
@@ -26,6 +35,36 @@ static void insertDylibCommand(uint32_t cmd, const char* path, struct mach_heade
 	header->sizeofcmds += dylib->cmdsize;
 }
 
+static void replaceDylibPath(struct mach_header_64* header, const char* oldPath, const char* newPath) {
+    uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
+    struct load_command* command = (struct load_command*)imageHeaderPtr;
+    for (int i = 0; i < header->ncmds; i++) {
+        if (command->cmd == LC_LOAD_DYLIB) {
+            struct dylib_command* dylib = (struct dylib_command*)command;
+            char* dylibName = (char*)dylib + dylib->dylib.name.offset;
+            if (strcmp(dylibName, oldPath) == 0) {
+                uint32_t newNameLen = (uint32_t)strlen(newPath) + 1;
+                uint32_t newCmdSize = sizeof(struct dylib_command) + rnd32(newNameLen, 8);
+                int32_t sizeDiff = newCmdSize - dylib->cmdsize;
+                if (sizeDiff != 0) {
+                    uint8_t* nextCmd = (uint8_t*)command + dylib->cmdsize;
+                    uint8_t* endOfCmds = imageHeaderPtr + header->sizeofcmds;
+                    size_t remainingSize = endOfCmds - nextCmd;
+                    if (remainingSize > 0) {
+                        memmove(nextCmd + sizeDiff, nextCmd, remainingSize);
+                    }
+                    header->sizeofcmds += sizeDiff;
+                }
+                memset((uint8_t*)dylib + sizeof(struct dylib_command), 0, newCmdSize - sizeof(struct dylib_command));
+                dylib->cmdsize = newCmdSize;
+                strcpy((char*)dylib + dylib->dylib.name.offset, newPath);
+                break;
+            }
+        }
+        command = (struct load_command*)((uint8_t*)command + command->cmdsize);
+    }
+}
+
 void noopOverwrite(struct load_command* command) {
 	uint32_t old_size = command->cmdsize;
 	memset(command, 0, old_size);
@@ -36,9 +75,12 @@ void noopOverwrite(struct load_command* command) {
 static void insertRPathCommand(const char* path, struct mach_header_64* header) {
 	struct rpath_command* rpath = (struct rpath_command*)(sizeof(struct mach_header_64) + (void*)header + header->sizeofcmds);
 	rpath->cmd = LC_RPATH;
-	rpath->cmdsize = sizeof(struct rpath_command) + rnd32((uint32_t)strlen(path) + 1, 8);
+	rpath->cmdsize = rnd32(sizeof(struct rpath_command) + (uint32_t)strlen(path) + 1, 8);
+	// rpath->cmdsize = sizeof(struct rpath_command) + rnd32((uint32_t)strlen(path) + 1, 8);
 	rpath->path.offset = sizeof(struct rpath_command);
-	strncpy((void*)rpath + rpath->path.offset, path, strlen(path));
+	// strncpy((void*)rpath + rpath->path.offset, path, strlen(path));
+	memcpy((void*)rpath + rpath->path.offset, path, strlen(path));
+	((char*)rpath)[rpath->cmdsize - 1] = '\0';
 	header->ncmds++;
 	header->sizeofcmds += rpath->cmdsize;
 }
@@ -48,7 +90,7 @@ void LCPatchAddRPath(const char* path, struct mach_header_64* header) {
 	insertRPathCommand("@loader_path", header);
 }
 
-void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool withGeode) {
+void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool withGeode, bool withANGLE) {
 	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
 
 	// Literally convert an executable to a dylib
@@ -65,7 +107,7 @@ void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool with
 		}
 	}
 
-	BOOL hasDylibCommand = NO, hasLoaderCommand = NO;
+	BOOL hasDylibCommand = NO, hasLoaderCommand = NO, hasANGLECommand = NO, hasRPathCommand = NO;
 	const char* tweakLoaderPath = "@loader_path/../../Tweaks/TweakLoader.dylib";
 	// const char* geodeLoaderPath = "@executable_path/Geode.ios.dylib";
 	const char* geodeLoaderPath = "@executable_path/EnterpriseLoader.dylib";
@@ -73,6 +115,11 @@ void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool with
 	struct load_command* command = (struct load_command*)imageHeaderPtr;
 	struct load_command* lcIDcmd;
 	struct dylib_command* lcLOADcmd;
+
+	const char* openGlesLoadCmd = "/System/Library/Frameworks/OpenGLES.framework/OpenGLES";
+	const char* ANGLELoadCmd = "@rpath/ANGLEGLKit.framework/ANGLEGLKit";
+	const char* rPathLoadCmd = "@executable_path/Frameworks";
+
 	for (int i = 0; i < header->ncmds; i++) {
 		if (command->cmd == LC_ID_DYLIB) {
 			lcIDcmd = command;
@@ -83,6 +130,18 @@ void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool with
 			if (!strncmp(dylibName, tweakLoaderPath, strlen(tweakLoaderPath))) {
 				lcLOADcmd = dylib;
 				hasLoaderCommand = YES;
+			}
+			if (!strncmp(dylibName, openGlesLoadCmd, strlen(openGlesLoadCmd))) {
+				hasANGLECommand = NO;
+			}
+			if (!strncmp(dylibName, ANGLELoadCmd, strlen(ANGLELoadCmd))) {
+				hasANGLECommand = YES;
+			}
+		} else if (command->cmd == LC_RPATH) {
+			struct rpath_command* rpath = (struct rpath_command*)command;
+			char* rpathName = (void*)rpath + rpath->path.offset;
+			if (!strncmp(rpathName, rPathLoadCmd, strlen(rPathLoadCmd))) {
+				hasRPathCommand = YES;
 			}
 		}
 		command = (struct load_command*)((void*)command + command->cmdsize);
@@ -124,6 +183,14 @@ void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool with
 		}
 		if (!hasLoaderCommand) {
 			insertDylibCommand(LC_LOAD_DYLIB, tweakLoaderPath, header);
+		}
+	}
+	if (withANGLE) {
+		if (!hasANGLECommand) {
+			replaceDylibPath(header, openGlesLoadCmd, ANGLELoadCmd);
+		}
+		if (!hasRPathCommand) {
+			insertRPathCommand(rPathLoadCmd, header);
 		}
 	}
 
