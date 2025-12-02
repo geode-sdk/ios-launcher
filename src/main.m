@@ -144,8 +144,9 @@ void UIAGuestHooksInit();
 @end
 
 static BOOL checkJITEnabled() {
-	if (access("/Users", R_OK) == 0)
-		return YES;
+#if TARGET_OS_MACCATALYST || TARGET_OS_SIMULATOR
+	return YES;
+#else
 	if ([gcUserDefaults boolForKey:@"JITLESS"])
 		return NO;
 	// check if jailbroken
@@ -157,6 +158,7 @@ static BOOL checkJITEnabled() {
 	int flags;
 	csops(getpid(), 0, &flags, sizeof(flags));
 	return (flags & CS_DEBUGGED) != 0;
+#endif
 }
 
 static void overwriteMainCFBundle() {
@@ -229,6 +231,9 @@ int hook__NSGetExecutablePath_overwriteExecPath(char*** dyldApiInstancePtr, char
 		assert(tpro_ret);
 	}
 	*mainExecutablePathPtr = newPath;
+	if (ret != KERN_SUCCESS) {
+		os_thread_self_restrict_tpro_to_ro();
+	}
 
 	return 0;
 }
@@ -400,10 +405,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 				NSString* target = [NSBundle.mainBundle.privateFrameworksPath stringByAppendingPathComponent:@"CAHighFPS.dylib"];
 				symlink(target.UTF8String, caHighFPSPath.UTF8String);
 			}
-		} else {
-			if ([fm fileExistsAtPath:caHighFPSPath]) {
-				[fm removeItemAtPath:caHighFPSPath error:nil];
-			}
+			setenv("ANGLEGLKit", "1", 1);
 		}
 	} else {
 		AppLog(@"[invokeAppMain] Couldn't find tweak folder!");
@@ -778,7 +780,7 @@ int GeodeMain(int argc, char* argv[]) {
 									} progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:NO];
 								}];
 							} else {
-								[gcUserDefaults setObject:@"No certificate found." forKey:@"error"];
+								[gcUserDefaults setObject:@"No certificate found. Please go to settings to import a certificate." forKey:@"error"];
 								successPatch = NO;
 								dispatch_group_leave(group);
 							}

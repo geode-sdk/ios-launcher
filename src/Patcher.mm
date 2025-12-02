@@ -590,11 +590,11 @@ for func in list:
 	NSError* error;
 	AppLog(@"Patching Binary...");
 	if (![Patcher loadTulipHook])
-		return completionHandler(NO, @"Couldn't load TulipHook");
+		return completionHandler(NO, @"Couldn't load TulipHook. Please ensure that whatever installer you used does not remove libraries/dylibs from bundle, and ensure that the installer you use signs TulipHook. View logs for more information. (If logs reference code signature invalid, the installer you used isn't signing libTuliphook.dylib)");
 	NSMutableData* data = [NSMutableData dataWithContentsOfURL:from options:0 error:&error];
 	if (!data || error) {
 		AppLog(@"Couldn't read binary: %@", error);
-		return completionHandler(NO, @"Couldn't read binary");
+		return completionHandler(NO, @"Couldn't read binary (You may have to reinstall Geode, backup the \"Data\" folder before doing so!)");
 	}
 	if (entitlements) {
 		NSString* execPath = to.path;

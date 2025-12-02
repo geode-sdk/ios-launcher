@@ -322,10 +322,6 @@ Class LCSharedUtilsClass = nil;
 	});
 }
 
-+ (NSURL*)archiveTweakedAltStoreWithError:(NSError**)error {
-	return nil;
-}
-
 #pragma mark - Extensions of LCUtils
 // ext
 + (NSUserDefaults*)appGroupUserDefault {

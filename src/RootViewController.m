@@ -628,7 +628,7 @@
 								  } progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
 							  }];
 						  } else {
-							  return completionHandler(NO, @"No certificate found.");
+							  return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
 						  }
 					  } else {
 						  completionHandler(NO, error);
@@ -669,7 +669,7 @@
 							} progressHandler:^(NSProgress* signProgress) {} forceSign:NO blockMainThread:YES];
 						  }];
 					  } else {
-						  return completionHandler(NO, @"No certificate found.");
+						  return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
 					  }
 				} else {
 					completionHandler(NO, error);
@@ -736,7 +736,7 @@
 								  } progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
 							  }];
 						  } else {
-							  return completionHandler(NO, @"No certificate found.");
+							  return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
 						  }
 					  } else {
 						  completionHandler(NO, error);
@@ -782,7 +782,7 @@
 							} progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
 						}];
 					} else {
-						return completionHandler(NO, @"No certificate found.");
+						return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
 					}
 				} else {
 					completionHandler(NO, error);

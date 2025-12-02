@@ -28,7 +28,6 @@ void refreshFile(NSString* execPath);
 @interface LCUtils : NSObject
 
 + (void)validateJITLessSetup:(void (^)(BOOL success, NSError* error))completionHandler;
-+ (NSURL*)archiveTweakedAltStoreWithError:(NSError**)error;
 + (NSData*)certificateData;
 + (NSString*)certificatePassword;
 

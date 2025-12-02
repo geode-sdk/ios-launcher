@@ -1612,7 +1612,7 @@
 	case 20:
 		if ([sender isOn]) {
 			if ([UIScreen mainScreen].maximumFramesPerSecond <= 60) {
-				[Utils showError:self title:@"Your device does not support refresh rates above 60 Hz (ProMotion)! You must own a Pro device (for example, iPhone 15 Pro) or another device that supports >60 Hz.\n\nIf you've enabled \"Limit Frame Rate\", disable it by opening the Settings app and navigating to Accessibility -> Motion -> turn off Limit Frame Rate. If that option isn't available, your device doesn't support ProMotion." error:nil];
+				[Utils showError:self title:@"Your device does not support refresh rates above 60 Hz (ProMotion)! You must own a Pro device (anything that is iPhone 13 Pro or higher. iPhone 12 Pro does not have ProMotion) or another device that supports >60 Hz.\n\nIf you've enabled \"Limit Frame Rate\", disable it by opening the Settings app and navigating to Accessibility -> Motion -> turn off Limit Frame Rate. If that option isn't available, your device doesn't support ProMotion." error:nil];
 				[self.tableView reloadData];
 				return;
 			}

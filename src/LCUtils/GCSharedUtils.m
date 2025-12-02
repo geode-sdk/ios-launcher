@@ -125,7 +125,7 @@ extern NSBundle* gcMainBundle;
 			}];
 		}];
 	} else {
-		return completionHandler(NO, @"No certificate found.");
+		return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
 	}
 }
 
@@ -252,7 +252,8 @@ extern NSBundle* gcMainBundle;
 		}
 	} else if ((jitEnabler == 0 && [application canOpenURL:[NSURL URLWithString:@"sidestore://"]]) || jitEnabler == 5) {
 		urlScheme = @"sidestore://sidejit-enable?bid=%@";
-	} else {
+	}
+	if (!urlScheme) {
 		tries = 2;
 		urlScheme = [NSString stringWithFormat:@"%@://geode-relaunch", gcAppUrlScheme];
 	}
