@@ -220,10 +220,10 @@ BOOL canAppOpenItself(NSURL* url) {
 }
 
 - (void)hook__connectUISceneFromFBSScene:(id)scene transitionContext:(UIApplicationSceneTransitionContext*)context {
-    if (access("/Users", F_OK) != 0) {
-        context.payload = nil;
-        context.actions = nil;
-    }
+#if !TARGET_OS_MACCATALYST
+    context.payload = nil;
+    context.actions = nil;
+#endif
     [self hook__connectUISceneFromFBSScene:scene transitionContext:context];
 }
 
@@ -403,23 +403,16 @@ BOOL canAppOpenItself(NSURL* url) {
     
     CGRect constrainedFrame;
     
-    // if (screenAspectRatio > targetAspectRatio) {
-    //     CGFloat newWidth = screenBounds.size.height * targetAspectRatio;
-    //     CGFloat xOffset = (screenBounds.size.width - newWidth) / 2.0;
-    //     constrainedFrame = CGRectMake(xOffset, 0, newWidth, screenBounds.size.height);
-    // } else {
-    //     CGFloat newHeight = screenBounds.size.width / targetAspectRatio;
-    //     CGFloat yOffset = (screenBounds.size.height - newHeight) / 2.0;
-    //     constrainedFrame = CGRectMake(0, yOffset, screenBounds.size.width, newHeight);
-    // }
-    
+    UIWindow *window = [UIApplication sharedApplication].windows.firstObject;
+    window.backgroundColor = [UIColor blackColor];
     // yeah i quickly realized this after taking too many screenshots
-    for (UIView *subview in [self.view.superview.subviews copy]) {
+    for (UIView *subview in [window.subviews copy]) {
         // no memory leak!!
         if (subview.tag == 6969) {
             [subview removeFromSuperview];
         }
     }
+    if (!window) return;
     if (screenAspectRatio > targetAspectRatio) {
         // too wide
         CGFloat newWidth = screenBounds.size.height * targetAspectRatio;
@@ -429,13 +422,15 @@ BOOL canAppOpenItself(NSURL* url) {
         UIView *leftBox = [[UIView alloc] initWithFrame:CGRectMake(0, 0, xOffset, screenBounds.size.height)];
         leftBox.backgroundColor = [UIColor blackColor];
         leftBox.tag = 6969;
+        leftBox.userInteractionEnabled = NO;
 
         UIView *rightBox = [[UIView alloc] initWithFrame:CGRectMake(xOffset + newWidth, 0, xOffset, screenBounds.size.height)];
         rightBox.backgroundColor = [UIColor blackColor]; 
         rightBox.tag = 6969;
+        rightBox.userInteractionEnabled = NO;
 
-        [self.view.superview addSubview:leftBox];
-        [self.view.superview addSubview:rightBox];
+        [window addSubview:leftBox];
+        [window addSubview:rightBox];
     } else {
         CGFloat newHeight = screenBounds.size.width / targetAspectRatio;
         CGFloat yOffset = (screenBounds.size.height - newHeight) / 2.0;
@@ -444,13 +439,15 @@ BOOL canAppOpenItself(NSURL* url) {
         UIView *topBox = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenBounds.size.width, yOffset)];
         topBox.backgroundColor = [UIColor blackColor];
         topBox.tag = 6969;
+        topBox.userInteractionEnabled = NO;
 
         UIView *bottomBox = [[UIView alloc] initWithFrame:CGRectMake(0, yOffset + newHeight, screenBounds.size.width, yOffset)];
         bottomBox.backgroundColor = [UIColor blackColor];
         bottomBox.tag = 6969;
+        bottomBox.userInteractionEnabled = NO;
 
-        [self.view.superview addSubview:topBox];
-        [self.view.superview addSubview:bottomBox];
+        [window addSubview:topBox];
+        [window addSubview:bottomBox];
     }
     self.view.frame = constrainedFrame;
     self.view.clipsToBounds = YES;
