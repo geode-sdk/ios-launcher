@@ -89,6 +89,9 @@ extern NSBundle* gcMainBundle;
 			NSString* passLC = [NSString stringWithContentsOfURL:[[LCPath realLCDocPath] URLByAppendingPathComponent:@"pass"] encoding:NSUTF8StringEncoding error:nil];
 			if (passLC != nil)
 				return passLC;
+			NSString* passLC2 = [NSString stringWithContentsOfURL:[[LCPath realLCDocPath] URLByAppendingPathComponent:@"pass.txt"] encoding:NSUTF8StringEncoding error:nil];
+			if (passLC2 != nil)
+				return passLC2;
 		}
 		return [[[NSUserDefaults alloc] initWithSuiteName:[self appGroupID]] objectForKey:@"LCCertificatePassword"];
 	}

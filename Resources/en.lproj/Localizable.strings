@@ -165,7 +165,7 @@
 "jitless.certstatus.invalid" = "Invalid / Revoked";
 "jitless.certstatus.notimport" = "Not Imported";
 "jitless.cert.readerror" = "Couldn't read certificate.";
-"jitless.cert.invalidcert" = "Couldn't validate certificate. Please ensure the password is correct, the certificate was used to sign this app, and that the certificate is not revoked.";
+"jitless.cert.invalidcert" = "Couldn't validate certificate. Please ensure the password is correct, the certificate was used to sign this app, and that the certificate is not revoked.\nIf you enabled an option to remove the mobile provision file, please disable it and resign the app, or copy it to the Documents folder for Geode as \"embedded.mobileprovision\".";
 "jitless.cert.dev-cert.unused" = "Certificate Imported! However, Geode will not work as it was signed without the \"get-task-allow\" entitlement. You must use a Development Certificate, or Geode will not load.";
 "jitless.cert.dev-cert" = "Application signed without the \"get-task-allow\" entitlement. You must use a Development Certificate with that entitlement for Geode. Use the \"Enterprise Mode\" if you want to still use Geode without a Development Certificate.\nYou can verify if Geode was signed with the entitlement by seeing if it's visible in an app like StikDebug.";
 "jitless.cert.success" = "Certificate Imported! Be sure to run the JIT-Less test first to ensure it works!";
