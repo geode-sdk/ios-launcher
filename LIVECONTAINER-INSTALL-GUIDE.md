@@ -12,7 +12,7 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 # JIT Only
 ## Prerequisites
 - LiveContainer
-- A **JIT enabler** (e.g. StikDebug)
+- A **JIT enabler** (e.g. [StikDebug](https://apps.apple.com/us/app/stikdebug/id6744045754))
 - An internet connection
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
 
