@@ -15,3 +15,6 @@ To get started, choose an installation guide for your iOS version from the table
 | [JIT-Less](/JITLESS-INSTALL-GUIDE.md)             | iOS 14 and higher (mainly for iOS 26)      | Depends (Installing SideStore requires a computer, therefore the SideStore method requires a computer)| Medium            | Depends (An Apple developer certificate is paid) |
 | [Enterprise Certificate](ENTERPRISE-INSTALL-GUIDE.md) ("free certificates") | iOS 14 and higher                           | No                                                         | Medium            | Free                                                |
 | [LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md) (recommended for SideStore if you want to bypass the 3 active app limit and 10 App ID limit on SideStore) | iOS 14 and higher | Yes (SideStore requires a computer) | High (with JIT) or Medium (with JIT-Less) | Free |
+
+In case you do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
+![](screenshots/geode_path.png)
