@@ -142,7 +142,7 @@ extern NSBundle* gcMainBundle;
 		[fm createFileAtPath:[[LCPath docPath].path stringByAppendingPathComponent:@"../../../../jitflag"] contents:[[NSData alloc] init] attributes:@{}];
 		//UIApplication* application = [NSClassFromString(@"UIApplication") sharedApplication];
 		// assume livecontainer
-		NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"livecontainer://livecontainer-launch?bundle-name=%@.app", gcMainBundle.bundleIdentifier]];
+		NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=%@.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)], gcMainBundle.bundleIdentifier]];
 		//NSURL* launchURL2 = [NSURL URLWithString:[NSString stringWithFormat:@"livecontainer2://livecontainer-launch?bundle-name=%@.app", gcMainBundle.bundleIdentifier]];
 		AppLog(@"Attempting to launch geode with %@", launchURL);
 		if ([gcUserDefaults boolForKey:@"JITLESS"] || [gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
@@ -262,10 +262,15 @@ extern NSBundle* gcMainBundle;
 	}
 	if (NSClassFromString(@"LCSharedUtils")) {
 		tries = 2;
-		// but... what about if the user installs multiple geode!?!?!?! sorry... ill deal with that later!
-		urlScheme = @"livecontainer://livecontainer-launch?bundle-name=com.geode.launcher.app";
+		urlScheme = [NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=%@", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)], [[NSBundle mainBundle] bundlePath].lastPathComponent];
 		if (![application canOpenURL:[NSURL URLWithString:urlScheme]]) {
-			urlScheme = @"livecontainer2://livecontainer-launch?bundle-name=com.geode.launcher.app";
+			urlScheme = [NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=com.geode.launcher.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)]];
+			if (![application canOpenURL:[NSURL URLWithString:urlScheme]]) {
+				urlScheme = @"livecontainer://livecontainer-launch?bundle-name=com.geode.launcher.app";
+				if (![application canOpenURL:[NSURL URLWithString:urlScheme]]) {
+					urlScheme = @"livecontainer2://livecontainer-launch?bundle-name=com.geode.launcher.app";
+				}
+			}
 		}
 	}
 	NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:urlScheme, gcMainBundle.bundleIdentifier]];

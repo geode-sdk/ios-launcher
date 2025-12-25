@@ -401,13 +401,11 @@ Class LCSharedUtilsClass = nil;
 		completion([NSError errorWithDomain:@"InvalidTweakFolder" code:0 userInfo:nil]);
 		return;
 	}
-
 	NSMutableDictionary* tweakSignInfo = [NSMutableDictionary dictionaryWithContentsOfURL:[tweakFolderUrl URLByAppendingPathComponent:@"TweakInfo.plist"]];
 	BOOL signNeeded = force;
 	if (!force) {
 		NSMutableDictionary* tweakFileINodeRecord = [NSMutableDictionary dictionaryWithDictionary:[tweakSignInfo objectForKey:@"files"]];
 		NSArray* fileURLs = [fm contentsOfDirectoryAtURL:tweakFolderUrl includingPropertiesForKeys:nil options:0 error:nil];
-
 		for (NSURL* fileURL in fileURLs) {
 			NSError* error = nil;
 			NSDictionary* attributes = [fm attributesOfItemAtPath:fileURL.path error:&error];
