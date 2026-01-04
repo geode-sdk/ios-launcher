@@ -1,4 +1,4 @@
-# Installation Guide (Enterprise Certificates)
+# Installation Guide (Free aka Enterprise Certificates)
 > [!IMPORTANT]
 > While this guide will teach you how to enable and use certificates without entitlements on Geode, it is still recommended to buy a Developer Certificate if you can, and follow the [JIT-Less guide](./JITLESS-INSTALL-GUIDE.md), as this method is not endorsed or recommended.
 > This is because this method is time consuming, tedious, and slow for using Geode, as it will require you to install a patched Geometry Dash ("Geode Helper") each time you want to install a mod, update a mod, enable a mod, disable a mod, update Geode, and launch in safe mode.

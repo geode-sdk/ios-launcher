@@ -8,13 +8,12 @@ This page **will help you install Geode on your iDevice**. Unlike other platform
 
 To get started, choose an installation guide for your iOS version from the table:
 
-| Method                         | Supported iOS Versions                      | Requires Computer                                          | Mod Compatibility | Price                                               |
-|--------------------------------|----------------------------------------------|------------------------------------------------------------|-------------------|-----------------------------------------------------|
-| [TrollStore](/OLD-IOS-INSTALL.md) (or TrollStore Lite with/without the Geode jailbreak tweak if the device is jailbroken, TrollStore Lite and the jailbreak tweak is listed in this installation guide)     | iOS 14.0 – 17.0 (excluding iOS 16.7.x and iOS 17.0.x)                       | Depends (iOS 17.0 requires a computer)                     | High              | Free                                                |
-| [SideStore](/MODERN-IOS-INSTALL.md) (or Paid Certificate if you have a PC and below iOS 26)                      | iOS 16 to 17.4 and higher    | Yes                                                        | High (with JIT) or Medium (with JIT-Less)              | Free                                                |
-| [JIT-Less](/JITLESS-INSTALL-GUIDE.md)             | iOS 14 and higher (mainly for iOS 26)      | Depends (Installing SideStore requires a computer, therefore the SideStore method requires a computer)| Medium            | Depends (An Apple developer certificate is paid) |
-| [Enterprise Certificate](ENTERPRISE-INSTALL-GUIDE.md) ("free certificates") | iOS 14 and higher                           | No                                                         | Medium            | Free                                                |
-| [LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md) (recommended for SideStore if you want to bypass the 3 active app limit and 10 App ID limit on SideStore) | iOS 14 and higher | Yes (SideStore requires a computer) | High (with JIT) or Medium (with JIT-Less) | Free |
+| Method | Supported iOS | Computer Required | Mod Compatibility | Price |
+| ------ | ------------- | ----------------- | ----------------- | ----- |
+| [TrollStore (and optionally Jailbreak)](/OLD-IOS-INSTALL.md) | iOS 14–16.6.1 | No* | High (Native) | Free |
+| [SideStore](/MODERN-IOS-INSTALL.md) | iOS 14+ | First-time setup only | High (JIT) / Medium (JIT-less) | Free |
+| [Apple Developer Certificate](/APPLE-DEV-CERT-INSTALL-GUIDE.md) | iOS 14+ | Depends (JIT requires computer, JIT-less does not) | High (with JIT), Medium (with JIT-less) | Paid |
+| [Free Certificates](/ENTERPRISE-INSTALL-GUIDE.md) | iOS 14+ | No | Medium | Free |
 
 In case you do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
 ![](screenshots/geode_path.png)
