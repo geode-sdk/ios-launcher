@@ -29,10 +29,10 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 
 After these steps:
 
-4. Open Geode
-5. Press **"Verify Geometry Dash"**
-6. Press **"Download"**
-7. Press **"Launch"**
+3. Open Geode
+4. Press **"Verify Geometry Dash"**
+5. Press **"Download"**
+6. Press **"Launch"**
 
 # With JIT-Less
 ## Prerequisites
