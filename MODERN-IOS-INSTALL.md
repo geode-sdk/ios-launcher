@@ -67,7 +67,7 @@ Here you have 2 options:
 4. Connect to LocalDevVPN.
 5. Launch StikDebug.
 6. Now you should be set! Simply tap on **Connect by App** to enable JIT on Geode.
-![](screenshots/stikdebug.png)
+![](screenshots/stikdebug-updated.png)
 
 > [!WARNING]
 > Since LocalDevVPN only works on Wi-Fi and Airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
