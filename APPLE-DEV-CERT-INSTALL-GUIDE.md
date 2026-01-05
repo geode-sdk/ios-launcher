@@ -28,7 +28,7 @@ This guide will teach you how to install Geode using an Apple Developer Certific
 5. Connect to LocalDevVPN.
 6. Now you should be set! Simply tap on **Connect by App** in StikDebug to enable JIT on Geode.
 
- [!WARNING]
+> [!WARNING]
 > Since LocalDevVPN only works on Wi-Fi and airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
 
 1. Enable cellular.
