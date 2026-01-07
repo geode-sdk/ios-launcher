@@ -7,7 +7,7 @@
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 16 to 17.4 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
+| iOS 14 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
 
 ## Prerequisites
 - PC (Windows, Mac, Linux)
@@ -75,6 +75,14 @@ After going through the setup process, you may have seen the warning that **Just
 ![](screenshots/stikdebug.png)
 > [!TIP]
 > StikDebug works without Wi-Fi connection, just by Airplane Mode. Unfortunately, this on-device VPN does not support cellular. However, you can use cellular data after launching an app with JIT.
+
+## Installing SideJITServer (17.0.1 - 17.3.1)
+
+Follow the instructions as listed here
+https://github.com/nythepegasus/SideJITServer
+
+You will need to be nearby your computer to use this, StikDebug does not and will never work on 17.0.1 - 17.3.1
+
 
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
