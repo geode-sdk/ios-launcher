@@ -7,7 +7,7 @@
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
+| iOS 15 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
 
 ## Prerequisites
 - PC (Windows, Mac, Linux)
