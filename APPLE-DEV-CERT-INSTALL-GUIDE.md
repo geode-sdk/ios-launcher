@@ -23,7 +23,7 @@ This guide will teach you how to install Geode using an Apple Developer Certific
 ## JIT Method
 1. Download the StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases).
 2. Install StikDebug using the installer of your choice (ESign, Feather, KSign, etc.). **Make sure to install StikDebug with the Developer certificate, not the Distribution certificate.**
-3. Install Geode with the installer of your choice.
+3. Install Geode using the installer of your choice (ESign, Feather, KSign, etc.). **Make sure to install Geode with the Developer certificate, not the Distribution certificate.**.
 4. Connect your device back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 5. Connect to LocalDevVPN.
 6. Now you should be set! Simply tap on **Connect by App** in StikDebug to enable JIT on Geode.
@@ -40,8 +40,8 @@ This guide will teach you how to install Geode using an Apple Developer Certific
 You will have to do this every time you want to launch Geode with JIT on cellular. As long as Geode stays open, you will not need to do these steps.
 
 ## JIT-Less Method
-1. Install Geode using the installer of your choice (ESign, Feather, KSign, etc.). **Make sure to install Geode with the Developer certificate, not the Distribution certificate.**.
-2. - Press **"Enable JIT-Less"**.
+1. Install Geode using the installer of your choice (ESign, Feather, KSign, etc.). **Make sure to install Geode with the Developer certificate, not the Distribution certificate**.
+2. Press **"Enable JIT-Less"**.
 3. Press **"Import Certificate Manually"**.
 4. Choose the **.p12** file of the certificate you used to sign the Geode launcher.
 5. Input the password of your certificate **(make sure to input the password correctly, or Geode will fail to do the signing process)**.
