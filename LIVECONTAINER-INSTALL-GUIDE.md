@@ -42,6 +42,9 @@ After these steps:
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
 
 ## Set Up LiveContainer for Geode (JIT-Less)
+> [!WARNING]
+> If you set Geode to be a shared app in LiveContainer, convert it to a private app. If you don't, Geode will not be able to detect the certificate.
+
 - Install Geode using LiveContainer.
 - Hold on the app and go to the Geode app settings in LiveContainer, then **enable these settings:**
 
