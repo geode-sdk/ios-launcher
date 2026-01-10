@@ -55,7 +55,7 @@ Here you have 2 options:
 # Launch Geode
 ## With JIT
 > [!TIP]
-> Skip this **if you're on iOS 16**. SideStore lets you enable JIT **directly from it**. To do so, go to the **My Apps** section in SideStore, hold Geode, and press **"Enable JIT"** (you need to have StosVPN enabled for this).
+> Skip this **if you're on iOS 16**. SideStore lets you enable JIT **directly from it**. To do so, go to the **My Apps** section in SideStore, hold Geode, and press **"Enable JIT"** (you need to have LocalDevVPN enabled for this).
 
 > [!NOTE]
 > For the first time setup, you will need a computer to get a pairing file. If you installed SideStore, you likely already have a pairing file, meaning there is no need to reinstall iDevice Pair.
