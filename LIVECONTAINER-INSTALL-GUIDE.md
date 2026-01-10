@@ -55,6 +55,7 @@ After these steps:
 - **Don't Load TweakLoader**
 
 After these steps:
+
 3. Tap on **"Settings"** on the bottom right.
 4. Tap **"Import Certificate from SideStore"**.
 5. On the popup in **SideStore**, hit **"Export"**.
