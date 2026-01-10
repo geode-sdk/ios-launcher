@@ -70,7 +70,7 @@ Here you have 2 options:
 ![](screenshots/stikdebug-updated.png)
 
 > [!WARNING]
-> Since LocalDevVPN only works on Wi-Fi and Airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
+> Since LocalDevVPN only works on Wi-Fi and airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
 
 1. Enable cellular.
 2. Connect to LocalDevVPN.
