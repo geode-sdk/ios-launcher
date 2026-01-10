@@ -43,10 +43,10 @@ After these steps:
 
 ## Set Up LiveContainer for Geode (JIT-Less)
 > [!WARNING]
-> If you set Geode to be a shared app in LiveContainer, convert it to a private app. If you don't, Geode will not be able to detect the certificate.
+> If you have set Geode as a shared app in LiveContainer, convert it to a private app. Otherwise, Geode will not be able to detect the certificate.
 
-- Install Geode using LiveContainer.
-- Hold on the app and go to the Geode app settings in LiveContainer, then **enable these settings:**
+1. Install Geode using LiveContainer.
+2. Hold on the app and go to the Geode app settings in LiveContainer, then **enable these settings:**
 
 - **Fix File Picker**
 - **Fix Local Notification**
@@ -55,21 +55,21 @@ After these steps:
 - **Don't Load TweakLoader**
 
 After these steps:
-1. Tap on **"Settings"** on the bottom right.
-2. Tap **"Import Certificate from SideStore"**.
-3. On the popup in **SideStore**, hit **"Export"**.
-4. Get back to LiveContainer and scroll down until you see the version of LiveContainer.
-5. Tap on the version text 5 times.
-6. Scroll down and tap **"Export Cert"** then return to **"Apps"** in the bottom left.
+3. Tap on **"Settings"** on the bottom right.
+4. Tap **"Import Certificate from SideStore"**.
+5. On the popup in **SideStore**, hit **"Export"**.
+6. Get back to LiveContainer and scroll down until you see the version of LiveContainer.
+7. Tap on the version text 5 times.
+8. Scroll down and tap **"Export Cert"** then return to **"Apps"** in the bottom left.
 
 ![](./screenshots/livecontainer-jitless.png)
 
 Finally, the last steps are:
 
-7. Open Geode.
-8. Press **"Verify Geometry Dash"**.
-9. Press **"Download"**.
-10. Open Settings.
-11. Make sure **Enable JIT-Less** is on.
-12. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
-13. Exit settings & press **"Launch"**.
+9. Open Geode.
+10. Press **"Verify Geometry Dash"**.
+11. Press **"Download"**.
+12. Open Settings.
+13. Make sure **Enable JIT-Less** is on.
+14. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
+15. Exit settings & press **"Launch"**.
