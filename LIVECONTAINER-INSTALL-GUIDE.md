@@ -17,7 +17,7 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 - An internet connection
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
 
-## Set Up LiveContainer for Geode
+## Set Up LiveContainer for Geode (JIT)
 1. Install Geode using LiveContainer.
 2. Hold on the app and go to the Geode app settings in LiveContainer, then **enable these settings:**
 
@@ -41,7 +41,7 @@ After these steps:
 - An internet connection
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
 
-## Set Up LiveContainer for Geode
+## Set Up LiveContainer for Geode (JIT-Less)
 - Install Geode using LiveContainer.
 - Hold on the app and go to the Geode app settings in LiveContainer, then **enable these settings:**
 
