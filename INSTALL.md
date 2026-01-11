@@ -12,7 +12,7 @@ To get started, choose an installation guide for your iOS version from the table
 | ------ | ------------- | ----------------- | ----------------- | ----- |
 | [TrollStore (and optionally Jailbreak)](/OLD-IOS-INSTALL.md) | iOS 14–16.6.1 | No* | High (Native) | Free |
 | [SideStore](/MODERN-IOS-INSTALL.md) | iOS 14+ | First-time setup only | High (JIT) / Medium (JIT-less) | Free |
-| [Apple Developer Certificate](/APPLE-DEV-CERT-INSTALL-GUIDE.md) | iOS 14+ | Depends (JIT requires computer, JIT-less does not) | High (with JIT), Medium (with JIT-less) | Paid |
+| [Apple Developer Certificate](/APPLE-DEV-CERT-INSTALL-GUIDE.md) | iOS 14+ | No* | High (with JIT), Medium (with JIT-less) | Paid |
 | [Free Certificates](/ENTERPRISE-INSTALL-GUIDE.md) | iOS 14+ | No | Medium | Free |
 
 In case you do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
