@@ -60,7 +60,7 @@ Here you have 2 options:
 > [!NOTE]
 > For the first time setup, you will need a computer to get a pairing file. If you installed SideStore, you likely already have a pairing file, meaning there is no need to reinstall iDevice Pair.
 
-#### Installing StikDebug
+### Installing StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases).
 2. Install StikDebug from SideStore.
 3. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
@@ -80,7 +80,7 @@ Here you have 2 options:
 
 You will have to do this every time you want to launch Geode with JIT on cellular. As long as Geode stays open, you will not need to do these steps.
 
-# With JIT-Less
+## With JIT-Less
 1. Press **"Enable JIT-Less"**.
 2. Press **"Import SideStore Certificate"**.
 3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
