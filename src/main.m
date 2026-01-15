@@ -45,6 +45,7 @@ NSDictionary* guestAppInfo;
 BOOL usingLiveContainer;
 
 void NUDGuestHooksInit();
+void SecItemGuestHooksInit();
 bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** origFunction, void* hookFunction) {
 	uint32_t* baseAddr = dlsym(RTLD_DEFAULT, functionName);
 	assert(baseAddr != 0);
@@ -557,7 +558,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 	AppLog(@"[invokeAppMain] Init guest hooks...");
 	// hook NSUserDefault before running libraries' initializers
 	NUDGuestHooksInit();
-	// SecItemGuestHooksInit();
+	SecItemGuestHooksInit();
 	// NSFMGuestHooksInit();
 	// initDead10ccFix();
 	//  UIAGuestHooksInit();
