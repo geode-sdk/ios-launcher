@@ -2,8 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- NOTICE, when signing, replace the AAAAA11111 with your team id if this is causing you problems with keychain -->
 	<key>application-identifier</key>
-	<string>com.geode.launcher</string>
+	<string>AAAAA11111.com.geode.launcher</string>
+	<key>com.apple.developer.team-identifier</key>
+	<string>AAAAA11111</string>
 	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
 	<true/>
 	<key>com.apple.developer.kernel.increased-memory-limit</key>
@@ -11,12 +14,16 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.SideStore.SideStore</string>
-        <string>group.com.rileytestut.AltStore</string>
+		<string>group.com.rileytestut.AltStore</string>
 	</array>
 	<key>get-task-allow</key>
 	<true/>
-    <key>com.apple.private.MobileContainerManager.allowed</key>
-    <true/>
+	<key>com.apple.private.MobileContainerManager.allowed</key>
+	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>AAAAA11111.com.geode.launcher.shared</string>
+    </array>
     <!-- TODO: figure out another entitlement than this, because this just breaks JIT -->
     <!--<key>com.apple.security.exception.files.absolute-path.read-write</key>
     <array>
