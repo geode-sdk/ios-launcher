@@ -2,6 +2,7 @@
 
 > [!WARNING]
 > For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, **JIT** is a **__requirement__** to run Geode.
+One more thing, as of 27th Dec 2026 you **can't** download StikDebug from the App Store. If you haven't paid for a developer account you will use **all** your 3 apps in this guide.
 > \
 > This guide assumes you will be installing SideStore. Using enterprise certificates to install SideStore **will not work**, as the usage of a PC is required to sideload SideStore.
 
@@ -65,14 +66,18 @@ After going through the setup process, you may have seen the warning that **Just
 2. Run the program with your iOS device connected to your computer. It will save a file to your computer.
 3. Use iCloud, AirDrop, [LocalSend](https://localsend.org), or a website such as [Pairdrop](https://pairdrop.net/) to upload the pairing file to your iOS device.
 
-#### Downloading StikDebug
-1. Download StikDebug from the App Store: https://apps.apple.com/us/app/stikdebug/id6744045754
+#### Downloading StikDebug and LocalDevVPN
+1. Download LocalDevVPN from the App Store: https://apps.apple.com/us/app/stikdebug/id6744045754
 2. Launch the app
-3. It'll ask you to add "StikDebug" as a VPN Configuration. Click "Allow" and enter your passcode to add it.
-4. Go back to StikDebug and click on "Select Pairing File". You actually will need **WiFi connection** on your phone for it to download DDI.
-5. After DDI is mounted you won't need WiFi. Now you can go back to Geode and click on **Launch**.
-6. Geode will now launch in Geometry Dash.
-![](screenshots/stikdebug.png)
+3. It'll ask you to add "LocalDevVPN" as a VPN Configuration. Click "Allow" and enter your passcode to add it.
+4. Install StikDebug from [the GitHub Repo](https://github.com/StephenDev0/StikDebug) with SideStore.
+6. Go into StikDebug and click on "Select Pairing File". You actually will need **WiFi connection** on your phone for it to download DDI. After DDI is mounted you won't need WiFi.
+7. Click **Connect by App** then hold down on Geode, then click **Assign Script** and finally click the pre-included **Geode.js** script.
+8. Leave StikDebug and LocalDevVPN open, and open Geode, then press Launch.
+9. Geode will now launch in Geometry Dash. A PiP (Picture in Picture) window will open. Simply swipe this out the way to the side. (The side without the notch or dynamic island)
+> [!NOTE]
+> Image temporarily removed until an updated version is made.
+
 > [!TIP]
 > StikDebug works without Wi-Fi connection, just by Airplane Mode. Unfortunately, this on-device VPN does not support cellular. However, you can use cellular data after launching an app with JIT.
 
