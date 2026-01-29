@@ -14,6 +14,10 @@ To get started, choose an installation guide for your iOS version from the table
 | [SideStore](/MODERN-IOS-INSTALL.md) | iOS 14+ | First-time setup only | High (JIT) / Medium (JIT-less) | Free |
 | [Apple Developer Certificate](/APPLE-DEV-CERT-INSTALL-GUIDE.md) | iOS 14+ | No* | High (with JIT), Medium (with JIT-less) | Paid |
 | [Free Certificates](/ENTERPRISE-INSTALL-GUIDE.md) | iOS 14+ | No | Medium | Free |
+| [LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md) | iOS 15+ | Yes* | High (with JIT), Medium (with JIT-less) | Free |
+
+> [!NOTE]
+> Apple Developer Certificate method only requires a computer if you want to enable JIT. LiveContainer indirectly requires a computer as LiveContainer itself has to be sideloaded through SideStore
 
 In case you do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
 ![](screenshots/geode_path.png)
