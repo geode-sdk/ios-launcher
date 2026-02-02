@@ -2,7 +2,7 @@
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14.0 to 17.0 (Excluding iOS 16.7.x and 17.0.x) | On iOS 17.0 | *High* | Free |
+| iOS 14.0 to 17.0 (Excluding iOS 16.7.x and 17.0.x) | On iOS 17.0 | *Full* | Free |
 
 This guide is for devices that are compatible with TrollStore (and optionally a jailbreak)
 
