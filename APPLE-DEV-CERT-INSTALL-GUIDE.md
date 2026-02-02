@@ -1,7 +1,14 @@
 # Installing Geode (Apple Developer Certificate)
 This guide will teach you how to install Geode using an Apple Developer Certificate, and how to launch Geode depending on which method you choose (JIT, JIT-Less).
 
+| Supported on | Requires Computer? | Mod Compatibility | Price |
+|--------------|--------------------|-------------------|-------|
+| iOS 14 and above | No* | *Medium* to *High* (*Medium* on JIT-Less) | Free |
+
 # Prerequisites
+> [!NOTE]
+> JIT method will require the use of a computer to set up the JIT enabler. JIT-less method will not require a computer and can be done on device.
+
 ## With JIT
 - An Apple developer certificate
 - A computer running Windows, macOS or Linux

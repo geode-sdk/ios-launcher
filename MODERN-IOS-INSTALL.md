@@ -1,9 +1,9 @@
 # Installation Guide (SideStore)
 
 > [!WARNING]
-> For this installation guide, it is **required** to have a computer with Administrator access, as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, **JIT** is a **__requirement__** to run Geode.
+> For this installation guide, it is **required** to have a computer with Administrator access (if you are on Windows), as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, **JIT** is a **__requirement__** to run Geode.
 > \
-> This guide assumes you will be installing SideStore. Using enterprise certificates to install SideStore **will not work**, as the usage of a PC is required to sideload SideStore.
+> This guide assumes you will be installing SideStore. Using enterprise (aka free) certificates to install SideStore **will not work**, as the use of a computer is required to install SideStore.
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|

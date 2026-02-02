@@ -2,7 +2,7 @@
 
 | Supported on | Requires Computer? | Mod Compatibility | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14.0 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
+| iOS 15 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
 
 This tutorial is for people that use LiveContainer to bypass Apple's 3 active app and 10 app ID limit.
 
@@ -11,7 +11,7 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 
 # With JIT
 ## Prerequisites
-- LiveContainer
+- Nightly version of [LiveContainer](https://github.com/LiveContainer/LiveContainer/releases/tag/nightly)
 - A **JIT enabler** (e.g. [StikDebug](https://github.com/StephenDev0/StikDebug/releases), has to be installed through SideStore)
 - [LocalDevVPN](https://apps.apple.com/us/app/localdevvpn/id6755608044) if you are going to use StikDebug
 - An internet connection
@@ -36,7 +36,7 @@ After these steps:
 
 # With JIT-Less
 ## Prerequisites
-- LiveContainer (Latest)
+- Nightly version of [LiveContainer](https://github.com/LiveContainer/LiveContainer/releases/tag/nightly)
 - Confirming JIT-less works on LiveContainer
 - An internet connection
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)

@@ -7,7 +7,7 @@
 This guide is for devices that are compatible with TrollStore (and optionally a jailbreak)
 
 > [!TIP]
-> On devices below iOS 17.0, you can use free certificates to get any installer you will use to install TrollStore. You will not need them after installing TrollStore, as TrollStore permanently signs apps. iOS 17.0 requires the usage of a computer to install TrollStore.
+> On devices below iOS 17.0, you can use enterprise (aka free) certificates to get any installer you will use to install TrollStore. You will not need the free certificates after installing TrollStore, and you should get rid of them after installing TrollStore; as TrollStore permanently signs apps. iOS 17.0 requires the use of a computer to install TrollStore.
 
 ## Prerequisites
 
