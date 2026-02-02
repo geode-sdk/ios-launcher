@@ -28,6 +28,8 @@ This page **will help you install Geode on your iDevice**. Unlike other platform
 > [!NOTE]
 > Methods that say **"can go up to full support"** mean the method provides **partial mod support by default (JIT-less)**, but can be extended to **full mod support (JIT)**. Full mod support **always requires a computer to set up**.
 > \
+> Don't worry, your favorite mods like **CBF, Eclipse, Globed and more will work out of the box** on **partial mod support (JIT-less)**.
+> \
 > \
 > Methods that support the latest iOS versions **work on iOS 14 and above**, except **LiveContainer**, which requires **iOS 15 or later**.
 
