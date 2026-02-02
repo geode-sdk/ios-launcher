@@ -7,7 +7,7 @@ This page **will help you install Geode on your iDevice**. Unlike other platform
 > [!TIP]
 > If you **don't know the iOS version of your iDevice**, follow [this page from Apple](https://support.apple.com/en-us/109065) to check your iOS version.
 
-| Method | Supported iOS | Computer Required | Mod Compatibility | Price |
+| Method | Supported iOS | Computer Required | Mod Support | Price |
 | ------ | ------------- | ----------------- | ----------------- | ----- |
 | [TrollStore](/OLD-IOS-INSTALL.md) | iOS 14–17.0 (excluding 16.7.x+ & 17.0.x+) | No* | Full (Native JIT) | Free |
 | [SideStore](/MODERN-IOS-INSTALL.md) | iOS 14+ | First-time setup only | High (JIT) / Full (JIT-less) | Free |

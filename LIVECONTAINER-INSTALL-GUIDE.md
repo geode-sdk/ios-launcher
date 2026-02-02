@@ -1,6 +1,6 @@
 # Installation Guide (LiveContainer)
 
-| Supported on | Requires Computer? | Mod Compatibility | Price |
+| Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
 | iOS 15 and above | Yes | *Medium* to *High* (*Medium* on JIT-Less) | Free |
 

@@ -5,7 +5,7 @@
 > \
 > This guide assumes you will be installing SideStore. Using enterprise (aka free) certificates to install SideStore **will not work**, as the use of a computer is required to install SideStore.
 
-| Supported on | Requires Computer? | Mod Compatibility | Price |
+| Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
 | iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less) | Free |
 
