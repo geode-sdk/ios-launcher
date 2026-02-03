@@ -28,15 +28,16 @@ This page **will help you install Geode on your iDevice**. Unlike other platform
 > [!NOTE]
 > Methods that say **"can go up to full support"** mean the method provides **partial mod support by default (JIT-less)**, but can be extended to **full mod support (JIT)**. Full mod support **always requires a computer to set up**.
 > \
+> \
 > Don't worry, your favorite mods like **CBF, Eclipse, Globed and more will work out of the box** on **partial mod support (JIT-less)**.
 > \
 > \
-> Methods that support the latest iOS versions **work on iOS 14 and above**, except **LiveContainer**, which requires **iOS 15 or later**.
+> Methods that **support the latest iOS versions** work on **iOS 14 or above** (iOS 14 being the minimum version for the Geode launcher). The exception is **LiveContainer**, which requires **iOS 15 or above**.
 
 Here's a comparison of all methods for you to see which method is the most suitable for you:
 
 ## TrollStore
-🌟 If your device supports it, this is the best option to install Geode 🌟
+🌟 If your device supports it, this is THE best option to install Geode 🌟
 ### Pros
 - Full mod support
 - Easy to setup
@@ -71,20 +72,20 @@ Here's a comparison of all methods for you to see which method is the most suita
 - Requires computer **if you want full mod support** (setting it up with partial mod support can be on device, no computer required)
 
 ## Free Certificates
-❌ This is the worst way to install Geode, and should be avoided unless absolutely necessary (such as not having a computer, not being able to pay for a certificate and your device not supporting a great on device option like TrollStore) ❌
+❌ This is THE worst way to install Geode, and **should be avoided unless absolutely necessary** (such as not having a computer, not being able to pay for a certificate, or your device not supporting a great on-device option like TrollStore) ❌
 
 ### Pros
-- Partial mod support
 - Does not require a computer
 - Supports up to the latest version of iOS
 - Completely free to set up
 
 ### Cons
+- Cannot go up to full mod support (JIT-less only)
 - Takes a lot of storage, atleast 400 MB (as it involves installing a patched version of Geometry Dash)
 - Time consuming to set up and use (as it not only involves finding the right certificate to install Geode, but it also involves having to patch Geode everytime you install, update, enable or disable mods or update Geode itself)
 - Works unreliably, can run into issues
 - Geode might get revoked, causing it to crash when trying to open it
-- Violates Apple's Terms of Service (as you're using a leaked certificate that was most likely used previously by a company)
+- Violates Apple's Terms of Service (as you're using a leaked certificate that was previously used by a company)
 
 ## LiveContainer
 👍 If you have SideStore and don't want to waste an active app and app ID slot, this is the best way to install Geode 👍

@@ -1,5 +1,4 @@
 # Installation Guide (SideStore)
-
 > [!WARNING]
 > For this installation guide, it is **required** to have a computer with Administrator access (if you are on Windows), as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **JIT**. Additionally, **JIT** is a **__requirement__** to run Geode.
 > \
@@ -68,6 +67,10 @@ Here you have 2 options:
 5. Launch StikDebug.
 6. Now you should be set! Simply tap on **Connect by App** to enable JIT on Geode.
 ![](screenshots/stikdebug-updated.png)
+
+### Required Extra Steps for iOS 26
+1. Go to StikDebug settings
+2. Enable **Picture in Picture**, scroll down and see if your device is reported as **TXM** or **Non TXM**. If your device is reported as **Non TXM**, enable **Always Run Scripts**
 
 > [!WARNING]
 > Since LocalDevVPN only works on Wi-Fi and airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
