@@ -33,7 +33,11 @@ extern NSBundle* gcMainBundle;
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		void* taskSelf = SecTaskCreateFromSelf(NULL);
-		ans = SecTaskCopyTeamIdentifier(taskSelf, nil);
+		CFErrorRef error = NULL;
+		CFTypeRef cfans = SecTaskCopyValueForEntitlement(taskSelf, CFSTR("com.apple.developer.team-identifier"), &error);
+		if(CFGetTypeID(cfans) == CFStringGetTypeID()) {
+			ans = (__bridge NSString*)cfans;
+		}
 		CFRelease(taskSelf);
 		if (!ans)
 			ans = [[gcMainBundle.bundleIdentifier componentsSeparatedByString:@"."] lastObject];

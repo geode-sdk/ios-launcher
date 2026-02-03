@@ -86,5 +86,13 @@ You will have to do this every time you want to launch Geode with JIT on cellula
 3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
 4. Press **"Launch"**.
 
+## Installing SideJITServer (17.0.1 - 17.3.1)
+
+Follow the instructions as listed here
+https://github.com/nythepegasus/SideJITServer
+
+You will need to be nearby your computer to use this, StikDebug does not and will never work on 17.0.1 - 17.3.1
+
+
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
