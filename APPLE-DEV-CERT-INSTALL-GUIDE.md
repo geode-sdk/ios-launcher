@@ -53,3 +53,8 @@ You will have to do this every time you want to launch Geode with JIT on cellula
 4. Choose the **.p12** file of the certificate you used to sign the Geode launcher.
 5. Input the password of your certificate **(make sure to input the password correctly, or Geode will fail to do the signing process)**.
 6. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
+
+![](screenshots/jitless-cert.png)
+
+# Conclusion
+You should now be able to run Geometry Dash with Geode! You can install mods by tapping the Geode button on the bottom of the menu, and browse for mods to install!
