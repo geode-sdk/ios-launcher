@@ -1,4 +1,4 @@
-# Installation Guide (Enterprise Certificates)
+# Installation Guide (Free aka Enterprise Certificates)
 > [!IMPORTANT]
 > While this guide will teach you how to enable and use certificates without entitlements on Geode, it is still recommended to buy a Developer Certificate if you can, and follow the [JIT-Less guide](./JITLESS-INSTALL-GUIDE.md), as this method is not endorsed or recommended.
 > This is because this method is time consuming, tedious, and slow for using Geode, as it will require you to install a patched Geometry Dash ("Geode Helper") each time you want to install a mod, update a mod, enable a mod, disable a mod, update Geode, and launch in safe mode.
@@ -10,9 +10,9 @@
 > This guide will not teach you how to go about obtaining such certificates. These certificates ("free certificates") violate [Apple's Terms of Service](https://developer.apple.com/support/terms/apple-developer-program-license-agreement/#ADPLA5), and may get your iDevice blacklisted. As such, this guide is only for educational purposes, given the consequences: Use at your own risk.
 > If you are fine with this, and acknowledge the warning, you can proceed to follow this guide.
 
-| Supported on | Requires Computer? | Mod Compatibility | Price |
+| Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14.0 and above | No | *Medium* | Free |
+| iOS 14.0 and above | No | *Partial* | Free |
 
 This tutorial is for people who cannot afford to purchase a Developer Certificate, and do not have a computer, but wish to use Geode.
 
