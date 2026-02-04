@@ -89,6 +89,8 @@ You will have to do this every time you want to launch Geode with JIT on cellula
 3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
 4. Press **"Launch"**.
 
+![](screenshots/jitless-sidestore.png)
+
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
 Follow the instructions as listed here
