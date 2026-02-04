@@ -902,6 +902,7 @@ extern NSString *lcAppUrlScheme;
 		} visible:nil prefsKey:@"MANUAL_REOPEN" switchTag:7 action:nil custom:nil],
 		[Setting create:@"advanced.use-nightly".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"USE_NIGHTLY" switchTag:11 action:nil custom:nil],
 		[Setting create:@"advanced.warn-launcher-jit".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"DONT_WARN_JIT" switchTag:13 action:nil custom:nil],
+		[Setting create:@"Platform Console".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"PLATFORM_CONSOLE" switchTag:24 action:nil custom:nil],
 		[Setting simpleCreate:@"advanced.view-app-logs".loc type:SettingTypeButtonWithIcon action:^{
 			// View App Logs
 			[[self navigationController] pushViewController:[[LogsViewController alloc] initWithFile:[[LCPath docPath] URLByAppendingPathComponent:@"app.log"]] animated:YES];
@@ -998,9 +999,6 @@ extern NSString *lcAppUrlScheme;
 			// 	AppLog(@"Patched Geode (Success: %@, Error: %@)", (success) ? @"YES" : @"NO", error);
 			// 	[Utils showNotice:self title:@"patch"];
 			// }];
-			//Class LCSharedUtilsClass = NSClassFromString(@"LCSharedUtils");
-			//[LCSharedUtilsClass _lcUserDefaults];
-			//[Utils showNotice:self title:[NSString stringWithFormat:@"ok %@", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)]]];
 		} custom:nil],
 		[Setting simpleCreate:@"developer.importipa".loc type:SettingTypeButton action:^{
 			// Import IPA
@@ -1164,17 +1162,24 @@ extern NSString *lcAppUrlScheme;
 			}
 			[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
 				withHandlerAddress:0x8b8000
-							 force:YES
-					  withSafeMode:YES
-				  withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
-					  dispatch_async(dispatch_get_main_queue(), ^{
-						  if (success) {
-							  [Utils showNotice:self title:@"Binary restored and Info.plist restored! Launching should be safe now..."];
-						  } else {
-							  [Utils showError:self title:error error:nil];
-						  }
-					  });
-				  }];
+				force:YES
+				withSafeMode:YES
+				withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						if (success) {
+							[Utils showNotice:self title:@"Binary restored and Info.plist restored! Launching should be safe now..."];
+						} else {
+							[Utils showError:self title:error error:nil];
+						}
+					});
+				}
+			];
+		} custom:nil],
+		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
+			return ![Utils isSandboxed];
+		} visible:nil prefsKey:nil switchTag:0 action:^{
+			[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
+			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
 		} custom:nil],
 		[Setting simpleCreate:@"View Bundle Dir".loc type:SettingTypeButtonWithIcon action:^{
 			// View Bundle Dir
@@ -1192,7 +1197,6 @@ extern NSString *lcAppUrlScheme;
 			// View NSUserDefaults
 			[self.navigationController pushViewController:[[NSUDBrowserVC alloc] init] animated:YES];
 		} custom:nil],
-
 		[Setting simpleCreate:@"Obtain Launch File".loc type:SettingTypeButton action:^{
 			// Obtain Launch File
 			NSString* extractionPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"flags.txt"].path;
@@ -1541,6 +1545,9 @@ extern NSString *lcAppUrlScheme;
 		break;
 	case 23:
 		[Utils toggleKey:@"FORCE_ANGLE"];
+		break;
+	case 24:
+		[Utils toggleKey:@"PLATFORM_CONSOLE"];
 		break;
 	}
 }

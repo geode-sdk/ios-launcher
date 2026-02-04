@@ -1,5 +1,3 @@
-// TODO: add a check for embedded.mobileprovision BEFORE the user imports the cert. Also have that check in settings too
-
 #import "IntroVC.h"
 #include "src/AppDelegate.h"
 #include "src/components/LogUtils.h"
@@ -120,28 +118,9 @@ bool passJITTest = false;
 									[self showQuestionaireStep:0];
 								}
 							}
-							// we have to secretly hope the user doesnt disable the team ID extension for sideloadly
-							/*NSString* teamID = [LCUtils teamIdentifier];
-
-							if (teamID != nil && ![teamID hasSuffix:@"launcher"]) {
-								if (@available(iOS 26.0, *)) {
-									[self showSoftLock:0];
-								} else {
-									// we have stikdebug? well if we do then we can just skip and go to the warning thing
-									if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"stikjit://"]]) {
-										_currentStep = InstallStepWarning;
-										[self showWarningStep];
-									} else {
-										// otherwise we will just prompt if they have a cert...
-									}
-
-								}
-
-							} else {
-							}*/
 						} else {
-                            if (@available(iOS 26.0, *)) {
-                                [self promptCert];
+							if (@available(iOS 26.0, *)) {
+								[self promptCert];
 							} else {
 								// we have stikdebug? well if we do then we can just skip and go to the warning thing
 								if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"stikjit://"]] || runningJIT) {

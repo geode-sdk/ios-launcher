@@ -96,6 +96,7 @@ static NSString* certPassword = nil;
 		NSString* fileName = [url lastPathComponent];
 
 		NSURL* path;
+		NSURL* docPath = [NSURL fileURLWithPath:[LCPath docPath].path];
 		NSError* error = nil;
 		if ([Utils isContainerized]) {
 			path = [NSURL fileURLWithPath:[[LCPath docPath].path stringByAppendingString:@"/game/geode/mods/"]];
@@ -113,7 +114,12 @@ static NSString* certPassword = nil;
 		BOOL access = [url startAccessingSecurityScopedResource]; // to prevent ios from going "OH YOU HAVE NO PERMISSION!!!"
 		if ([fm copyItemAtURL:url toURL:destinationURL error:&error]) {
 			AppLog(@"Added new mod %@!", fileName);
-			[fm removeItemAtURL:url error:nil];
+			if ([[url path] containsString:@"Documents/Inbox"]) {
+				NSURL* reconstructedPath = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/Inbox/%@", docPath.path, fileName]];
+				if (reconstructedPath != nil) {
+					[fm removeItemAtURL:reconstructedPath error:nil];
+				}
+			}
 			if (access)
 				[url stopAccessingSecurityScopedResource];
 			dispatch_async(dispatch_get_main_queue(), ^{ [Utils showNoticeGlobal:[NSString stringWithFormat:@"launcher.notice.mod-import".loc, fileName]]; });

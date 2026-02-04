@@ -25,7 +25,7 @@
 #include <objc/runtime.h>
 
 #define LOCAL_BUILD 0
-#define LOCAL_URL "http://192.168.1.22:3000/Geometry-2.207.ipa"
+#define LOCAL_URL "http://192.168.1.22:3000/Geometry-2.208.ipa"
 
 @interface RootViewController ()
 
