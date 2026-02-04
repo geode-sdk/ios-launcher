@@ -10,7 +10,8 @@ void LCPatchAddRPath(const char* path, struct mach_header_64* header);
 extern "C" {
 #endif
 NSString* LCParseMachO(const char* path, bool readOnly, LCParseMachOCallback callback);
-void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool withGeode, bool withANGLE);
+int LCPatchExecSlice(const char* path, struct mach_header_64* header, bool withGeode, bool withANGLE);
+BOOL LCPatchLibWithANGLE(const char* path, struct mach_header_64* header, bool withANGLE);
 #ifdef __cplusplus
 }
 #endif

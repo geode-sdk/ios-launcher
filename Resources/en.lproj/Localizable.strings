@@ -39,8 +39,9 @@
 
 "intro.warning.title" = "Warning";
 "intro.warning.subtitle1" = "If you are not jailbroken or don't have TrollStore, you will need a Computer to set up JIT; specifically for the pairing profile. JIT is required for Geode, otherwise you can use JIT-Less mode if you can import a certificate (in settings), and don't own a computer.\n\nPlease view the guide for more information, and refrain from asking about this.";
-"intro.warning.subtitle2" = "You have sideloaded Geode with an Enterprise Certificate (Free Certificate), or a certificate with no entitlements. Please ensure that you have signed Geode with the correct certificate when installing it, otherwise you will be forced to use the time consuming \"Enterprise Mode\"\n\nPlease view the guide for more information.";
-"intro.warning.subtitle3" = "Geode has detected your version to be iOS 26+. This iOS version requires StikDebug, and requires importing a certificate, which you can do in settings. If you are having problems, try using the JIT-Less mode.\n\nPlease view the guide for more information.";
+"intro.warning.subtitle2" = "You have sideloaded Geode with an Enterprise Certificate (Free Certificate), or a certificate with no entitlements. Please ensure that you have signed Geode with the correct certificate when installing it, otherwise you will be forced to use the time consuming \"Enterprise Mode\"\n\nIt is strongly recommended to read the guide.";
+"intro.warning.subtitle3" = "Geode has detected your version to be iOS 26+. Since you have StikDebug, you will need to enable the following settings in it: \"Always Run Script\" and \"Picture in Picture\". After doing that, you can proceed with launching Geode. If you are having problems, enable the JIT-Less mode in settings.\n\nPlease view the guide for more information.";
+"intro.warning.subtitle4" = "You have sideloaded Geode with TrollStore. In order for Geode to launch to Geometry Dash, you must open TrollStore, tap Settings, and enable \"URL Scheme Enabled\" for Geode to launch to TrollStore. Do these steps before continuing.";
 "intro.warning.understood" = "Understood";
 
 "intro.final.title" = "Setup complete!";

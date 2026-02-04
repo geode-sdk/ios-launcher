@@ -19,3 +19,6 @@ uint64_t aarch64_emulate_adrp(uint32_t instruction, uint64_t pc);
 bool aarch64_emulate_add_imm(uint32_t instruction, uint32_t* dst, uint32_t* src, uint32_t* imm);
 uint64_t aarch64_emulate_adrp_add(uint32_t instruction, uint32_t addInstruction, uint64_t pc);
 uint64_t aarch64_emulate_adrp_ldr(uint32_t instruction, uint32_t ldrInstruction, uint64_t pc);
+
+void BreakMarkJITMapping(void* addr, size_t bytes);
+void BreakJITWrite(void* dest, void* src, size_t bytes);

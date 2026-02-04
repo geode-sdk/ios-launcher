@@ -1,4 +1,6 @@
 #import "../components/LogUtils.h"
+#include "src/Utils.h"
+#include "src/LCUtils/Shared.h"
 #include <string.h>
 #import "LCUtils.h"
 #import <CoreFoundation/CoreFoundation.h>
@@ -36,33 +38,33 @@ static void insertDylibCommand(uint32_t cmd, const char* path, struct mach_heade
 }
 
 static void replaceDylibPath(struct mach_header_64* header, const char* oldPath, const char* newPath) {
-    uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
-    struct load_command* command = (struct load_command*)imageHeaderPtr;
-    for (int i = 0; i < header->ncmds; i++) {
-        if (command->cmd == LC_LOAD_DYLIB) {
-            struct dylib_command* dylib = (struct dylib_command*)command;
-            char* dylibName = (char*)dylib + dylib->dylib.name.offset;
-            if (strcmp(dylibName, oldPath) == 0) {
-                uint32_t newNameLen = (uint32_t)strlen(newPath) + 1;
-                uint32_t newCmdSize = sizeof(struct dylib_command) + rnd32(newNameLen, 8);
-                int32_t sizeDiff = newCmdSize - dylib->cmdsize;
-                if (sizeDiff != 0) {
-                    uint8_t* nextCmd = (uint8_t*)command + dylib->cmdsize;
-                    uint8_t* endOfCmds = imageHeaderPtr + header->sizeofcmds;
-                    size_t remainingSize = endOfCmds - nextCmd;
-                    if (remainingSize > 0) {
-                        memmove(nextCmd + sizeDiff, nextCmd, remainingSize);
-                    }
-                    header->sizeofcmds += sizeDiff;
-                }
-                memset((uint8_t*)dylib + sizeof(struct dylib_command), 0, newCmdSize - sizeof(struct dylib_command));
-                dylib->cmdsize = newCmdSize;
-                strcpy((char*)dylib + dylib->dylib.name.offset, newPath);
-                break;
-            }
-        }
-        command = (struct load_command*)((uint8_t*)command + command->cmdsize);
-    }
+	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
+	struct load_command* command = (struct load_command*)imageHeaderPtr;
+	for (int i = 0; i < header->ncmds; i++) {
+		if (command->cmd == LC_LOAD_DYLIB) {
+			struct dylib_command* dylib = (struct dylib_command*)command;
+			char* dylibName = (char*)dylib + dylib->dylib.name.offset;
+			if (strcmp(dylibName, oldPath) == 0) {
+				uint32_t newNameLen = (uint32_t)strlen(newPath) + 1;
+				uint32_t newCmdSize = sizeof(struct dylib_command) + rnd32(newNameLen, 8);
+				int32_t sizeDiff = newCmdSize - dylib->cmdsize;
+				if (sizeDiff != 0) {
+					uint8_t* nextCmd = (uint8_t*)command + dylib->cmdsize;
+					uint8_t* endOfCmds = imageHeaderPtr + header->sizeofcmds;
+					size_t remainingSize = endOfCmds - nextCmd;
+					if (remainingSize > 0) {
+						memmove(nextCmd + sizeDiff, nextCmd, remainingSize);
+					}
+					header->sizeofcmds += sizeDiff;
+				}
+				memset((uint8_t*)dylib + sizeof(struct dylib_command), 0, newCmdSize - sizeof(struct dylib_command));
+				dylib->cmdsize = newCmdSize;
+				strcpy((char*)dylib + dylib->dylib.name.offset, newPath);
+				break;
+			}
+		}
+		command = (struct load_command*)((uint8_t*)command + command->cmdsize);
+	}
 }
 
 void noopOverwrite(struct load_command* command) {
@@ -90,9 +92,50 @@ void LCPatchAddRPath(const char* path, struct mach_header_64* header) {
 	insertRPathCommand("@loader_path", header);
 }
 
-void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool withGeode, bool withANGLE) {
-	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
+BOOL isBinarySigned(struct mach_header_64* header) {
+    uint8_t* ptr = (uint8_t*)header + sizeof(struct mach_header_64);
+    struct load_command* cmd = (struct load_command*)ptr;
+    for (uint32_t i = 0; i < header->ncmds; i++) {
+        if (cmd->cmd == LC_CODE_SIGNATURE) {
+            return YES;
+        }
+        cmd = (struct load_command*)((uint8_t*)cmd + cmd->cmdsize);
+    }
+    return NO;
+}
 
+
+// TODO: look at https://github.com/LiveContainer/LiveContainer/blob/main/LiveContainer/LCMachOUtils.m and see if i can really manipulate with codesigs
+
+// static void invalidateCodeSignature(struct mach_header_64* header) {
+//     uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
+//     struct load_command* command = (struct load_command*)imageHeaderPtr;
+//
+//     for (uint32_t i = 0; i < header->ncmds; i++) {
+//         if (command->cmd == LC_CODE_SIGNATURE) {
+//             // Option 1: Change the command to a harmless one
+//             command->cmd = LC_LOADFVMLIB; // Obsolete, ignored command
+//
+//             // Option 2: Or zero out the linkedit_data_command
+//             // struct linkedit_data_command* sig = (struct linkedit_data_command*)command;
+//             // sig->dataoff = 0;
+//             // sig->datasize = 0;
+//
+//             break;
+//         }
+//         command = (struct load_command*)((uint8_t*)command + command->cmdsize);
+//     }
+// }
+
+// Error Codes
+// 0 = Success
+// -1 = Binary is signed, cant manipulate
+int LCPatchExecSlice(const char* path, struct mach_header_64* header, bool withGeode, bool withANGLE) {
+	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
+	if (isBinarySigned(header)) {
+        AppLog(@"Binary is signed! pengu if you crash then you have to restore binary!");
+		//return -1;
+	}
 	// Literally convert an executable to a dylib
 	if (header->magic == MH_MAGIC_64) {
 		// assert(header->flags & MH_PIE);
@@ -107,18 +150,36 @@ void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool with
 		}
 	}
 
-	BOOL hasDylibCommand = NO, hasLoaderCommand = NO, hasANGLECommand = NO, hasRPathCommand = NO;
+	// Patch __PAGEZERO to map just a single zero page, fixing "out of address space"
+	struct segment_command_64* seg = (struct segment_command_64*)imageHeaderPtr;
+	assert(seg->cmd == LC_SEGMENT_64 || seg->cmd == LC_ID_DYLIB);
+	if (seg->cmd == LC_SEGMENT_64 && seg->vmaddr == 0) {
+		assert(seg->vmsize == 0x100000000);
+		seg->vmaddr = 0x100000000 - 0x4000;
+		seg->vmsize = 0x4000;
+	} else if (withGeode) {
+		// we arent containerizing it so...
+		seg->vmaddr = 0x0;
+		seg->vmsize = 0x100000000;
+	}
+
+	BOOL hasDylibCommand = NO, hasLoaderCommand = NO, hasANGLECommand = NO;
 	const char* tweakLoaderPath = "@loader_path/../../Tweaks/TweakLoader.dylib";
-	// const char* geodeLoaderPath = "@executable_path/Geode.ios.dylib";
 	const char* geodeLoaderPath = "@executable_path/EnterpriseLoader.dylib";
-	// const char* geodeLoaderPath = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
 	struct load_command* command = (struct load_command*)imageHeaderPtr;
 	struct load_command* lcIDcmd;
 	struct dylib_command* lcLOADcmd;
 
 	const char* openGlesLoadCmd = "/System/Library/Frameworks/OpenGLES.framework/OpenGLES";
-	const char* ANGLELoadCmd = "@rpath/ANGLEGLKit.framework/ANGLEGLKit";
-	const char* rPathLoadCmd = "@executable_path/Frameworks";
+	const char* ANGLELoadCmd = "@executable_path/Frameworks/ANGLEGLKit.framework/ANGLEGLKit";
+	//const char* rPathLoadCmd = "@executable_path/Frameworks";
+	if (NSClassFromString(@"LCSharedUtils")) {
+		NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
+		NSString* frameworks = [bundlePath URLByAppendingPathComponent:@"Frameworks"].path;
+		//rPathLoadCmd = frameworks.UTF8String;
+		//rPathLoadCmd = "@loader_path/Frameworks";
+		AppLog(@"Detected LiveContainer! Using different rpath... (%@)", frameworks);
+	}
 
 	for (int i = 0; i < header->ncmds; i++) {
 		if (command->cmd == LC_ID_DYLIB) {
@@ -136,12 +197,6 @@ void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool with
 			}
 			if (!strncmp(dylibName, ANGLELoadCmd, strlen(ANGLELoadCmd))) {
 				hasANGLECommand = YES;
-			}
-		} else if (command->cmd == LC_RPATH) {
-			struct rpath_command* rpath = (struct rpath_command*)command;
-			char* rpathName = (void*)rpath + rpath->path.offset;
-			if (!strncmp(rpathName, rPathLoadCmd, strlen(rPathLoadCmd))) {
-				hasRPathCommand = YES;
 			}
 		}
 		command = (struct load_command*)((void*)command + command->cmdsize);
@@ -189,23 +244,73 @@ void LCPatchExecSlice(const char* path, struct mach_header_64* header, bool with
 		if (!hasANGLECommand) {
 			replaceDylibPath(header, openGlesLoadCmd, ANGLELoadCmd);
 		}
-		if (!hasRPathCommand) {
-			insertRPathCommand(rPathLoadCmd, header);
+	}/* else {
+		// not sure if this is even necessary actually considering the orig binary shouldnt even have this load command
+		if (hasANGLECommand) {
+			replaceDylibPath(header, ANGLELoadCmd, openGlesLoadCmd);
 		}
+	}*/
+	return 0;
+}
+
+BOOL LCPatchLibWithANGLE(const char* path, struct mach_header_64* header, bool withANGLE) {
+	AppLog(@"Patching %@ with ANGLE? %@", [NSString stringWithUTF8String:path], (withANGLE) ? @"YES" : @"NO");
+	if (isBinarySigned(header)) {
+		AppLog(@"Can't patch library: Binary is signed.");
+		return NO;
+	}
+	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
+	if (header->magic == MH_MAGIC_64) {
+		header->filetype = MH_DYLIB;
+		// header->flags |= MH_NO_REEXPORTED_DYLIBS;
+		header->flags &= ~MH_PIE;
 	}
 
-	// Patch __PAGEZERO to map just a single zero page, fixing "out of address space"
-	struct segment_command_64* seg = (struct segment_command_64*)imageHeaderPtr;
-	assert(seg->cmd == LC_SEGMENT_64);
-	if (seg->vmaddr == 0) {
-		assert(seg->vmsize == 0x100000000);
-		seg->vmaddr = 0x100000000 - 0x4000;
-		seg->vmsize = 0x4000;
-	} else if (withGeode) {
-		// we arent containerizing it so...
-		seg->vmaddr = 0x0;
-		seg->vmsize = 0x100000000;
+	BOOL hasANGLECommand = NO, hasOGLCommand = NO;
+	struct load_command* command = (struct load_command*)imageHeaderPtr;
+
+	const char* openGlesLoadCmd = "/System/Library/Frameworks/OpenGLES.framework/OpenGLES";
+	const char* ANGLELoadCmd = "@executable_path/Frameworks/ANGLEGLKit.framework/ANGLEGLKit";
+	//const char* rPathLoadCmd = "@executable_path/Frameworks";
+	if (NSClassFromString(@"LCSharedUtils")) {
+		NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
+		NSString* frameworks = [bundlePath URLByAppendingPathComponent:@"Frameworks"].path;
+		//rPathLoadCmd = frameworks.UTF8String;
+		AppLog(@"Detected LiveContainer! Using different rpath... (%@)", frameworks);
+		//rPathLoadCmd = "@loader_path/Frameworks";
 	}
+
+	for (int i = 0; i < header->ncmds; i++) {
+		if (command->cmd == LC_LOAD_DYLIB) {
+			struct dylib_command* dylib = (struct dylib_command*)command;
+			char* dylibName = (void*)dylib + dylib->dylib.name.offset;
+			if (!strncmp(dylibName, openGlesLoadCmd, strlen(openGlesLoadCmd))) {
+				hasANGLECommand = NO;
+				hasOGLCommand = YES;
+			}
+			if (!strncmp(dylibName, ANGLELoadCmd, strlen(ANGLELoadCmd))) {
+				hasANGLECommand = YES;
+				hasOGLCommand = NO;
+			}
+		}
+		command = (struct load_command*)((void*)command + command->cmdsize);
+	}
+	if (!hasOGLCommand && !hasANGLECommand) return NO; // we will assume the mod doesnt need any
+	if (withANGLE) {
+		if (!hasANGLECommand) {
+			replaceDylibPath(header, openGlesLoadCmd, ANGLELoadCmd);
+		} else {
+			return NO;
+		}
+	} else {
+		/*if (hasANGLECommand) {
+			replaceDylibPath(header, ANGLELoadCmd, openGlesLoadCmd);
+		} else {
+			return NO;
+		}*/
+		return NO;
+	}
+	return YES;
 }
 
 NSString* LCParseMachO(const char* path, bool readOnly, LCParseMachOCallback callback) {

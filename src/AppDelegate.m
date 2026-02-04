@@ -228,24 +228,7 @@ static NSString* certPassword = nil;
 			}
 			return NO;
 		}
-		if ([url.host isEqualToString:@"relaunch"] && [[Utils getPrefs] boolForKey:@"JITLESS"]) {
-			if (NO) {
-				NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
-				[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
-					withHandlerAddress:0x8b8000
-								 force:NO
-						  withSafeMode:NO
-					  withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
-						  [LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"game/geode"] force:NO progressHandler:^(NSProgress* progress) {}
-							  completion:^(NSError* error) {
-								  if (error != nil) {
-									  AppLog(@"Detailed error for signing mods: %@", error);
-								  }
-								  [LCUtils launchToGuestApp];
-							  }];
-					  }];
-			}
-		} else {
+		if (![url.host isEqualToString:@"relaunch"]) {
 			AppLog(@"Launching Geometry Dash");
 			if (![LCUtils launchToGuestApp]) {
 				[Utils showErrorGlobal:[NSString stringWithFormat:@"launcher.error.gd".loc, @"launcher.error.app-uri".loc] error:nil];

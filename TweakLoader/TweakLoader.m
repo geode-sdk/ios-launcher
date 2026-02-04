@@ -10,6 +10,10 @@ static NSString *loadTweakAtURL(NSURL *url) {
     if (![tweakPath hasSuffix:@".dylib"]) {
         return nil;
     }
+    if ([tweakPath hasSuffix:@"CAHighFPS.dylib"] && !getenv("ANGLEGLKit")) {
+        NSLog(@"Skipping to load tweak %@ because ANGLEGLKit env isn't set.", tweak);
+        return nil;
+    }
     void *handle = dlopen(tweakPath.UTF8String, RTLD_LAZY | RTLD_GLOBAL);
     const char *error = dlerror();
     if (handle) {
@@ -69,25 +73,6 @@ static void TweakLoaderConstructor() {
             [errors addObject:error];
         }
     }
-
-    // Load selected tweak folder, recursively
-    NSString *tweakFolderName = NSUserDefaults.guestAppInfo[@"LCTweakFolder"];
-    if (tweakFolderName.length > 0) {
-        NSLog(@"Loading tweaks from the selected folder");
-        NSString *tweakFolder = [globalTweakFolder stringByAppendingPathComponent:tweakFolderName];
-        NSURL *tweakFolderURL = [NSURL fileURLWithPath:tweakFolder];
-        NSDirectoryEnumerator *directoryEnumerator = [NSFileManager.defaultManager enumeratorAtURL:tweakFolderURL includingPropertiesForKeys:@[] options:0 errorHandler:^BOOL(NSURL *url, NSError *error) {
-            NSLog(@"Error while enumerating tweak directory: %@", error);
-            return YES;
-        }];
-        for (NSURL *fileURL in directoryEnumerator) {
-            NSString *error = loadTweakAtURL(fileURL);
-            if (error) {
-                [errors addObject:error];
-            }
-        }
-    }
-
     if (errors.count > 0) {
         dispatch_async(dispatch_get_main_queue(), ^{
             NSString *error = [errors componentsJoinedByString:@"\n"];

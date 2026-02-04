@@ -11,7 +11,7 @@ typedef NS_ENUM(NSInteger, InstallStep) {
 	InstallStepComplete
 };
 
-@interface IntroVC : UIViewController <UITextFieldDelegate, UIPopoverPresentationControllerDelegate, MSColorSelectionViewControllerDelegate>
+@interface IntroVC : UIViewController <UITextFieldDelegate, UIPopoverPresentationControllerDelegate, MSColorSelectionViewControllerDelegate, UIDocumentPickerDelegate>
 #pragma mark - Color Temp
 @property(nonatomic, strong) UIButton* colorNextButton;
 @property(nonatomic, strong) UILabel* colorPreviewLabel;

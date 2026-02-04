@@ -40,8 +40,8 @@
 	NSURLSessionDownloadTask* downloadTask;
 }
 
-- (BOOL)isLCTweakLoaded {
-	NSString* name = @"LiveContainer.app/Frameworks/TweakLoader.dylib";
++ (BOOL)isLCTweakLoaded {
+	NSString* name = @"TweakLoader.dylib";
 	int dyld_count = _dyld_image_count();
 	for (int i = 0; i < dyld_count; i++) {
 		const char* imageName = _dyld_get_image_name(i);
@@ -337,7 +337,7 @@
 	[self.view addSubview:self.progressBar];
 
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.75 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		if ([self isLCTweakLoaded]) {
+		if ([RootViewController isLCTweakLoaded]) {
 			[Utils showNotice:self title:@"In LiveContainer, please enable \"Launch with JIT\", \"Don't Inject TweakLoader\" & \"Don't Load TweakLoader\", otherwise Geode will "
 										 @"not launch properly. JIT-Less mode may NOT work on LiveContainer."];
 		} else if (![Utils isSandboxed]) {
@@ -650,24 +650,70 @@
 								return completionHandler(NO, @"launcher.error.sign.invalidcert2".loc);
 							}
 							LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
-							[app patchExecAndSignIfNeedWithCompletionHandler:^(BOOL signSuccess, NSString* signError) {
-								if (signError)
-									return completionHandler(NO, signError);
-								[LCUtils signTweaks:[LCPath tweakPath] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
-									if (error != nil) {
-										AppLog(@"Detailed error for signing tweaks: %@", error);
-										return completionHandler(
-											NO,
-											@"Couldn't sign tweaks. Please make sure that you imported a certificate in settings.");
-									}
-									if (error != nil) {
-										AppLog(@"Detailed error for signing mods: %@", error);
-										return completionHandler(NO, @"Couldn't sign mods. Please make sure that you imported a certificate in settings.");
-									}
-									completionHandler(YES, nil);
-								}];
-							} progressHandler:^(NSProgress* signProgress) {} forceSign:NO blockMainThread:YES];
-						  }];
+							[Patcher patchGeode:^(BOOL success, NSString *error) {
+								AppLog(@"Patched Geode (Success: %@, Error: %@)", (success) ? @"YES" : @"NO", error);
+								[app patchExecAndSignIfNeedWithCompletionHandler:^(BOOL signSuccess, NSString* signError) {
+									if (signError)
+										return completionHandler(NO, signError);
+									[LCUtils signTweaks:[LCPath tweakPath] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+										if (error != nil) {
+											AppLog(@"Detailed error for signing tweaks: %@", error);
+											return completionHandler(
+												NO,
+												@"Couldn't sign tweaks. Please make sure that you imported a certificate in settings.");
+										}
+										if (error != nil) {
+											AppLog(@"Detailed error for signing mods: %@", error);
+											return completionHandler(NO, @"Couldn't sign mods. Please make sure that you imported a certificate in settings.");
+										}
+										completionHandler(YES, nil);
+									}];
+								} progressHandler:^(NSProgress* signProgress) {} forceSign:NO blockMainThread:YES];
+							}];
+						}];
+					  } else {
+						  return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
+					  }
+				} else {
+					completionHandler(NO, error);
+				}
+			});
+		}];
+	} else if (@available(iOS 26.0, *)) {
+		[Utils copyOrigBinary:^(BOOL success, NSString *error) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				if (success) {
+					self.optionalTextLabel.text = @"launcher.status.signing".loc;
+					if ([LCUtils certificateData]) {
+						[LCUtils validateCertificate:^(int status, NSDate* expirationDate, NSString* errorC) {
+							if (errorC) {
+								return completionHandler(NO, [NSString stringWithFormat:@"launcher.error.sign.invalidcert".loc, errorC]);
+							}
+							if (status != 0) {
+								return completionHandler(NO, @"launcher.error.sign.invalidcert2".loc);
+							}
+							LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
+							[Patcher patchGeode:^(BOOL success, NSString *error) {
+								AppLog(@"Patched Geode (Success: %@, Error: %@)", (success) ? @"YES" : @"NO", error);
+								[app patchExecAndSignIfNeedWithCompletionHandler:^(BOOL signSuccess, NSString* signError) {
+									if (signError)
+										return completionHandler(NO, signError);
+									[LCUtils signTweaks:[LCPath tweakPath] force:NO progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+										if (error != nil) {
+											AppLog(@"Detailed error for signing tweaks: %@", error);
+											return completionHandler(
+												NO,
+												@"Couldn't sign tweaks. Please make sure that you imported a certificate in settings.");
+										}
+										if (error != nil) {
+											AppLog(@"Detailed error for signing mods: %@", error);
+											return completionHandler(NO, @"Couldn't sign mods. Please make sure that you imported a certificate in settings.");
+										}
+										completionHandler(YES, nil);
+									}];
+								} progressHandler:^(NSProgress* signProgress) {} forceSign:NO blockMainThread:YES];
+							}];
+						}];
 					  } else {
 						  return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
 					  }
@@ -682,9 +728,12 @@
 }
 
 - (void)signApp:(BOOL)forceSign completionHandler:(void (^)(BOOL success, NSString* error))completionHandler {
-	if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_PATCHING"] && ![[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"])
-		return completionHandler(YES, nil);
-
+	if (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_PATCHING"] && ![[Utils getPrefs] integerForKey:@"FORCE_CERT_JIT"]) {
+		return [Patcher patchGeode:^(BOOL success, NSString *error) {
+			AppLog(@"Patched Geode (Success: %@, Error: %@)", (success) ? @"YES" : @"NO", error);
+			return completionHandler(YES, nil);
+		}];
+	}
 	NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
 	if ([[Utils getPrefs] boolForKey:@"JITLESS"]) {
 		[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8b8000
@@ -758,28 +807,68 @@
 								return completionHandler(NO, @"launcher.error.sign.invalidcert2".loc);
 							}
 							LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
+							[Patcher patchGeode:^(BOOL success, NSString *error) {
+								AppLog(@"Patched Geode (Success: %@, Error: %@)", (success) ? @"YES" : @"NO", error);
 								[app patchExecAndSignIfNeedWithCompletionHandler:^(BOOL signSuccess, NSString* signError) {
-								if (signError)
-									return completionHandler(NO, signError);
-								[LCUtils signTweaks:[LCPath tweakPath] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
-									if (error != nil) {
-										AppLog(@"Detailed error for signing tweaks: %@", error);
-										return completionHandler(NO, @"Couldn't sign tweaks. Please make sure that you imported a certificate in settings.");
-									}
-
-									[LCUtils signModsNew:[[LCPath dataPath] URLByAppendingPathComponent:@"game/geode"] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
-										[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"game/geode"] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+									if (signError)
+										return completionHandler(NO, signError);
+									[LCUtils signTweaks:[LCPath tweakPath] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
 										if (error != nil) {
-											AppLog(@"Detailed error for signing mods: %@", error);
-											return completionHandler(NO, @"Couldn't sign mods. Please make sure that you imported a certificate in settings.");
+											AppLog(@"Detailed error for signing tweaks: %@", error);
+											return completionHandler(NO, @"Couldn't sign tweaks. Please make sure that you imported a certificate in settings.");
 										}
-										[[Utils getPrefs] setValue:[Utils gdBundleName] forKey:@"selected"];
-										[[Utils getPrefs] setValue:@"GeometryDash" forKey:@"selectedContainer"];
-									completionHandler(YES, nil);
+
+										[LCUtils signModsNew:[[LCPath dataPath] URLByAppendingPathComponent:@"game/geode"] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+											[LCUtils signMods:[[LCPath dataPath] URLByAppendingPathComponent:@"game/geode"] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+											if (error != nil) {
+												AppLog(@"Detailed error for signing mods: %@", error);
+												return completionHandler(NO, @"Couldn't sign mods. Please make sure that you imported a certificate in settings.");
+											}
+											[[Utils getPrefs] setValue:[Utils gdBundleName] forKey:@"selected"];
+											[[Utils getPrefs] setValue:@"GeometryDash" forKey:@"selectedContainer"];
+										completionHandler(YES, nil);
+											}];
 										}];
 									}];
-								}];
-							} progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
+								} progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
+							}];
+						}];
+					} else {
+						return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
+					}
+				} else {
+					completionHandler(NO, error);
+				}
+			});
+		}];
+	} else if (@available(iOS 26.0, *)) {
+		[Utils copyOrigBinary:^(BOOL success, NSString *error) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				if (success) {
+					BOOL force = forceSign;
+					self.optionalTextLabel.text = @"launcher.status.signing".loc;
+					if ([LCUtils certificateData]) {
+						[LCUtils validateCertificate:^(int status, NSDate* expirationDate, NSString* errorC) {
+							if (errorC) {
+								return completionHandler(NO, [NSString stringWithFormat:@"launcher.error.sign.invalidcert".loc, errorC]);
+							}
+							if (status != 0) {
+								return completionHandler(NO, @"launcher.error.sign.invalidcert2".loc);
+							}
+							LCAppInfo* app = [[LCAppInfo alloc] initWithBundlePath:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path];
+							[Patcher patchGeode:^(BOOL success, NSString *error) {
+								AppLog(@"Patched Geode (Success: %@, Error: %@)", (success) ? @"YES" : @"NO", error);
+								[app patchExecAndSignIfNeedWithCompletionHandler:^(BOOL signSuccess, NSString* signError) {
+									if (signError)
+										return completionHandler(NO, signError);
+									[LCUtils signTweaks:[LCPath tweakPath] force:force progressHandler:^(NSProgress* progress) {} completion:^(NSError* error) {
+										if (error != nil) {
+											AppLog(@"Detailed error for signing tweaks: %@", error);
+											return completionHandler(NO, @"Couldn't sign tweaks. Please make sure that you imported a certificate in settings.");
+										}
+									}];
+								} progressHandler:^(NSProgress* signProgress) {} forceSign:force blockMainThread:YES];
+							}];
 						}];
 					} else {
 						return completionHandler(NO, @"No certificate found. Please go to settings to import a certificate.");
@@ -1062,6 +1151,7 @@
 		return;
 	} else if (![Utils isDevCert]) {
 		[Utils showNotice:self title:@"Geode was signed without entitlements! Please follow the guide on Enterprise Mode, or sign Geode with entitlements (recommended)."];
+		[self.launchButton setEnabled:YES];
 		return;
 	}
 	if (![Utils isSandboxed]) {

@@ -14,5 +14,6 @@
 		  withSafeMode:(BOOL)safeMode
 	  withEntitlements:(BOOL)entitlements
 	 completionHandler:(void (^)(BOOL success, NSString* error))completionHandler;
++ (void)patchGeode:(void (^)(BOOL success, NSString* error))completionHandler;
 
 @end

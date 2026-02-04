@@ -16,6 +16,7 @@
 
 - (void)updateState;
 - (void)cancelDownload;
++ (BOOL)isLCTweakLoaded;
 
 // sorry i dont want to deal with dumb link errors
 - (BOOL)progressVisible;
