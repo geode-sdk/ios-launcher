@@ -100,4 +100,5 @@ Here's a comparison of all methods for you to see which method is the most suita
 - Might require some extra setup
 
 In case you still do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
-![](screenshots/geode_path.png)
+<img width="2211" height="1570" alt="Untitled drawing" src="https://github.com/user-attachments/assets/45f9c6e7-f9b4-4d0e-a825-2eea145e8dd2" />
+
