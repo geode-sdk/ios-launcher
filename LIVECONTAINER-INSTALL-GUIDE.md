@@ -28,6 +28,7 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 ### Required Extra Steps for iOS 26
 > [!WARNING]
 > On iOS 26, you will see a black picture in picture box on your screen. Do not close it, as it will most likely cause Geode to crash. It is required for it to be open for JIT to work properly.
+> You will also need to enable **Use LiveContainer's Bundle ID** as iOS 26 requires a certificate for JIT.
 
 1. Download the [TuliphookJIT.js](https://github.com/geode-sdk/ios-launcher/blob/main/TuliphookJIT.js) script (click on the script name, then press the download button on the redirected page to download it)
 2. On the Geode **app settings** in **LiveContainer**, find the **JIT Launch Script** option and select the **TuliphookJIT.js** script that you have downloaded
