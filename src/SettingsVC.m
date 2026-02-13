@@ -860,7 +860,7 @@ extern NSString *lcAppUrlScheme;
 							return [Utils
 								showError:self
 									title:[NSString stringWithFormat:@"The test library has failed to load. This means your certificate may be having issue. Please try to: 1. "
-																	 @"Reopen %@; 2. Refresh all apps in %@; 3. Re-patch %@ and try again.\n\nIf you imported certificate, "
+																	 @"Reopen %@; 2. Refresh all apps in %@; 3. Tap Refresh Certificate from %@ and try again.\n\nIf you imported certificate, "
 																	 @"please ensure the certificate is valid, and it is NOT an enterprise certificate.",
 																	 [LCUtils getStoreName], [LCUtils getStoreName], [LCUtils getStoreName]]
 									error:nil];
@@ -1045,7 +1045,7 @@ extern NSString *lcAppUrlScheme;
 		[Setting simpleCreate:@"Patch Binary".loc type:SettingTypeButton action:^{
 			// Patch
 			[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
-				withHandlerAddress:0x8b8000
+				withHandlerAddress:0x8c4000
 				force:YES
 				withSafeMode:NO
 				withEntitlements:YES completionHandler:^(BOOL success, NSString* error) {
@@ -1137,7 +1137,7 @@ extern NSString *lcAppUrlScheme;
 				return;
 			}
 			[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
-				withHandlerAddress:0x8b8000 force:YES withSafeMode:YES
+				withHandlerAddress:0x8c4000 force:YES withSafeMode:YES
 				withEntitlements:YES completionHandler:^(BOOL success, NSString* error) {
 				dispatch_async(dispatch_get_main_queue(), ^{
 					if (success) {
@@ -1161,7 +1161,7 @@ extern NSString *lcAppUrlScheme;
 				return;
 			}
 			[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
-				withHandlerAddress:0x8b8000
+				withHandlerAddress:0x8c4000
 				force:YES
 				withSafeMode:YES
 				withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {

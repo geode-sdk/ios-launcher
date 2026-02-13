@@ -133,7 +133,7 @@ BOOL isBinarySigned(struct mach_header_64* header) {
 int LCPatchExecSlice(const char* path, struct mach_header_64* header, bool withGeode, bool withANGLE) {
 	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
 	if (isBinarySigned(header)) {
-        AppLog(@"Binary is signed! pengu if you crash then you have to restore binary!");
+		AppLog(@"Binary is signed! If you crash then restore binary!");
 		//return -1;
 	}
 	// Literally convert an executable to a dylib

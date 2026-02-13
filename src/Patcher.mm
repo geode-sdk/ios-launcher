@@ -1011,6 +1011,7 @@ for func in list:
 		}
 	}
 	AppLog(@"Binary has been patched! Now going to patch all mods with rendering engine...");
+	return completionHandler(YES, @"force");
 	[Patcher patchGeode:^(BOOL success2, NSString *error2) {
 		if (!success2) {
 			AppLog(@"Had an error patching with renderer but skipping anyway: %@", error2);
