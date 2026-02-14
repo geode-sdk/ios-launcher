@@ -259,15 +259,13 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 													   encoding:NSUTF8StringEncoding] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 				NSString* hash = gdPlist[@"CFBundleShortVersionString"];
 				AppLog(@"Versions: %@ & %@", hash, str);
-				if (!([hash isEqualToString:@"2.208"] && [str isEqualToString:@"2.207"])) {
-					if (![hash isEqualToString:str]) {
-						AppLog(@"Versions don't match. Assume GD needs an update!");
-						if (![Utils isSandboxed]) {
-							[Utils showNotice:_root title:@"launcher.notice.gd-outdated".loc];
-						} else {
-							[Utils showNotice:_root title:@"launcher.notice.gd-update".loc];
-							[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
-						}
+				if ([hash compare:str options:NSNumericSearch] == NSOrderedAscending) {
+					AppLog(@"Versions don't match. Assume GD needs an update!");
+					if (![Utils isSandboxed]) {
+						[Utils showNotice:_root title:@"launcher.notice.gd-outdated".loc];
+					} else {
+						[Utils showNotice:_root title:@"launcher.notice.gd-update".loc];
+						[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
 					}
 				}
 				[self.root updateState];

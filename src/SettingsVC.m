@@ -903,6 +903,12 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"advanced.use-nightly".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"USE_NIGHTLY" switchTag:11 action:nil custom:nil],
 		[Setting create:@"advanced.warn-launcher-jit".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"DONT_WARN_JIT" switchTag:13 action:nil custom:nil],
 		[Setting create:@"Platform Console".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"PLATFORM_CONSOLE" switchTag:24 action:nil custom:nil],
+		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
+			return ![Utils isSandboxed];
+		} visible:nil prefsKey:nil switchTag:0 action:^{
+			[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
+			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
+		} custom:nil],
 		[Setting simpleCreate:@"advanced.view-app-logs".loc type:SettingTypeButtonWithIcon action:^{
 			// View App Logs
 			[[self navigationController] pushViewController:[[LogsViewController alloc] initWithFile:[[LCPath docPath] URLByAppendingPathComponent:@"app.log"]] animated:YES];
@@ -1175,12 +1181,12 @@ extern NSString *lcAppUrlScheme;
 				}
 			];
 		} custom:nil],
-		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
-			return ![Utils isSandboxed];
-		} visible:nil prefsKey:nil switchTag:0 action:^{
-			[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
-			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
-		} custom:nil],
+		// [Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
+		// 	return ![Utils isSandboxed];
+		// } visible:nil prefsKey:nil switchTag:0 action:^{
+		// 	[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
+		// 	[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
+		// } custom:nil],
 		[Setting simpleCreate:@"View Bundle Dir".loc type:SettingTypeButtonWithIcon action:^{
 			// View Bundle Dir
 			FileBrowserViewController* browser = [[FileBrowserViewController alloc] initWithPath:[[NSBundle mainBundle] bundlePath]];
