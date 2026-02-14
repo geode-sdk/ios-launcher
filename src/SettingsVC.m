@@ -873,7 +873,7 @@ extern NSString *lcAppUrlScheme;
 		} custom:nil],
 		[Setting create:@"Force Resign".loc type:SettingTypeButton disabled:^BOOL() {
 			if (@available(iOS 26.0, *)) {
-				return YES;
+				return NO;
 			}
 			return ![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_CERT_JIT"];
 		} visible:^BOOL() {
