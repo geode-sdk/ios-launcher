@@ -68,6 +68,7 @@ extern NSString *lcAppUrlScheme;
 		@{ @"name" : @"Anh", @"url" : @"https://github.com/AnhNguyenlost13" },
 		@{ @"name" : @"pengubow", @"url" : @"https://github.com/pengubow" },
 		@{ @"name" : @"August (coopeeo)", @"url" : @"https://github.com/coopeeo" },
+		@{ @"name" : @"kafanase", @"url" : @"https://github.com/kafanase" }
 	];
 	[self createSettings];
 
