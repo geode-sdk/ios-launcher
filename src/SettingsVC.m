@@ -903,6 +903,9 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"advanced.use-nightly".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"USE_NIGHTLY" switchTag:11 action:nil custom:nil],
 		[Setting create:@"advanced.warn-launcher-jit".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"DONT_WARN_JIT" switchTag:13 action:nil custom:nil],
 		[Setting create:@"Platform Console".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"PLATFORM_CONSOLE" switchTag:24 action:nil custom:nil],
+		[Setting create:@"Rotate Platform Console".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {
+			return [[Utils getPrefs] boolForKey:@"PLATFORM_CONSOLE"];
+		} prefsKey:@"ROTATE_PLATFORM_CONSOLE" switchTag:25 action:nil custom:nil],
 		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
 			return ![Utils isSandboxed];
 		} visible:nil prefsKey:nil switchTag:0 action:^{
@@ -1554,6 +1557,10 @@ extern NSString *lcAppUrlScheme;
 		break;
 	case 24:
 		[Utils toggleKey:@"PLATFORM_CONSOLE"];
+		[self.tableView reloadData];
+		break;
+	case 25:
+		[Utils toggleKey:@"ROTATE_PLATFORM_CONSOLE"];
 		break;
 	}
 }
