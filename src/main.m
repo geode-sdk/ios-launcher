@@ -392,7 +392,10 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 				NSString* target = [NSBundle.mainBundle.privateFrameworksPath stringByAppendingPathComponent:@"PlatformConsole.dylib"];
 				symlink(target.UTF8String, platformPath.UTF8String);
 			}
-		    setenv("SHOW_PLATFORM_CONSOLE", "1", 1);
+			setenv("SHOW_PLATFORM_CONSOLE", "1", 1);
+			if ([gcUserDefaults boolForKey:@"ROTATE_PLATFORM_CONSOLE"]) {
+				setenv("ROTATE_PLATFORM_CONSOLE", "1", 1);
+			}
 		}
 
 		NSString* caHighFPSPath = [tweakFolder stringByAppendingPathComponent:@"CAHighFPS.dylib"];
