@@ -879,14 +879,20 @@ extern NSString *lcAppUrlScheme;
 		} visible:^BOOL() {
 			return [Utils isSandboxed] && ![[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} prefsKey:nil switchTag:0 action:^{
-			[_root signApp:YES completionHandler:^(BOOL success, NSString* error) {
-				dispatch_async(dispatch_get_main_queue(), ^{
-					if (!success) {
-						[Utils showError:self title:error error:nil];
-					} else {
-						[Utils showNotice:self title:@"Resign successful!"];
-					}
-				});
+			[Utils copyOrigBinary:^(BOOL isSuccess, NSString *errorStr) {
+				if (!isSuccess) {
+					[Utils showError:self title:[NSString stringWithFormat:@"Failed to copy Geometry Dash: %@", errorStr] error:nil];
+					return;
+				}
+				[_root signApp:YES completionHandler:^(BOOL success, NSString* error) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						if (!success) {
+							[Utils showError:self title:error error:nil];
+						} else {
+							[Utils showNotice:self title:@"Resign successful!"];
+						}
+					});
+				}];
 			}];
 		} custom:nil],
 		[Setting create:@"Allow Importing Cert".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {

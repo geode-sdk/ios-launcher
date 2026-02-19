@@ -89,7 +89,7 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	return results;
 }
 
-+ (NSString*)getGeodeVersion {
++ (NSString*)getRealGeodeVersion:(BOOL)withV {
 	NSFileManager* fm = NSFileManager.defaultManager;
 	if (![Utils isSandboxed]) {
 		NSString* applicationSupportDirectory = [[Utils getGDDocPath] stringByAppendingString:@"Library/Application Support"];
@@ -103,14 +103,19 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 			return @"Geode is not installed";
 		}
 	}
-	// no need to calculate anything if we're nightly...
-	if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
-		return @"Nightly";
-	} else if (cachedVersion) {
+	if (cachedVersion) {
 		if ([cachedVersion hasPrefix:@"v"]) {
-			return cachedVersion;
+			if (withV) {
+				return cachedVersion;
+			} else {
+				return [cachedVersion substringFromIndex:1];
+			}
 		} else {
-			return [NSString stringWithFormat:@"v%@", cachedVersion];
+			if (withV) {
+				return [NSString stringWithFormat:@"v%@", cachedVersion];
+			} else {
+				return cachedVersion;
+			}
 		}
 	}
 	NSString* currentHash = [[Utils getPrefs] stringForKey:@"CURRENT_TWEAK_HASH"];
@@ -134,9 +139,17 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 					[[Utils getPrefs] setObject:newHash forKey:@"CURRENT_TWEAK_HASH"];
 					AppLog(@"Set new version to %@ and hash to %@", cachedVersion, newHash);
 					if ([cachedVersion hasPrefix:@"v"]) {
-						return cachedVersion;
+						if (withV) {
+							return cachedVersion;
+						} else {
+							return [cachedVersion substringFromIndex:1];
+						}
 					} else {
-						return [NSString stringWithFormat:@"v%@", cachedVersion];
+						if (withV) {
+							return [NSString stringWithFormat:@"v%@", cachedVersion];
+						} else {
+							return cachedVersion;
+						}
 					}
 				}
 			}
@@ -144,12 +157,41 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	} else {
 		cachedVersion = [[Utils getPrefs] stringForKey:@"CURRENT_VERSION_TAG"];
 		if ([cachedVersion hasPrefix:@"v"]) {
-			return cachedVersion;
+			if (withV) {
+				return cachedVersion;
+			} else {
+				return [cachedVersion substringFromIndex:1];
+			}
 		} else {
-			return [NSString stringWithFormat:@"v%@", cachedVersion];
+			if (withV) {
+				return [NSString stringWithFormat:@"v%@", cachedVersion];
+			} else {
+				return cachedVersion;
+			}
 		}
 	}
 	return @"Couldn't fetch version";
+}
+
++ (NSString*)getGeodeVersion {
+	NSFileManager* fm = NSFileManager.defaultManager;
+	if (![Utils isSandboxed]) {
+		NSString* applicationSupportDirectory = [[Utils getGDDocPath] stringByAppendingString:@"Library/Application Support"];
+		if (applicationSupportDirectory != nil) {
+			if (![fm fileExistsAtPath:[applicationSupportDirectory stringByAppendingString:@"/GeometryDash/game/geode/Geode.ios.dylib"]]) {
+				return @"Geode is not installed";
+			}
+		}
+	} else {
+		if (![fm fileExistsAtPath:[[LCPath tweakPath].path stringByAppendingPathComponent:@"Geode.ios.dylib"]]) {
+			return @"Geode is not installed";
+		}
+	}
+	// no need to calculate anything if we're nightly...
+	if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
+		return @"Nightly";
+	}
+	return [Utils getRealGeodeVersion:YES];
 }
 
 + (void)updateGeodeVersion:(NSString*)newVer {

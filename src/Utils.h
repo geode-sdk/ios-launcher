@@ -10,6 +10,7 @@
 + (NSString*)gdBundleName;
 + (NSString*)launcherBundleName;
 + (NSString*)getGeodeVersion;
++ (NSString*)getRealGeodeVersion:(BOOL)withV;
 
 + (NSString*)docPath;
 
