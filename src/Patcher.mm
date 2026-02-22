@@ -682,6 +682,18 @@ for func in list:
 			NSDictionary *modJSON = [NSJSONSerialization JSONObjectWithData:modJSONData options:kNilOptions error:&error2]; // JSONJSON
 			if (error2 || ![modJSON isKindOfClass:[NSDictionary class]]) continue;
 			NSString* godeSDK = modJSON[@"geode"];
+			if ([modJSON objectForKey:@"requires-patching"] != nil) {
+				BOOL requiresPatching = modJSON[@"requires-patching"];
+				if (requiresPatching) {
+					AppLog(@"%@ requires JIT! Skipping!", modId);
+					if ([modIDs containsObject:modId]) {
+						[modIDs removeObject:modId];
+					}
+					if ([modEnabledDict containsObject:modId]) {
+						[modEnabledDict removeObject:modId];
+					}
+				}
+			}
 			if (![godeSDK isKindOfClass:[NSString class]]) continue;
 			NSArray *verComponents = [[godeSDK componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
 			if (verComponents.count == 0) continue;
@@ -927,6 +939,18 @@ for func in list:
 			NSDictionary *modJSON = [NSJSONSerialization JSONObjectWithData:modJSONData options:kNilOptions error:&error2]; // JSONJSON
 			if (error2 || ![modJSON isKindOfClass:[NSDictionary class]]) continue;
 			NSString* godeSDK = modJSON[@"geode"];
+			if ([modJSON objectForKey:@"requires-patching"] != nil) {
+				BOOL requiresPatching = modJSON[@"requires-patching"];
+				if (requiresPatching) {
+					AppLog(@"%@ requires JIT! Skipping!", modId);
+					if ([modIDs containsObject:modId]) {
+						[modIDs removeObject:modId];
+					}
+					if ([modEnabledDict containsObject:modId]) {
+						[modEnabledDict removeObject:modId];
+					}
+				}
+			}
 			if (![godeSDK isKindOfClass:[NSString class]]) continue;
 			NSArray *verComponents = [[godeSDK componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
 			if (verComponents.count == 0) continue;
@@ -1147,6 +1171,18 @@ for func in list:
 			NSDictionary *modJSON = [NSJSONSerialization JSONObjectWithData:modJSONData options:kNilOptions error:&error2]; // JSONJSON
 			if (error2 || ![modJSON isKindOfClass:[NSDictionary class]]) continue;
 			NSString* godeSDK = modJSON[@"geode"];
+			if ([modJSON objectForKey:@"requires-patching"] != nil) {
+				BOOL requiresPatching = modJSON[@"requires-patching"];
+				if (requiresPatching) {
+					AppLog(@"%@ requires JIT! Skipping!", modId);
+					if ([modIDs containsObject:modId]) {
+						[modIDs removeObject:modId];
+					}
+					if ([modEnabledDict containsObject:modId]) {
+						[modEnabledDict removeObject:modId];
+					}
+				}
+			}
 			if (![godeSDK isKindOfClass:[NSString class]]) continue;
 			NSArray *verComponents = [[godeSDK componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
 			if (verComponents.count == 0) continue;
