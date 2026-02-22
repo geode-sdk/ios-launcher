@@ -5,6 +5,8 @@
 #import "VerifyInstall.h"
 #import "components/LogUtils.h"
 
+#define GD_VERSION @"2.208"
+
 typedef void (^DecompressCompletion)(NSError* _Nullable error);
 
 @implementation GeodeInstaller {
@@ -237,42 +239,23 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 	if (_root == nil || ![VerifyInstall verifyGDInstalled])
 		return;
 	AppLog(@"Verifying GD version...");
-	NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://jinx.firee.dev/gode/version.txt"]];
-	NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-	NSURLSessionDataTask* dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
-		if (error) {
-			return dispatch_async(dispatch_get_main_queue(), ^{
-				[Utils showError:_root title:@"launcher.error.req-failed".loc error:error];
-				[self.root updateState];
-				AppLog(@"Couldn't send request to get GD version: %@", error);
-			});
+	NSDictionary* gdPlist;
+	if (![Utils isSandboxed]) {
+		gdPlist = [NSDictionary dictionaryWithContentsOfFile:[[Utils getGDBundlePath] stringByAppendingPathComponent:@"GeometryJump.app/Info.plist"]];
+	} else {
+		gdPlist = [NSDictionary dictionaryWithContentsOfURL:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app/Info.plist"]];
+	}
+	NSString* hash = gdPlist[@"CFBundleShortVersionString"];
+	AppLog(@"Versions: %@ & %@", hash, GD_VERSION);
+	if ([hash compare:GD_VERSION options:NSNumericSearch] == NSOrderedAscending) {
+		AppLog(@"Versions don't match. Assume GD needs an update!");
+		if (![Utils isSandboxed]) {
+			[Utils showNotice:_root title:@"launcher.notice.gd-outdated".loc];
+		} else {
+			[Utils showNotice:_root title:@"launcher.notice.gd-update".loc];
+			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
 		}
-		if (data) {
-			dispatch_async(dispatch_get_main_queue(), ^{
-				NSDictionary* gdPlist;
-				if (![Utils isSandboxed]) {
-					gdPlist = [NSDictionary dictionaryWithContentsOfFile:[[Utils getGDBundlePath] stringByAppendingPathComponent:@"GeometryJump.app/Info.plist"]];
-				} else {
-					gdPlist = [NSDictionary dictionaryWithContentsOfURL:[[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app/Info.plist"]];
-				}
-				NSString* str = [[[NSString alloc] initWithData:data
-													   encoding:NSUTF8StringEncoding] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-				NSString* hash = gdPlist[@"CFBundleShortVersionString"];
-				AppLog(@"Versions: %@ & %@", hash, str);
-				if ([hash compare:str options:NSNumericSearch] == NSOrderedAscending) {
-					AppLog(@"Versions don't match. Assume GD needs an update!");
-					if (![Utils isSandboxed]) {
-						[Utils showNotice:_root title:@"launcher.notice.gd-outdated".loc];
-					} else {
-						[Utils showNotice:_root title:@"launcher.notice.gd-update".loc];
-						[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
-					}
-				}
-				[self.root updateState];
-			});
-		}
-	}];
-	[dataTask resume];
+	}
 }
 
 // updating
