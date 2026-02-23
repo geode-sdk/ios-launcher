@@ -1135,7 +1135,7 @@
 	}
 	NSFileManager* fm = [NSFileManager defaultManager];
 	if ([[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"]) {
-		if (![fm fileExistsAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path]) {
+		if (![fm fileExistsAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path] && ![fm fileExistsAtPath:[[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path]) {
 			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"common.notice".loc message:@"launcher.notice.enterprise.s1".loc
 																	preferredStyle:UIAlertControllerStyleAlert];
 			UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"common.yes".loc style:UIAlertActionStyleDefault

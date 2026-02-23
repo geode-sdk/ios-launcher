@@ -677,6 +677,9 @@ extern NSString *lcAppUrlScheme;
 			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
 		} prefsKey:nil switchTag:0 action:^{
 			NSString* extractionPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path;
+			if ([[Utils getPrefs] boolForKey:@"HELPER_IPA_DOCS"]) {
+				extractionPath = [[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path;
+			}
 			NSURL* extractionPathURL = [NSURL fileURLWithPath:extractionPath];
 			if (![fm fileExistsAtPath:extractionPath]) {
 				[Utils showError:self title:@"Helper IPA doesn't exist! Tap Launch to generate one." error:nil];
@@ -1009,6 +1012,7 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"Is Compressing IPA".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"IS_COMPRESSING_IPA" switchTag:18 action:nil custom:nil],
 		[Setting create:@"Force TXM".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_TXM" switchTag:21 action:nil custom:nil],
 		[Setting create:@"Force ANGLEGLKit".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_ANGLE" switchTag:23 action:nil custom:nil],
+		[Setting create:@"Change .ipa loc to Docs".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"HELPER_IPA_DOCS" switchTag:26 action:nil custom:nil],
 		[Setting simpleCreate:@"developer.testbundleaccess".loc type:SettingTypeButton action:^{
 			// Test GD Bundle Access (testbundleaccess) why do i always use it for testing? its quicker! Test Bundle Access
 			[Utils showNotice:self title:[Utils getGDDocPath]];
@@ -1425,6 +1429,9 @@ extern NSString *lcAppUrlScheme;
 				}
 			}
 			[fm removeItemAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path error:nil];
+			if ([[Utils getPrefs] boolForKey:@"HELPER_IPA_DOCS"]) {
+				[fm removeItemAtPath:[[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path error:nil];
+			}
 			NSString* infoPath = [bundlePath URLByAppendingPathComponent:@"Info.plist"].path;
 			NSString* infoBackupPath = [bundlePath URLByAppendingPathComponent:@"InfoBackup.plist"].path;
 			if ([fm fileExistsAtPath:infoBackupPath]) {
@@ -1569,6 +1576,9 @@ extern NSString *lcAppUrlScheme;
 		break;
 	case 25:
 		[Utils toggleKey:@"ROTATE_PLATFORM_CONSOLE"];
+		break;
+	case 26:
+		[Utils toggleKey:@"HELPER_IPA_DOCS"];
 		break;
 	}
 }

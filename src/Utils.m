@@ -290,8 +290,14 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	[[Utils getPrefs] setBool:YES forKey:@"IS_COMPRESSING_IPA"];
 	NSFileManager* fm = [NSFileManager defaultManager];
 	[fm removeItemAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path error:nil];
+	if ([[Utils getPrefs] boolForKey:@"HELPER_IPA_DOCS"]) {
+		[fm removeItemAtPath:[[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path error:nil];
+	}
 	NSString* fileToExtract = [[LCPath bundlePath] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"].path;
 	NSString* extractionPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path;
+	if ([[Utils getPrefs] boolForKey:@"HELPER_IPA_DOCS"]) {
+		extractionPath = [[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path;
+	}
 	NSURL* extractionPathURL = [NSURL fileURLWithPath:extractionPath];
 	AppLog(@"Starting compression of %@ to %@", fileToExtract, extractionPath);
 	[[NSFileManager defaultManager] createFileAtPath:extractionPath contents:nil attributes:nil];
