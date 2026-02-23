@@ -914,7 +914,9 @@ extern NSString *lcAppUrlScheme;
 		} prefsKey:@"ROTATE_PLATFORM_CONSOLE" switchTag:25 action:nil custom:nil],
 		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
 			return ![Utils isSandboxed];
-		} visible:nil prefsKey:nil switchTag:0 action:^{
+		} visible:^BOOL() {
+			return NO;
+	    } prefsKey:nil switchTag:0 action:^{
 			[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
 			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
 		} custom:nil],
@@ -1221,7 +1223,7 @@ extern NSString *lcAppUrlScheme;
 			if (launchArgs && [launchArgs length] > 2) {
 				env = launchArgs;
 			} else {
-				env = @"--geode:use-common-handler-offset=8b8000";
+				env = @"--geode:use-common-handler-offset=8c4000";
 			}
 			[env writeToFile:extractionPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
 			UIAlertController* alert =
