@@ -587,10 +587,10 @@ extern NSString *lcAppUrlScheme;
 		}],
 		[Setting create:@"Enable 120hz (Experimental)".loc type:SettingTypeToggle disabled:^BOOL() {
 			//return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
-            //return ![Utils isSandboxed] || ![Utils isDevCert];
-            return YES;
+            return ![Utils isSandboxed] || ![Utils isDevCert];
+            //return YES;
 		} visible:^BOOL() {
-            return NO;
+            return YES;
        } prefsKey:@"USE_MAX_FPS" switchTag:20 action:nil custom:nil],
 	];
 	NSArray<Setting*>* jit = @[
