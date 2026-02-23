@@ -587,10 +587,10 @@ extern NSString *lcAppUrlScheme;
 		}],
 		[Setting create:@"Enable 120hz (Experimental)".loc type:SettingTypeToggle disabled:^BOOL() {
 			//return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
-            return ![Utils isSandboxed] || ![Utils isDevCert];
-            //return YES;
-		} visible:^BOOL() {
+            //return ![Utils isSandboxed] || ![Utils isDevCert];
             return YES;
+		} visible:^BOOL() {
+            return NO;
        } prefsKey:@"USE_MAX_FPS" switchTag:20 action:nil custom:nil],
 	];
 	NSArray<Setting*>* jit = @[
@@ -915,7 +915,7 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
 			return ![Utils isSandboxed];
 		} visible:^BOOL() {
-			return NO;
+			return YES;
 	    } prefsKey:nil switchTag:0 action:^{
 			[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
 			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
