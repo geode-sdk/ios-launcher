@@ -3,7 +3,7 @@ This guide will teach you how to install Geode using an Apple Developer Certific
 
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14 and above | No* | *Partial* to *Full* (*Partial* on JIT-Less) | Free |
+| iOS 14 and above | No* | *Partial* to *Full* (*Partial* on JIT-Less) | Paid |
 
 # Prerequisites
 > [!NOTE]
