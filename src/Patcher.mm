@@ -1189,7 +1189,6 @@ for func in list:
 			NSArray *currComponents = [[[Utils getRealGeodeVersion:NO] componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
 			if (currComponents.count == 0) continue;
 			if ([verComponents[0] integerValue] != [currComponents[0] integerValue]) {
-				AppLog(@"%@ has a different SDK version! Skipping! (%@ vs %@)", modId, [Utils getRealGeodeVersion:NO], godeSDK);
 				if ([modIDs containsObject:modId]) {
 					[modIDs removeObject:modId];
 				}

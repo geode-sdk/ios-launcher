@@ -256,6 +256,7 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
 		}
 	}
+	[self.root updateState];
 }
 
 // updating

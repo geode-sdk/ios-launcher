@@ -39,13 +39,35 @@ extern NSBundle* gcMainBundle;
 			ans = (__bridge NSString*)cfans;
 		}
 		CFRelease(taskSelf);
-		if (!ans)
-			ans = [[gcMainBundle.bundleIdentifier componentsSeparatedByString:@"."] lastObject];
+		if (!ans) {
+			// the above seems not to work if the device is jailbroken by Palera1n, so we use the public api one as backup
+			// https://stackoverflow.com/a/11841898
+			NSString *tempAccountName = @"bundleSeedID";
+			NSDictionary *query = @{
+				(__bridge NSString *)kSecClass : (__bridge NSString *)kSecClassGenericPassword,
+				(__bridge NSString *)kSecAttrAccount : tempAccountName,
+				(__bridge NSString *)kSecAttrService : @"",
+				(__bridge NSString *)kSecReturnAttributes: (__bridge NSNumber *)kCFBooleanTrue,
+			};
+			CFDictionaryRef result = nil;
+			OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, (CFTypeRef *)&result);
+			if (status == errSecItemNotFound)
+				status = SecItemAdd((__bridge CFDictionaryRef)query, (CFTypeRef *)&result);
+			if (status == errSecSuccess) {
+				status = SecItemDelete((__bridge CFDictionaryRef)query); // remove temp item
+				NSDictionary *dict = (__bridge_transfer NSDictionary *)result;
+				NSString *accessGroup = dict[(__bridge NSString *)kSecAttrAccessGroup];
+				NSArray *components = [accessGroup componentsSeparatedByString:@"."];
+				NSString *bundleSeedID = [[components objectEnumerator] nextObject];
+				ans = bundleSeedID;
+			}
+		}
 	});
 	return ans;
 }
 
 + (NSString*)appGroupID {
+	if (![Utils isSandboxed]) return @"Unknown";
 	static dispatch_once_t once;
 	static NSString* appGroupID = @"Unknown";
 	dispatch_once(&once, ^{

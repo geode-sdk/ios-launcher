@@ -587,11 +587,11 @@ extern NSString *lcAppUrlScheme;
 		}],
 		[Setting create:@"Enable 120hz (Experimental)".loc type:SettingTypeToggle disabled:^BOOL() {
 			//return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
-            //return ![Utils isSandboxed] || ![Utils isDevCert];
-            return YES;
+			//return ![Utils isSandboxed] || ![Utils isDevCert];
+			return YES;
 		} visible:^BOOL() {
-            return NO;
-       } prefsKey:@"USE_MAX_FPS" switchTag:20 action:nil custom:nil],
+			return NO;
+		} prefsKey:@"USE_MAX_FPS" switchTag:20 action:nil custom:nil],
 	];
 	NSArray<Setting*>* jit = @[
 		[Setting simpleCreate:@"jit.jit-enabler".loc type:SettingTypeCustomVal1 action:^{
@@ -911,18 +911,12 @@ extern NSString *lcAppUrlScheme;
 		} visible:nil prefsKey:@"MANUAL_REOPEN" switchTag:7 action:nil custom:nil],
 		[Setting create:@"advanced.use-nightly".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"USE_NIGHTLY" switchTag:11 action:nil custom:nil],
 		[Setting create:@"advanced.warn-launcher-jit".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"DONT_WARN_JIT" switchTag:13 action:nil custom:nil],
-		[Setting create:@"Platform Console".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"PLATFORM_CONSOLE" switchTag:24 action:nil custom:nil],
+		[Setting create:@"Platform Console".loc type:SettingTypeToggle disabled:^BOOL() {
+			return ![Utils isSandboxed];
+		} visible:nil prefsKey:@"PLATFORM_CONSOLE" switchTag:24 action:nil custom:nil],
 		[Setting create:@"Rotate Platform Console".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {
 			return [[Utils getPrefs] boolForKey:@"PLATFORM_CONSOLE"];
 		} prefsKey:@"ROTATE_PLATFORM_CONSOLE" switchTag:25 action:nil custom:nil],
-		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
-			return ![Utils isSandboxed];
-		} visible:^BOOL() {
-			return YES;
-	    } prefsKey:nil switchTag:0 action:^{
-			[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
-			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
-		} custom:nil],
 		[Setting simpleCreate:@"advanced.view-app-logs".loc type:SettingTypeButtonWithIcon action:^{
 			// View App Logs
 			[[self navigationController] pushViewController:[[LogsViewController alloc] initWithFile:[[LCPath docPath] URLByAppendingPathComponent:@"app.log"]] animated:YES];
@@ -936,6 +930,19 @@ extern NSString *lcAppUrlScheme;
 			// View recent crash
 			NSURL* file = [Utils pathToMostRecentLogInDirectory:[[Utils docPath] stringByAppendingString:@"game/geode/crashlogs/"]];
 			[[self navigationController] pushViewController:[[LogsViewController alloc] initWithFile:file] animated:YES];
+		} custom:nil],
+		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
+			return ![Utils isSandboxed];
+		} visible:nil prefsKey:nil switchTag:0 action:^{
+			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Warning" message:@"Are you sure you want to mark Geode as wanting a GD update?\nThis will force Geode to think that Geode needs to update Geometry Dash to the latest version. You shouldn't do this unless geode is marking Geometry Dash as outdated.".loc preferredStyle:UIAlertControllerStyleAlert];
+			UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Yes I do" style:UIAlertActionStyleDestructive handler:^(UIAlertAction* _Nonnull action) {
+				[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
+				[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
+			}];
+			UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+			[alert addAction:okAction];
+			[alert addAction:cancelAction];
+			[self presentViewController:alert animated:YES completion:nil];
 		} custom:nil]
 	];
 	NSArray<Setting*>* about = @[
