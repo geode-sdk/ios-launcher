@@ -213,16 +213,7 @@
 	_icons = @[
 		@{ @"name" : @"Default", @"Logo" : @"geode_logo", @"iconName" : @"AppIcon" },
 		@{ @"name" : @"Geode", @"Logo" : @"new_geode_logo", @"iconName" : @"Geode" },
-		@{ @"name" : @"Pride", @"Logo" : @"pride_logo", @"iconName" : @"Pride" },
-		@{ @"name" : @"Lesbian", @"Logo" : @"lesbian_logo", @"iconName" : @"Lesbian" },
-		@{ @"name" : @"Gay", @"Logo" : @"gay_logo", @"iconName" : @"Gay" },
-		@{ @"name" : @"Bi", @"Logo" : @"bi_logo", @"iconName" : @"Bi" },
-		@{ @"name" : @"Trans", @"Logo" : @"trans_logo", @"iconName" : @"Trans" },
-		@{ @"name" : @"Pan", @"Logo" : @"pan_logo", @"iconName" : @"Pan" },
-		@{ @"name" : @"Nonbinary", @"Logo" : @"nonbinary_logo", @"iconName" : @"Nonbinary" },
-		@{ @"name" : @"Asexual", @"Logo" : @"asexual_logo", @"iconName" : @"Asexual" },
-		@{ @"name" : @"Genderfluid", @"Logo" : @"genderfluid_logo", @"iconName" : @"Genderfluid" },
-		@{ @"name" : @"Perfection.", @"Logo" : @"pride_logo", @"iconName" : @"Perfection" }
+		@{ @"name" : @"Perfection.", @"Logo" : @"new_geode_logo", @"iconName" : @"Perfection" }
 	];
 
 	self.impactFeedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy];

@@ -1481,14 +1481,14 @@
 		[Utils toggleKey:@"JITLESS"];
 		if ([sender isOn]) {
 			[[Utils getPrefs] setBool:NO forKey:@"MANUAL_REOPEN"];
-			[[UIApplication sharedApplication] setAlternateIconName:@"Pride" completionHandler:^(NSError* _Nullable error) {
+			[[UIApplication sharedApplication] setAlternateIconName:@"Geode" completionHandler:^(NSError* _Nullable error) {
 				if (error) {
 					AppLog(@"Failed to set alternate icon: %@", error);
 				} else {
 					AppLog(@"Icon set successfully.");
 				}
 			}];
-			[[Utils getPrefs] setValue:@"Pride" forKey:@"CURRENT_ICON"];
+			[[Utils getPrefs] setValue:@"Geode" forKey:@"CURRENT_ICON"];
 			[_root updateLogoImage:2];
 		} else {
 			NSFileManager* fm = [NSFileManager defaultManager];
@@ -1539,14 +1539,14 @@
 			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Warning" message:@"jitless.enterprise.warning".loc preferredStyle:UIAlertControllerStyleAlert];
 			UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Yes I do" style:UIAlertActionStyleDestructive handler:^(UIAlertAction* _Nonnull action) {
 				[Utils toggleKey:@"ENTERPRISE_MODE"];
-				[[UIApplication sharedApplication] setAlternateIconName:@"Pride" completionHandler:^(NSError* _Nullable error) {
+				[[UIApplication sharedApplication] setAlternateIconName:@"Geode" completionHandler:^(NSError* _Nullable error) {
 					if (error) {
 						AppLog(@"Failed to set alternate icon: %@", error);
 					} else {
 						AppLog(@"Icon set successfully.");
 					}
 				}];
-				[[Utils getPrefs] setValue:@"Pride" forKey:@"CURRENT_ICON"];
+				[[Utils getPrefs] setValue:@"Geode" forKey:@"CURRENT_ICON"];
 				[_root updateLogoImage:2];
 				[self.tableView reloadData];
 			}];

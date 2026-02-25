@@ -16,15 +16,6 @@
 	self.icons = @[
 		@{ @"name" : @"Default", @"iconName" : @"AppIcon", @"iconImg" : @"AppIcon60x60" },
 		@{ @"name" : @"Geode", @"iconName" : @"Geode", @"iconImg" : @"GeodeIcon60x60" },
-		@{ @"name" : @"Pride", @"iconName" : @"Pride", @"iconImg" : @"PrideIcon60x60" },
-		@{ @"name" : @"Lesbian", @"iconName" : @"Lesbian", @"iconImg" : @"LesbianIcon60x60" },
-		@{ @"name" : @"Gay", @"iconName" : @"Gay", @"iconImg" : @"GayIcon60x60" },
-		@{ @"name" : @"Bi", @"iconName" : @"Bi", @"iconImg" : @"BiIcon60x60" },
-		@{ @"name" : @"Trans", @"iconName" : @"Trans", @"iconImg" : @"TransIcon60x60" },
-		@{ @"name" : @"Pan", @"iconName" : @"Pan", @"iconImg" : @"PanIcon60x60" },
-		@{ @"name" : @"Nonbinary", @"iconName" : @"Nonbinary", @"iconImg" : @"NonbinaryIcon60x60" },
-		@{ @"name" : @"Asexual", @"iconName" : @"Asexual", @"iconImg" : @"AsexualIcon60x60" },
-		@{ @"name" : @"Genderfluid", @"iconName" : @"Genderfluid", @"iconImg" : @"GenderfluidIcon60x60" },
 		@{ @"name" : @"Perfection.", @"iconName" : @"Perfection", @"iconImg" : @"PerfectionIcon60x60" },
 	];
 	// https://github.com/reactwg/react-native-new-architecture/blob/76d8426c27c1bf30c235f653e425ef872554a33b/docs/fabric-native-components.md
