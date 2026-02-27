@@ -15,6 +15,9 @@ This page **will help you install Geode on your iDevice**. Unlike other platform
 | [Free Certificates](/ENTERPRISE-INSTALL-GUIDE.md) | iOS 14+ | No | Partial | Free |
 | [LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md) | iOS 15+ | Yes* | Full (JIT) / Partial (JIT-less) | Free |
 
+In case you still do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
+![](screenshots/geode_path.png)
+
 > [!NOTE]
 > The guides are accessible by clicking on the names of each guide on the table.
 > \
@@ -98,6 +101,3 @@ Here's a comparison of all methods for you to see which method is the most suita
 ### Cons
 - Requires a computer (as it's supposed to be used together with SideStore)
 - Might require some extra setup
-
-In case you still do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
-![](screenshots/geode_path.png)
