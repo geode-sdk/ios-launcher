@@ -587,7 +587,7 @@ for func in list:
 		return completionHandler(YES, @"");
 	}
 	if ([UIScreen mainScreen].maximumFramesPerSecond <= 60 && ![[Utils getPrefs] boolForKey:@"FORCE_ANGLE"]) {
-		AppLog(@"Skipping to Patch Geode becuase device doesn't support Pro-Motion.");
+		AppLog(@"Skipping to Patch Geode because device doesn't support Pro-Motion.");
 		return completionHandler(YES, @"");
 	}
 	AppLog(@"Skipping to Patch Geode.");

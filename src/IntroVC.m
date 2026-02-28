@@ -1084,7 +1084,7 @@ bool passJITTest = false;
 				} else {
 					title = @"common.notice".loc;
 					if (@available(iOS 26.0, *)) {
-						linkToGuide = @"https://github.com/geode-sdk/ios-launcher/blob/main/JITLESS-INSTALL-GUIDE.md";
+						linkToGuide = @"https://github.com/geode-sdk/ios-launcher/blob/main/MODERN-IOS-INSTALL.md";
 					} else {
 						linkToGuide = @"https://github.com/geode-sdk/ios-launcher/blob/main/INSTALL.md";
 					}
