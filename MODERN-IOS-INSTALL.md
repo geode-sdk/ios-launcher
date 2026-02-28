@@ -52,12 +52,12 @@ Here you have 2 options:
 
 
 # Launch Geode
-## With JIT
+## JIT
 > [!TIP]
 > Skip this **if you're on iOS 16**. SideStore lets you enable JIT **directly from it**. To do so, go to the **My Apps** section in SideStore, hold Geode, and press **"Enable JIT"** (you need to have LocalDevVPN enabled for this).
 
 > [!NOTE]
-> For the first time setup, you will need a computer to get a pairing file. If you installed SideStore, you likely already have a pairing file, meaning there is no need to reinstall iDevice Pair.
+> For the first time setup, you will need a computer to get a pairing file. You will use iloader to get it.
 
 ### Installing StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases).
@@ -65,27 +65,19 @@ Here you have 2 options:
 3. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 4. Connect to LocalDevVPN.
 5. Launch StikDebug.
-6. Now you should be set! Simply tap on **Connect by App** to enable JIT on Geode.
-![](screenshots/stikdebug-updated.png)
+6. Now you should be set! Simply tap **Launch** in the Geode launcher to use Geode with JIT.
 
 ### Required Extra Steps for iOS 26
 1. Go to StikDebug settings
-2. Enable **Picture in Picture**, scroll down and see if your device is reported as **TXM** or **Non TXM**. If your device is reported as **Non TXM**, enable **Always Run Scripts**
+2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
 
 > [!WARNING]
-> Since LocalDevVPN only works on Wi-Fi and airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
+> Geode will require running with JIT since it does not initilize then run. Keep **LocalDevVPN** and **StikDebug** running to prevent a game crash.
+> StikDebug will only work on Wifi or Airplane Mode. To use Geode, I suggest using **JIT-less** to use things like search. (Some mods may not load, but at least you can use the internet.)
 
-1. Enable cellular.
-2. Connect to LocalDevVPN.
-3. Switch to airplane mode.
-4. Launch Geode with JIT using StikDebug.
-5. Turn off airplane mode.
-
-You will have to do this every time you want to launch Geode with JIT on cellular. As long as Geode stays open, you will not need to do these steps.
-
-## With JIT-Less
+## JIT-Less
 1. Press **"Enable JIT-Less"**.
-2. Press **"Import SideStore Certificate"**.
+2. Press **"Import SideStore Certificate"**. (I also sugest turning **Allow Importing Cert** on.)
 3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
 4. Press **"Launch"**.
 
