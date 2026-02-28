@@ -21,7 +21,7 @@
 
 ## Install SideStore
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
-2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
+2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section (https://docs.sidestore.io/docs/installation/prerequisites)
 3. Sign in with your Apple ID in iloader
 4. In the **Installers** section in iloader, you should generally click "SideStore (Stable)".
 5. You will most likely get an **Untrusted Developer** error. To fix this, go to Settings > General > VPN and Device Management > Your Apple ID and press Trust. After doing this, move to the **Enabling Developer Mode** section below.
