@@ -997,17 +997,17 @@ bool passJITTest = false;
 
 - (void)afterPromptCert {
 	self.useJITLess = YES;
-	if (@available(iOS 26.0, *)) {
-		int flags;
-		csops(getpid(), 0, &flags, sizeof(flags));
-		bool runningJIT = (flags & CS_DEBUGGED) != 0;
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"stikjit://"]] || runningJIT) {
-			self.useJITLess = NO;
-			_currentStep = InstallStepWarning;
-			[self showWarningStep];
-			return;
-		}
-	}
+	// if (@available(iOS 26.0, *)) {
+	// 	int flags;
+	// 	csops(getpid(), 0, &flags, sizeof(flags));
+	// 	bool runningJIT = (flags & CS_DEBUGGED) != 0;
+	// 	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"stikjit://"]] || runningJIT) {
+	// 		self.useJITLess = NO;
+	// 		_currentStep = InstallStepWarning;
+	// 		[self showWarningStep];
+	// 		return;
+	// 	}
+	// }
 	_currentStep = InstallStepComplete;
 	[self completeSetup];
 }
