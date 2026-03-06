@@ -77,7 +77,7 @@ Here you have 2 options:
 
 ## JIT-Less
 1. Press **"Enable JIT-Less"**.
-2. Press **"Import SideStore Certificate"**. (I also sugest turning **Allow Importing Cert** on.)
+2. Press **"Import SideStore Certificate"**.
 3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
 4. Press **"Launch"**.
 
