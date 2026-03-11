@@ -1334,15 +1334,6 @@ extern NSString *lcAppUrlScheme;
 		[Utils toggleKey:@"JITLESS"];
 		if ([sender isOn]) {
 			[[Utils getPrefs] setBool:NO forKey:@"MANUAL_REOPEN"];
-			[[UIApplication sharedApplication] setAlternateIconName:@"Pride" completionHandler:^(NSError* _Nullable error) {
-				if (error) {
-					AppLog(@"Failed to set alternate icon: %@", error);
-				} else {
-					AppLog(@"Icon set successfully.");
-				}
-			}];
-			[[Utils getPrefs] setValue:@"Pride" forKey:@"CURRENT_ICON"];
-			[_root updateLogoImage:2];
 		} else {
 			NSFileManager* fm = [NSFileManager defaultManager];
 			NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
