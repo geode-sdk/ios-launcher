@@ -664,11 +664,6 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"jitless.enterprise".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {
 			return ![Utils isDevCert] && [Utils isSandboxed];
 		} prefsKey:@"ENTERPRISE_MODE" switchTag:16 action:nil custom:nil],
-		[Setting create:@"Launch without patching".loc type:SettingTypeButton disabled:nil visible:^BOOL() {
-			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
-		} prefsKey:nil switchTag:0 action:^{
-			[_root launchHelper2:NO patchCheck:NO];
-		} custom:nil],
 		[Setting create:@"Force Reset Patching".loc type:SettingTypeButton disabled:nil visible:^BOOL() {
 			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
 		} prefsKey:nil switchTag:0 action:^{
@@ -1022,6 +1017,11 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"Force TXM".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_TXM" switchTag:21 action:nil custom:nil],
 		[Setting create:@"Force ANGLEGLKit".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_ANGLE" switchTag:23 action:nil custom:nil],
 		[Setting create:@"Change .ipa loc to Docs".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"HELPER_IPA_DOCS" switchTag:26 action:nil custom:nil],
+        [Setting create:@"Launch without patching".loc type:SettingTypeButton disabled:nil visible:^BOOL() {
+			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
+		} prefsKey:nil switchTag:0 action:^{
+			[_root launchHelper2:NO patchCheck:NO];
+		} custom:nil],
 		[Setting simpleCreate:@"developer.testbundleaccess".loc type:SettingTypeButton action:^{
 			// Test GD Bundle Access (testbundleaccess) why do i always use it for testing? its quicker! Test Bundle Access
 			[Utils showNotice:self title:[Utils getGDDocPath]];
