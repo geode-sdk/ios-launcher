@@ -132,7 +132,7 @@
 		[UIApplication sharedApplication].idleTimerDisabled = NO;
 		[self.launchButton setTitle:@"launcher.launch".loc forState:UIControlStateNormal];
 		[self.launchButton setImage:[[UIImage systemImageNamed:@"play.fill"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-		if ([[Utils getPrefs] boolForKey:@"LOAD_AUTOMATICALLY"] && self.countdown != -5) {
+        if ([[Utils getPrefs] boolForKey:@"LOAD_AUTOMATICALLY"] && self.countdown != -5 && ![[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"]) {
 			[self.optionalTextLabel setHidden:NO];
 			self.launchButton.frame = CGRectMake(self.view.center.x - 95, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 140, 45);
 			self.settingsButton.frame = CGRectMake(self.view.center.x + 50, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 45, 45);

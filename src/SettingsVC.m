@@ -503,7 +503,9 @@ extern NSString *lcAppUrlScheme;
 				}
 			}
 		} custom:nil],
-		[Setting create:@"gameplay.auto-launch".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"LOAD_AUTOMATICALLY" switchTag:1 action:nil custom:nil],
+		[Setting create:@"gameplay.auto-launch".loc type:SettingTypeToggle disabled:^BOOL() {
+            return [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
+        } visible:nil prefsKey:@"LOAD_AUTOMATICALLY" switchTag:1 action:nil custom:nil],
 		[Setting create:@"gameplay.fix-rotation".loc type:SettingTypeToggle disabled:^BOOL() {
 			return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} visible:nil prefsKey:@"FIX_ROTATION" switchTag:5 action:nil custom:nil],
