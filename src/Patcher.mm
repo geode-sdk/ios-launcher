@@ -490,7 +490,7 @@ for func in list:
 	if (regex && !error) {
 		NSArray<NSTextCheckingResult*>* matches = [regex matchesInString:data options:0 range:NSMakeRange(0, data.length)];
 		for (NSTextCheckingResult* match in matches) {
-			NSRange range = [match rangeAtIndex:1];
+			NSRange range = [match rangeAtIndex:2];
 			NSString* string = [data substringWithRange:range];
 			[offsets addObject:string];
 		}
@@ -1010,8 +1010,11 @@ for func in list:
 			};
 		}
 		for (NSString* offset in [Patcher getStaticHookOffsetsFromData:dataString]) {
-			if ([Patcher patchFunc:data strAddr:offset textSect:textSect customSect:customSect]) {
-				AppLogDebug(@"Patched Function %@", offset);
+			NSString* currentOffset = offset;
+			if (![currentOffset hasPrefix:@"0x"])
+				currentOffset = [NSString stringWithFormat:@"0x%@", offset];
+			if ([Patcher patchFunc:data strAddr:currentOffset textSect:textSect customSect:customSect]) {
+				AppLogDebug(@"Patched Function %@", currentOffset);
 			};
 		}
 		NSArray<NSTextCheckingResult*>* staticMatches = [Patcher getStaticPatchesOffsetsFromData:dataString];

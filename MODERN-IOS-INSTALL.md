@@ -6,7 +6,7 @@
 
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less) | Free |
+| iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less, only 5% not supported) | Free |
 
 ## Prerequisites
 - A computer running Windows, macOS or Linux
@@ -53,6 +53,14 @@ Here you have 2 options:
 
 
 # Launch Geode
+## With JIT-Less
+1. Press **"Enable JIT-Less"**.
+2. Press **"Import SideStore Certificate"**.
+3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
+4. Press **"Launch"**.
+
+![](screenshots/jitless-sidestore.png)
+
 ## With JIT
 > [!TIP]
 > Skip this **if you're on iOS 16**. SideStore lets you enable JIT **directly from it**. To do so, go to the **My Apps** section in SideStore, hold Geode, and press **"Enable JIT"** (you need to have LocalDevVPN enabled for this).
@@ -72,6 +80,7 @@ Here you have 2 options:
 ### Required Extra Steps for iOS 26
 1. Go to StikDebug settings
 2. Enable **Picture in Picture**, scroll down and see if your device is reported as **TXM** or **Non TXM**. If your device is reported as **Non TXM**, enable **Always Run Scripts**
+3. Import a certificate in **Geode settings**, otherwise you will be stuck at a black screen when launching to Geometry Dash with Geode.
 
 > [!WARNING]
 > Since LocalDevVPN only works on Wi-Fi and airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
@@ -83,14 +92,6 @@ Here you have 2 options:
 5. Turn off airplane mode.
 
 You will have to do this every time you want to launch Geode with JIT on cellular. As long as Geode stays open, you will not need to do these steps.
-
-## With JIT-Less
-1. Press **"Enable JIT-Less"**.
-2. Press **"Import SideStore Certificate"**.
-3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
-4. Press **"Launch"**.
-
-![](screenshots/jitless-sidestore.png)
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
