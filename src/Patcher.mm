@@ -587,7 +587,7 @@ for func in list:
 		return completionHandler(YES, @"");
 	}
 	if ([UIScreen mainScreen].maximumFramesPerSecond <= 60 && ![[Utils getPrefs] boolForKey:@"FORCE_ANGLE"]) {
-		AppLog(@"Skipping to Patch Geode becuase device doesn't support Pro-Motion.");
+		AppLog(@"Skipping to Patch Geode because device doesn't support Pro-Motion.");
 		return completionHandler(YES, @"");
 	}
 	AppLog(@"Skipping to Patch Geode.");
@@ -676,6 +676,39 @@ for func in list:
 			if (![fm fileExistsAtPath:modPath isDirectory:&isDir] || !isDir) continue;
 			NSArray* modDir = [fm contentsOfDirectoryAtPath:modPath error:&error];
 			if (error) continue;
+			NSError* error2;
+			NSData* modJSONData = [NSData dataWithContentsOfFile:[modPath stringByAppendingPathComponent:@"/mod.json"] options:0 error:&error2];
+			if (error2) continue;
+			NSDictionary *modJSON = [NSJSONSerialization JSONObjectWithData:modJSONData options:kNilOptions error:&error2]; // JSONJSON
+			if (error2 || ![modJSON isKindOfClass:[NSDictionary class]]) continue;
+			NSString* godeSDK = modJSON[@"geode"];
+			if ([modJSON objectForKey:@"requires-patching"] != nil) {
+				BOOL requiresPatching = modJSON[@"requires-patching"];
+				if (requiresPatching) {
+					AppLog(@"%@ requires JIT! Skipping!", modId);
+					if ([modIDs containsObject:modId]) {
+						[modIDs removeObject:modId];
+					}
+					if ([modEnabledDict containsObject:modId]) {
+						[modEnabledDict removeObject:modId];
+					}
+				}
+			}
+			if (![godeSDK isKindOfClass:[NSString class]]) continue;
+			NSArray *verComponents = [[godeSDK componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
+			if (verComponents.count == 0) continue;
+			NSArray *currComponents = [[[Utils getRealGeodeVersion:NO] componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
+			if (currComponents.count == 0) continue;
+			if ([verComponents[0] integerValue] != [currComponents[0] integerValue]) {
+				AppLog(@"%@ has a different SDK version! Skipping! (%@ vs %@)", modId, [Utils getRealGeodeVersion:NO], godeSDK);
+				if ([modIDs containsObject:modId]) {
+					[modIDs removeObject:modId];
+				}
+				if ([modEnabledDict containsObject:modId]) {
+					[modEnabledDict removeObject:modId];
+				}
+				continue;
+			}
 			for (NSString* file in modDir) {
 				if ([file hasSuffix:@"ios.dylib"]) {
 					if ([modEnabledDict containsObject:file] && ![modConflictDict containsObject:file]) {
@@ -900,6 +933,39 @@ for func in list:
 			if (![fm fileExistsAtPath:modPath isDirectory:&isDir] || !isDir) continue;
 			NSArray* modDir = [fm contentsOfDirectoryAtPath:modPath error:&error];
 			if (error) continue;
+			NSError* error2;
+			NSData* modJSONData = [NSData dataWithContentsOfFile:[modPath stringByAppendingPathComponent:@"/mod.json"] options:0 error:&error2];
+			if (error2) continue;
+			NSDictionary *modJSON = [NSJSONSerialization JSONObjectWithData:modJSONData options:kNilOptions error:&error2]; // JSONJSON
+			if (error2 || ![modJSON isKindOfClass:[NSDictionary class]]) continue;
+			NSString* godeSDK = modJSON[@"geode"];
+			if ([modJSON objectForKey:@"requires-patching"] != nil) {
+				BOOL requiresPatching = modJSON[@"requires-patching"];
+				if (requiresPatching) {
+					AppLog(@"%@ requires JIT! Skipping!", modId);
+					if ([modIDs containsObject:modId]) {
+						[modIDs removeObject:modId];
+					}
+					if ([modEnabledDict containsObject:modId]) {
+						[modEnabledDict removeObject:modId];
+					}
+				}
+			}
+			if (![godeSDK isKindOfClass:[NSString class]]) continue;
+			NSArray *verComponents = [[godeSDK componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
+			if (verComponents.count == 0) continue;
+			NSArray *currComponents = [[[Utils getRealGeodeVersion:NO] componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
+			if (currComponents.count == 0) continue;
+			if ([verComponents[0] integerValue] != [currComponents[0] integerValue]) {
+				AppLog(@"%@ has a different SDK version! Skipping! (%@ vs %@)", modId, [Utils getRealGeodeVersion:NO], godeSDK);
+				if ([modIDs containsObject:modId]) {
+					[modIDs removeObject:modId];
+				}
+				if ([modEnabledDict containsObject:modId]) {
+					[modEnabledDict removeObject:modId];
+				}
+				continue;
+			}
 			for (NSString* file in modDir) {
 				if ([file hasSuffix:@"ios.dylib"]) {
 					if ([modEnabledDict containsObject:file] && ![modConflictDict containsObject:file]) {
@@ -1011,6 +1077,7 @@ for func in list:
 		}
 	}
 	AppLog(@"Binary has been patched! Now going to patch all mods with rendering engine...");
+	return completionHandler(YES, @"force");
 	[Patcher patchGeode:^(BOOL success2, NSString *error2) {
 		if (!success2) {
 			AppLog(@"Had an error patching with renderer but skipping anyway: %@", error2);
@@ -1098,6 +1165,38 @@ for func in list:
 			if (![fm fileExistsAtPath:modPath isDirectory:&isDir] || !isDir) continue;
 			NSArray* modDir = [fm contentsOfDirectoryAtPath:modPath error:&error];
 			if (error) continue;
+			NSError* error2;
+			NSData* modJSONData = [NSData dataWithContentsOfFile:[modPath stringByAppendingPathComponent:@"/mod.json"] options:0 error:&error2];
+			if (error2) continue;
+			NSDictionary *modJSON = [NSJSONSerialization JSONObjectWithData:modJSONData options:kNilOptions error:&error2]; // JSONJSON
+			if (error2 || ![modJSON isKindOfClass:[NSDictionary class]]) continue;
+			NSString* godeSDK = modJSON[@"geode"];
+			if ([modJSON objectForKey:@"requires-patching"] != nil) {
+				BOOL requiresPatching = modJSON[@"requires-patching"];
+				if (requiresPatching) {
+					AppLog(@"%@ requires JIT! Skipping!", modId);
+					if ([modIDs containsObject:modId]) {
+						[modIDs removeObject:modId];
+					}
+					if ([modEnabledDict containsObject:modId]) {
+						[modEnabledDict removeObject:modId];
+					}
+				}
+			}
+			if (![godeSDK isKindOfClass:[NSString class]]) continue;
+			NSArray *verComponents = [[godeSDK componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
+			if (verComponents.count == 0) continue;
+			NSArray *currComponents = [[[Utils getRealGeodeVersion:NO] componentsSeparatedByString:@"-"].firstObject componentsSeparatedByString:@"."];
+			if (currComponents.count == 0) continue;
+			if ([verComponents[0] integerValue] != [currComponents[0] integerValue]) {
+				if ([modIDs containsObject:modId]) {
+					[modIDs removeObject:modId];
+				}
+				if ([modEnabledDict containsObject:modId]) {
+					[modEnabledDict removeObject:modId];
+				}
+				continue;
+			}
 			for (NSString* file in modDir) {
 				if ([file hasSuffix:@"ios.dylib"]) {
 					if ([modEnabledDict containsObject:file] && ![modConflictDict containsObject:file]) {

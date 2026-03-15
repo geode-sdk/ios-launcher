@@ -4,7 +4,7 @@
 > This is because this method is time consuming, tedious, and slow for using Geode, as it will require you to install a patched Geometry Dash ("Geode Helper") each time you want to install a mod, update a mod, enable a mod, disable a mod, update Geode, and launch in safe mode.
 
 > [!CAUTION]
-> In this tutorial, you will install the Geode Helper. This Helper stores a seperate save data for Geometry Dash. Uninstalling the Helper will cause your ***__SAVE DATA, MODS AND MOD SETTINGS in the Helper, to be PERMANENTLY DELETED!!!__*** So please, **backup your data (saving your data from the GD account menu also works) before planning to uninstall the Helper** (you usually do not have to uninstall the Helper anyway, just sideload the Helper while it's installed and it will be updated) to prevent any data loss.
+> In this tutorial, you will install the Geode Helper. This Helper stores a seperate save data for Geometry Dash. Uninstalling the Helper will cause your ***__SAVE DATA, MODS AND MOD SETTINGS in the Helper, to be PERMANENTLY DELETED!!!__*** Instead, keep the Helper installed and just install the IPA the iOS launcher generates for you. Think of it like updating the Helper.
 
 > [!WARNING]
 > This guide will not teach you how to go about obtaining such certificates. These certificates ("free certificates") violate [Apple's Terms of Service](https://developer.apple.com/support/terms/apple-developer-program-license-agreement/#ADPLA5), and may get your iDevice blacklisted. As such, this guide is only for educational purposes, given the consequences: Use at your own risk.
@@ -50,10 +50,3 @@ This is because it is a **requirement** to use the launcher to open the Helper. 
 Once you launch the **Helper** with Geode by opening Geode and tapping launch, you will notice that it's asking to open the app in Geode. You will tap Open, and it should bring you back to the launcher, then back to the helper.
 
 After that, you should be in the game!
-
-> [!NOTE]
-> Anytime you want to install the Helper IPA, assume you are updating it.
-
-> [!TIP]
-> If the launcher thinks you need to patch, but you do not want to, simply: Exit the Geode app, reopen the Geode app, go to settings, tap **Launch without patching**
-> Only do this if you believe you have not installed a mod, updated a mod, enabled a mod, or disabled a mod, otherwise you will have issues.

@@ -503,7 +503,9 @@ extern NSString *lcAppUrlScheme;
 				}
 			}
 		} custom:nil],
-		[Setting create:@"gameplay.auto-launch".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"LOAD_AUTOMATICALLY" switchTag:1 action:nil custom:nil],
+		[Setting create:@"gameplay.auto-launch".loc type:SettingTypeToggle disabled:^BOOL() {
+            return [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
+        } visible:nil prefsKey:@"LOAD_AUTOMATICALLY" switchTag:1 action:nil custom:nil],
 		[Setting create:@"gameplay.fix-rotation".loc type:SettingTypeToggle disabled:^BOOL() {
 			return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} visible:nil prefsKey:@"FIX_ROTATION" switchTag:5 action:nil custom:nil],
@@ -587,11 +589,11 @@ extern NSString *lcAppUrlScheme;
 		}],
 		[Setting create:@"Enable 120hz (Experimental)".loc type:SettingTypeToggle disabled:^BOOL() {
 			//return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
-            //return ![Utils isSandboxed] || ![Utils isDevCert];
-            return YES;
+			//return ![Utils isSandboxed] || ![Utils isDevCert];
+			return YES;
 		} visible:^BOOL() {
-            return NO;
-       } prefsKey:@"USE_MAX_FPS" switchTag:20 action:nil custom:nil],
+			return NO;
+		} prefsKey:@"USE_MAX_FPS" switchTag:20 action:nil custom:nil],
 	];
 	NSArray<Setting*>* jit = @[
 		[Setting simpleCreate:@"jit.jit-enabler".loc type:SettingTypeCustomVal1 action:^{
@@ -662,11 +664,6 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"jitless.enterprise".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {
 			return ![Utils isDevCert] && [Utils isSandboxed];
 		} prefsKey:@"ENTERPRISE_MODE" switchTag:16 action:nil custom:nil],
-		[Setting create:@"Launch without patching".loc type:SettingTypeButton disabled:nil visible:^BOOL() {
-			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
-		} prefsKey:nil switchTag:0 action:^{
-			[_root launchHelper2:NO patchCheck:NO];
-		} custom:nil],
 		[Setting create:@"Force Reset Patching".loc type:SettingTypeButton disabled:nil visible:^BOOL() {
 			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
 		} prefsKey:nil switchTag:0 action:^{
@@ -677,6 +674,9 @@ extern NSString *lcAppUrlScheme;
 			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
 		} prefsKey:nil switchTag:0 action:^{
 			NSString* extractionPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path;
+			if ([[Utils getPrefs] boolForKey:@"HELPER_IPA_DOCS"]) {
+				extractionPath = [[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path;
+			}
 			NSURL* extractionPathURL = [NSURL fileURLWithPath:extractionPath];
 			if (![fm fileExistsAtPath:extractionPath]) {
 				[Utils showError:self title:@"Helper IPA doesn't exist! Tap Launch to generate one." error:nil];
@@ -860,7 +860,7 @@ extern NSString *lcAppUrlScheme;
 							return [Utils
 								showError:self
 									title:[NSString stringWithFormat:@"The test library has failed to load. This means your certificate may be having issue. Please try to: 1. "
-																	 @"Reopen %@; 2. Refresh all apps in %@; 3. Re-patch %@ and try again.\n\nIf you imported certificate, "
+																	 @"Reopen %@; 2. Refresh all apps in %@; 3. Tap Refresh Certificate from %@ and try again.\n\nIf you imported certificate, "
 																	 @"please ensure the certificate is valid, and it is NOT an enterprise certificate.",
 																	 [LCUtils getStoreName], [LCUtils getStoreName], [LCUtils getStoreName]]
 									error:nil];
@@ -873,20 +873,26 @@ extern NSString *lcAppUrlScheme;
 		} custom:nil],
 		[Setting create:@"Force Resign".loc type:SettingTypeButton disabled:^BOOL() {
 			if (@available(iOS 26.0, *)) {
-				return YES;
+				return NO;
 			}
 			return ![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_CERT_JIT"];
 		} visible:^BOOL() {
 			return [Utils isSandboxed] && ![[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} prefsKey:nil switchTag:0 action:^{
-			[_root signApp:YES completionHandler:^(BOOL success, NSString* error) {
-				dispatch_async(dispatch_get_main_queue(), ^{
-					if (!success) {
-						[Utils showError:self title:error error:nil];
-					} else {
-						[Utils showNotice:self title:@"Resign successful!"];
-					}
-				});
+			[Utils copyOrigBinary:^(BOOL isSuccess, NSString *errorStr) {
+				if (!isSuccess) {
+					[Utils showError:self title:[NSString stringWithFormat:@"Failed to copy Geometry Dash: %@", errorStr] error:nil];
+					return;
+				}
+				[_root signApp:YES completionHandler:^(BOOL success, NSString* error) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						if (!success) {
+							[Utils showError:self title:error error:nil];
+						} else {
+							[Utils showNotice:self title:@"Resign successful!"];
+						}
+					});
+				}];
 			}];
 		} custom:nil],
 		[Setting create:@"Allow Importing Cert".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {
@@ -902,7 +908,12 @@ extern NSString *lcAppUrlScheme;
 		} visible:nil prefsKey:@"MANUAL_REOPEN" switchTag:7 action:nil custom:nil],
 		[Setting create:@"advanced.use-nightly".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"USE_NIGHTLY" switchTag:11 action:nil custom:nil],
 		[Setting create:@"advanced.warn-launcher-jit".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"DONT_WARN_JIT" switchTag:13 action:nil custom:nil],
-		[Setting create:@"Platform Console".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"PLATFORM_CONSOLE" switchTag:24 action:nil custom:nil],
+		[Setting create:@"Platform Console".loc type:SettingTypeToggle disabled:^BOOL() {
+			return ![Utils isSandboxed];
+		} visible:nil prefsKey:@"PLATFORM_CONSOLE" switchTag:24 action:nil custom:nil],
+		[Setting create:@"Rotate Platform Console".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {
+			return [[Utils getPrefs] boolForKey:@"PLATFORM_CONSOLE"];
+		} prefsKey:@"ROTATE_PLATFORM_CONSOLE" switchTag:25 action:nil custom:nil],
 		[Setting simpleCreate:@"advanced.view-app-logs".loc type:SettingTypeButtonWithIcon action:^{
 			// View App Logs
 			[[self navigationController] pushViewController:[[LogsViewController alloc] initWithFile:[[LCPath docPath] URLByAppendingPathComponent:@"app.log"]] animated:YES];
@@ -916,6 +927,19 @@ extern NSString *lcAppUrlScheme;
 			// View recent crash
 			NSURL* file = [Utils pathToMostRecentLogInDirectory:[[Utils docPath] stringByAppendingString:@"game/geode/crashlogs/"]];
 			[[self navigationController] pushViewController:[[LogsViewController alloc] initWithFile:file] animated:YES];
+		} custom:nil],
+		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
+			return ![Utils isSandboxed];
+		} visible:nil prefsKey:nil switchTag:0 action:^{
+			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Warning" message:@"Are you sure you want to mark Geode as wanting a GD update?\nThis will force Geode to think that Geode needs to update Geometry Dash to the latest version. You shouldn't do this unless geode is marking Geometry Dash as outdated.".loc preferredStyle:UIAlertControllerStyleAlert];
+			UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Yes I do" style:UIAlertActionStyleDestructive handler:^(UIAlertAction* _Nonnull action) {
+				[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
+				[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
+			}];
+			UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+			[alert addAction:okAction];
+			[alert addAction:cancelAction];
+			[self presentViewController:alert animated:YES completion:nil];
 		} custom:nil]
 	];
 	NSArray<Setting*>* about = @[
@@ -992,6 +1016,12 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"Is Compressing IPA".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"IS_COMPRESSING_IPA" switchTag:18 action:nil custom:nil],
 		[Setting create:@"Force TXM".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_TXM" switchTag:21 action:nil custom:nil],
 		[Setting create:@"Force ANGLEGLKit".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_ANGLE" switchTag:23 action:nil custom:nil],
+		[Setting create:@"Change .ipa loc to Docs".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"HELPER_IPA_DOCS" switchTag:26 action:nil custom:nil],
+        [Setting create:@"Launch without patching".loc type:SettingTypeButton disabled:nil visible:^BOOL() {
+			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
+		} prefsKey:nil switchTag:0 action:^{
+			[_root launchHelper2:NO patchCheck:NO];
+		} custom:nil],
 		[Setting simpleCreate:@"developer.testbundleaccess".loc type:SettingTypeButton action:^{
 			// Test GD Bundle Access (testbundleaccess) why do i always use it for testing? its quicker! Test Bundle Access
 			[Utils showNotice:self title:[Utils getGDDocPath]];
@@ -1045,7 +1075,7 @@ extern NSString *lcAppUrlScheme;
 		[Setting simpleCreate:@"Patch Binary".loc type:SettingTypeButton action:^{
 			// Patch
 			[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
-				withHandlerAddress:0x8b8000
+				withHandlerAddress:0x8c4000
 				force:YES
 				withSafeMode:NO
 				withEntitlements:YES completionHandler:^(BOOL success, NSString* error) {
@@ -1137,7 +1167,7 @@ extern NSString *lcAppUrlScheme;
 				return;
 			}
 			[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
-				withHandlerAddress:0x8b8000 force:YES withSafeMode:YES
+				withHandlerAddress:0x8c4000 force:YES withSafeMode:YES
 				withEntitlements:YES completionHandler:^(BOOL success, NSString* error) {
 				dispatch_async(dispatch_get_main_queue(), ^{
 					if (success) {
@@ -1161,7 +1191,7 @@ extern NSString *lcAppUrlScheme;
 				return;
 			}
 			[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"]
-				withHandlerAddress:0x8b8000
+				withHandlerAddress:0x8c4000
 				force:YES
 				withSafeMode:YES
 				withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
@@ -1175,12 +1205,12 @@ extern NSString *lcAppUrlScheme;
 				}
 			];
 		} custom:nil],
-		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
-			return ![Utils isSandboxed];
-		} visible:nil prefsKey:nil switchTag:0 action:^{
-			[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
-			[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
-		} custom:nil],
+		// [Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
+		// 	return ![Utils isSandboxed];
+		// } visible:nil prefsKey:nil switchTag:0 action:^{
+		// 	[Utils showNotice:self title:@"launcher.notice.gd-update".loc];
+		// 	[[Utils getPrefs] setBool:YES forKey:@"GDNeedsUpdate"];
+		// } custom:nil],
 		[Setting simpleCreate:@"View Bundle Dir".loc type:SettingTypeButtonWithIcon action:^{
 			// View Bundle Dir
 			FileBrowserViewController* browser = [[FileBrowserViewController alloc] initWithPath:[[NSBundle mainBundle] bundlePath]];
@@ -1206,7 +1236,7 @@ extern NSString *lcAppUrlScheme;
 			if (launchArgs && [launchArgs length] > 2) {
 				env = launchArgs;
 			} else {
-				env = @"--geode:use-common-handler-offset=8b8000";
+				env = @"--geode:use-common-handler-offset=8c4000";
 			}
 			[env writeToFile:extractionPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
 			UIAlertController* alert =
@@ -1306,15 +1336,6 @@ extern NSString *lcAppUrlScheme;
 		[Utils toggleKey:@"JITLESS"];
 		if ([sender isOn]) {
 			[[Utils getPrefs] setBool:NO forKey:@"MANUAL_REOPEN"];
-			[[UIApplication sharedApplication] setAlternateIconName:@"Pride" completionHandler:^(NSError* _Nullable error) {
-				if (error) {
-					AppLog(@"Failed to set alternate icon: %@", error);
-				} else {
-					AppLog(@"Icon set successfully.");
-				}
-			}];
-			[[Utils getPrefs] setValue:@"Pride" forKey:@"CURRENT_ICON"];
-			[_root updateLogoImage:2];
 		} else {
 			NSFileManager* fm = [NSFileManager defaultManager];
 			NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
@@ -1408,6 +1429,9 @@ extern NSString *lcAppUrlScheme;
 				}
 			}
 			[fm removeItemAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path error:nil];
+			if ([[Utils getPrefs] boolForKey:@"HELPER_IPA_DOCS"]) {
+				[fm removeItemAtPath:[[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path error:nil];
+			}
 			NSString* infoPath = [bundlePath URLByAppendingPathComponent:@"Info.plist"].path;
 			NSString* infoBackupPath = [bundlePath URLByAppendingPathComponent:@"InfoBackup.plist"].path;
 			if ([fm fileExistsAtPath:infoBackupPath]) {
@@ -1548,6 +1572,13 @@ extern NSString *lcAppUrlScheme;
 		break;
 	case 24:
 		[Utils toggleKey:@"PLATFORM_CONSOLE"];
+		[self.tableView reloadData];
+		break;
+	case 25:
+		[Utils toggleKey:@"ROTATE_PLATFORM_CONSOLE"];
+		break;
+	case 26:
+		[Utils toggleKey:@"HELPER_IPA_DOCS"];
 		break;
 	}
 }

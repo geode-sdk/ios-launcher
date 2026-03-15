@@ -27,7 +27,7 @@ To build this project, you must have the following prerequisites installed:
 
 After installing these, you can compile the project by running:
 ```bash
-git clone https://github.com/geode-sdk/ios-launcher
+git clone --recurse-submodules https://github.com/geode-sdk/ios-launcher
 cd ios-launcher
 make package FINALPACKAGE=1 STRIP=0
 ```

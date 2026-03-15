@@ -132,7 +132,7 @@
 		[UIApplication sharedApplication].idleTimerDisabled = NO;
 		[self.launchButton setTitle:@"launcher.launch".loc forState:UIControlStateNormal];
 		[self.launchButton setImage:[[UIImage systemImageNamed:@"play.fill"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-		if ([[Utils getPrefs] boolForKey:@"LOAD_AUTOMATICALLY"] && self.countdown != -5) {
+        if ([[Utils getPrefs] boolForKey:@"LOAD_AUTOMATICALLY"] && self.countdown != -5 && ![[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"]) {
 			[self.optionalTextLabel setHidden:NO];
 			self.launchButton.frame = CGRectMake(self.view.center.x - 95, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 140, 45);
 			self.settingsButton.frame = CGRectMake(self.view.center.x + 50, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 45, 45);
@@ -588,7 +588,7 @@
 - (void)signAppWithSafeMode:(void (^)(BOOL success, NSString* error))completionHandler {
 	NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
 	if ([[Utils getPrefs] boolForKey:@"JITLESS"]) {
-		[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8b8000
+		[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8c4000
 						 force:NO
 				  withSafeMode:YES
 			  withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
@@ -736,7 +736,7 @@
 	}
 	NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
 	if ([[Utils getPrefs] boolForKey:@"JITLESS"]) {
-		[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8b8000
+		[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8c4000
 						 force:NO
 				  withSafeMode:NO
 			  withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
@@ -879,7 +879,7 @@
 			});
 		}];
 	} else {
-		[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8b8000
+		[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8c4000
 						 force:NO
 				  withSafeMode:NO
 			  withEntitlements:NO completionHandler:^(BOOL success, NSString* error) { completionHandler(success, error); }];
@@ -892,9 +892,9 @@
 		env = launchArgs;
 	} else {
 		if (safeMode) {
-			env = @"--geode:use-common-handler-offset=8b8000 --geode:safe-mode";
+			env = @"--geode:use-common-handler-offset=8c4000 --geode:safe-mode";
 		} else {
-			env = @"--geode:use-common-handler-offset=8b8000";
+			env = @"--geode:use-common-handler-offset=8c4000";
 		}
 	}
 	NSString* b64 = [[env dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0];
@@ -1069,7 +1069,7 @@
 	NSString* uniqId = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
 	[fm createFileAtPath:[bundlePath URLByAppendingPathComponent:@"sf.bd"].path contents:[uniqId dataUsingEncoding:NSUTF8StringEncoding] attributes:@{}];
 
-	[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8b8000
+	[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8c4000
 					 force:[[Utils getPrefs] boolForKey:@"IS_COMPRESSING_IPA"]
 			  withSafeMode:safeMode
 		  withEntitlements:YES completionHandler:^(BOOL success, NSString* error) {
@@ -1135,7 +1135,7 @@
 	}
 	NSFileManager* fm = [NSFileManager defaultManager];
 	if ([[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"]) {
-		if (![fm fileExistsAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path]) {
+		if (![fm fileExistsAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"Helper.ipa"].path] && ![fm fileExistsAtPath:[[LCPath docPath] URLByAppendingPathComponent:@"Helper.ipa"].path]) {
 			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"common.notice".loc message:@"launcher.notice.enterprise.s1".loc
 																	preferredStyle:UIAlertControllerStyleAlert];
 			UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"common.yes".loc style:UIAlertActionStyleDefault

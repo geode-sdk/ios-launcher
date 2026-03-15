@@ -412,6 +412,10 @@ int compressEnt(NSString* docPath, NSString* zipPath, BOOL* force) {
 		if ([fm fileExistsAtPath:modBinPath]) {
 			[files addObject:@{@"path" : modBinPath, @"includeData" : @YES}];
 		}
+		NSString* modJsonPath = [modPath stringByAppendingPathComponent:@"mod.json"];
+		if ([fm fileExistsAtPath:modJsonPath]) {
+			[files addObject:@{@"path" : modJsonPath, @"includeData" : @YES}];
+		}
 	}
 
 	NSString* savedJsonPath = [docPath stringByAppendingPathComponent:@"save/geode/mods/geode.loader/saved.json"];

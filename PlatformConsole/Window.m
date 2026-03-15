@@ -56,13 +56,25 @@
 
 - (instancetype)init {
 	CGRect frame = CGRectMake(100, 100, 400, 200);
-	self = [super initWithFrame:frame];
+	BOOL rotate = getenv("ROTATE_PLATFORM_CONSOLE");
+	if (rotate) {
+		frame = CGRectMake(-100, 100, 400, 200);
+		self = [super initWithFrame:CGRectMake(100, 100, 200, 400)];
+	} else {
+		self = [super initWithFrame:frame];
+	}
 	if (self) {
 		self.windowLevel = UIWindowLevelAlert + 1;
 		self.backgroundColor = [UIColor clearColor];
 
 		// Container
-		UIView *contentView = [[UIView alloc] initWithFrame:self.bounds];
+		UIView *contentView;
+		if (rotate) {
+			contentView = [[UIView alloc] initWithFrame:frame];
+			contentView.transform = CGAffineTransformMakeRotation(M_PI_2);
+		} else {
+			contentView = [[UIView alloc] initWithFrame:self.bounds];
+		}
 		contentView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.9];
 		contentView.layer.cornerRadius = 8;
 		contentView.layer.masksToBounds = YES;
@@ -217,9 +229,18 @@
 - (void)handleResize:(UIPanGestureRecognizer *)pan {
 	CGPoint translation = [pan translationInView:self];
 	CGRect newFrame = self.frame;
-	newFrame.size.width = MAX(150, newFrame.size.width + translation.x);
-	newFrame.size.height = MAX(100, newFrame.size.height + translation.y);
-	self.frame = newFrame;
+	if (getenv("ROTATE_PLATFORM_CONSOLE")) {
+		newFrame.size.width -= translation.x;
+		newFrame.origin.x += translation.x;
+		newFrame.size.height = MAX(150, newFrame.size.height + translation.y);
+		if (newFrame.size.width >= 100) {
+			self.frame = newFrame;
+		}
+	} else {
+		newFrame.size.width = MAX(150, newFrame.size.width + translation.x);
+		newFrame.size.height = MAX(100, newFrame.size.height + translation.y);
+		self.frame = newFrame;
+	}
 	[pan setTranslation:CGPointZero inView:self];
 	[self scrollToBottom];
 }
@@ -227,9 +248,18 @@
 - (void)handleResizeRight:(UIPanGestureRecognizer *)pan {
 	CGPoint translation = [pan translationInView:self];
 	CGRect newFrame = self.frame;
-	newFrame.size.width = MAX(150, newFrame.size.width + translation.x);
-	newFrame.size.height = MAX(100, newFrame.size.height + translation.y);
-	self.frame = newFrame;
+	if (getenv("ROTATE_PLATFORM_CONSOLE")) {
+		newFrame.size.width -= translation.x;
+		newFrame.origin.x += translation.x;
+		newFrame.size.height = MAX(150, newFrame.size.height + translation.y);
+		if (newFrame.size.width >= 100) {
+			self.frame = newFrame;
+		}
+	} else {
+		newFrame.size.width = MAX(150, newFrame.size.width + translation.x);
+		newFrame.size.height = MAX(100, newFrame.size.height + translation.y);
+		self.frame = newFrame;
+	}
 	[pan setTranslation:CGPointZero inView:self];
 	[self scrollToBottom];
 }
@@ -239,10 +269,19 @@
 	CGRect newFrame = self.frame;
 	newFrame.origin.x += translation.x;
 	newFrame.size.width -= translation.x;
-	newFrame.size.height = MAX(100, newFrame.size.height + translation.y);
+	if (getenv("ROTATE_PLATFORM_CONSOLE")) {
+		newFrame.origin.y += translation.y;
+		newFrame.size.height -= translation.y;
 
-	if (newFrame.size.width >= 150) {
-		self.frame = newFrame;
+		if (newFrame.size.height >= 150 && newFrame.size.width >= 100) {
+			self.frame = newFrame;
+		}
+	} else {
+		newFrame.size.height = MAX(100, newFrame.size.height + translation.y);
+
+		if (newFrame.size.width >= 150) {
+			self.frame = newFrame;
+		}
 	}
 	[pan setTranslation:CGPointZero inView:self];
 	[self scrollToBottom];
