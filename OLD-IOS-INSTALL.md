@@ -7,11 +7,11 @@
 This guide is for devices that are compatible with TrollStore (and optionally a jailbreak)
 
 > [!TIP]
-> On devices below iOS 17.0, you can use enterprise (aka free) certificates to get any installer you will use to install TrollStore. You will not need the free certificates after installing TrollStore, and you should get rid of them after installing TrollStore; as TrollStore permanently signs apps. iOS 17.0 requires the use of a computer to install TrollStore.
+> On devices below iOS 17.0, you can use enterprise (aka free) certificates to get any installer you will use to install TrollStore. You will not need the free certificates after installing TrollStore, and you should get rid of them after installing TrollStore; as TrollStore permanently signs apps. iOS 15.8.7 and iOS 17.0 requires the use of a computer to install TrollStore.
 
 ## Prerequisites
 
-## iOS 17.0 
+## iOS 15.8.7/iOS 17.0
 - PC (Windows, Mac, Linux)
 - USB Cable to connect your device (Lightning / USB C)
 - TrollStore
@@ -19,7 +19,7 @@ This guide is for devices that are compatible with TrollStore (and optionally a 
 - IPA / TIPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest) (only get the TIPA file if you want to use the jailbreak tweak)
 - Jailbreak tweak (optional, you need to be jailbroken and have the TIPA version)
 
-## Below iOS 17.0
+## Below/Above iOS 15.8.7/iOS 17.0
 - TrollStore (or **if you're on an iOS version where TrollStore is not supported** but you're able to jailbreak, **[TrollStore Lite](https://havoc.app/package/trollstorelite))**
 - A jailbreak like Dopamine (optional, only if you want to use the jailbreak tweak)
 - Full version of Geometry Dash installed
