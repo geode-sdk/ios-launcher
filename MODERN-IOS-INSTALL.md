@@ -28,7 +28,7 @@
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
 2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
 3. Sign in with your Apple ID in iloader
-4. In the **Installers** section in iloader, you should generally click "SideStore (Stable)".
+4. In the **Installers** section in iloader, click "SideStore (Stable)".
 5. You will most likely get an **Untrusted Developer** error. To fix this, go to Settings > General > VPN and Device Management > Your Apple ID and press Trust. After doing this, move to the **Enabling Developer Mode** section below.
 ## Install Sidestore (26.4)
 1. Do the steps 1-3 in the below 26.4 guide.
@@ -36,7 +36,7 @@
 3. In iLoader, select **Import IPA** and select the alpha you downloaded.
 4. Select **Manage Pairing File*** and then place in Sidestore.
 5. Do step 5 in the below 26.4 guide.
-6. Go to settings, and scroll down to **Beta Updates Track.** Enable it, and set it to **alpha.**
+6. In the Sidestore settings, scroll down to **Beta Updates Track.** Enable it, and set it to **alpha.**
 > [!NOTE]
 > The Developer Mode option will not show up if you do not install SideStore! It will only appear when you install SideStore. So make sure to follow the **Install SideStore** section first, then try to enable Developer Mode.
 
