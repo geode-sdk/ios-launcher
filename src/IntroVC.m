@@ -997,17 +997,17 @@ bool passJITTest = false;
 
 - (void)afterPromptCert {
 	self.useJITLess = YES;
-	if (@available(iOS 26.0, *)) {
-		int flags;
-		csops(getpid(), 0, &flags, sizeof(flags));
-		bool runningJIT = (flags & CS_DEBUGGED) != 0;
-		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"stikjit://"]] || runningJIT) {
-			self.useJITLess = NO;
-			_currentStep = InstallStepWarning;
-			[self showWarningStep];
-			return;
-		}
-	}
+	// if (@available(iOS 26.0, *)) {
+	// 	int flags;
+	// 	csops(getpid(), 0, &flags, sizeof(flags));
+	// 	bool runningJIT = (flags & CS_DEBUGGED) != 0;
+	// 	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"stikjit://"]] || runningJIT) {
+	// 		self.useJITLess = NO;
+	// 		_currentStep = InstallStepWarning;
+	// 		[self showWarningStep];
+	// 		return;
+	// 	}
+	// }
 	_currentStep = InstallStepComplete;
 	[self completeSetup];
 }
@@ -1084,7 +1084,7 @@ bool passJITTest = false;
 				} else {
 					title = @"common.notice".loc;
 					if (@available(iOS 26.0, *)) {
-						linkToGuide = @"https://github.com/geode-sdk/ios-launcher/blob/main/JITLESS-INSTALL-GUIDE.md";
+						linkToGuide = @"https://github.com/geode-sdk/ios-launcher/blob/main/MODERN-IOS-INSTALL.md";
 					} else {
 						linkToGuide = @"https://github.com/geode-sdk/ios-launcher/blob/main/INSTALL.md";
 					}

@@ -6,7 +6,7 @@
 > Note that iOS 26.4 has extra or different steps. It also may break sideloading methods.
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less, 5% not supported) | Free |
+| iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less, only 5% not supported) | Free |
 
 ## Prerequisites
 - A computer running Windows, macOS or Linux

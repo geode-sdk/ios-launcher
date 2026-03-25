@@ -503,7 +503,9 @@ extern NSString *lcAppUrlScheme;
 				}
 			}
 		} custom:nil],
-		[Setting create:@"gameplay.auto-launch".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"LOAD_AUTOMATICALLY" switchTag:1 action:nil custom:nil],
+		[Setting create:@"gameplay.auto-launch".loc type:SettingTypeToggle disabled:^BOOL() {
+            return [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
+        } visible:nil prefsKey:@"LOAD_AUTOMATICALLY" switchTag:1 action:nil custom:nil],
 		[Setting create:@"gameplay.fix-rotation".loc type:SettingTypeToggle disabled:^BOOL() {
 			return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} visible:nil prefsKey:@"FIX_ROTATION" switchTag:5 action:nil custom:nil],
@@ -662,7 +664,9 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"jitless.enterprise".loc type:SettingTypeToggle disabled:nil visible:^BOOL() {
 			return ![Utils isDevCert] && [Utils isSandboxed];
 		} prefsKey:@"ENTERPRISE_MODE" switchTag:16 action:nil custom:nil],
-		[Setting create:@"Launch without patching".loc type:SettingTypeButton disabled:nil visible:^BOOL() {
+		[Setting create:@"Launch without patching".loc type:SettingTypeButton disabled:^BOOL() {
+			return ![[Utils getPrefs] boolForKey:@"DEVELOPER_MODE"];
+		} visible:^BOOL() {
 			return [[Utils getPrefs] boolForKey:@"ENTERPRISE_MODE"];
 		} prefsKey:nil switchTag:0 action:^{
 			[_root launchHelper2:NO patchCheck:NO];
@@ -1076,7 +1080,7 @@ extern NSString *lcAppUrlScheme;
 				withHandlerAddress:0x8c4000
 				force:YES
 				withSafeMode:NO
-				withEntitlements:YES completionHandler:^(BOOL success, NSString* error) {
+				withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
 					dispatch_async(dispatch_get_main_queue(), ^{
 						if (success) {
 							[Utils showNotice:self title:@"Patched!"];
@@ -1334,15 +1338,6 @@ extern NSString *lcAppUrlScheme;
 		[Utils toggleKey:@"JITLESS"];
 		if ([sender isOn]) {
 			[[Utils getPrefs] setBool:NO forKey:@"MANUAL_REOPEN"];
-			[[UIApplication sharedApplication] setAlternateIconName:@"Pride" completionHandler:^(NSError* _Nullable error) {
-				if (error) {
-					AppLog(@"Failed to set alternate icon: %@", error);
-				} else {
-					AppLog(@"Icon set successfully.");
-				}
-			}];
-			[[Utils getPrefs] setValue:@"Pride" forKey:@"CURRENT_ICON"];
-			[_root updateLogoImage:2];
 		} else {
 			NSFileManager* fm = [NSFileManager defaultManager];
 			NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];

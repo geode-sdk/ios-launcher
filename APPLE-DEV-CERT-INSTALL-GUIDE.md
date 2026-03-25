@@ -9,6 +9,12 @@ This guide will teach you how to install Geode using an Apple Developer Certific
 > [!NOTE]
 > JIT method will require the use of a computer to set up the JIT enabler. JIT-less method will not require a computer and can be done on device.
 
+## With JIT-Less
+- Full version of Geometry Dash installed
+- An internet connection
+- An Apple developer certificate
+- IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
+
 ## With JIT
 - An Apple developer certificate
 - A computer running Windows, macOS or Linux
@@ -20,13 +26,18 @@ This guide will teach you how to install Geode using an Apple Developer Certific
 - A passcode on your device (required for pairing file)
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
 
-## With JIT-Less
-- Full version of Geometry Dash installed
-- An internet connection
-- An Apple developer certificate
-- IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
-
 # Install Geode
+
+## JIT-Less Method
+1. Install Geode using the installer of your choice (ESign, Feather, KSign, etc.). **Make sure to install Geode with the Developer certificate, not the Distribution certificate**.
+2. Press **"Enable JIT-Less"**.
+3. Press **"Import Certificate Manually"**.
+4. Choose the **.p12** file of the certificate you used to sign the Geode launcher.
+5. Input the password of your certificate **(make sure to input the password correctly, or Geode will fail to do the signing process)**.
+6. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
+
+![](screenshots/jitless-cert.png)
+
 ## JIT Method
 1. Download the StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases).
 2. Install StikDebug using the installer of your choice (ESign, Feather, KSign, etc.). **Make sure to install StikDebug with the Developer certificate, not the Distribution certificate.**
@@ -45,16 +56,6 @@ This guide will teach you how to install Geode using an Apple Developer Certific
 5. Turn off airplane mode.
 
 You will have to do this every time you want to launch Geode with JIT on cellular. As long as Geode stays open, you will not need to do these steps.
-
-## JIT-Less Method
-1. Install Geode using the installer of your choice (ESign, Feather, KSign, etc.). **Make sure to install Geode with the Developer certificate, not the Distribution certificate**.
-2. Press **"Enable JIT-Less"**.
-3. Press **"Import Certificate Manually"**.
-4. Choose the **.p12** file of the certificate you used to sign the Geode launcher.
-5. Input the password of your certificate **(make sure to input the password correctly, or Geode will fail to do the signing process)**.
-6. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
-
-![](screenshots/jitless-cert.png)
 
 # Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the Geode button on the bottom of the menu, and browse for mods to install!
