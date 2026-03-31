@@ -3,7 +3,7 @@
 > For this installation guide, it is **required** to have a computer with Administrator access (if you are on Windows), as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **SideStore**.
 > \
 > This guide assumes you will be installing SideStore. Using enterprise (aka free) certificates to install SideStore **will not work**, as the use of a computer is required to install SideStore.
-> Note that iOS 26.4 has extra or different steps. Support is experimental on 26.4, so it also might not work.
+> Note support for iOS 26.4 is experimental. Expect some bugs for Sidestore.
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
 | iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less, only 5% not supported) | Free |
@@ -24,7 +24,7 @@
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
 2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
 3. Sign in with your Apple ID in iloader
-4. In the **Installers** section in iloader, click "SideStore (Stable)" if you are below iOS 26.4, if you are on iOS 26.4, click "SideStore (Nightly)."
+4. In the **Installers** section in iloader, click "SideStore (Stable)" if you are below iOS 26.4, if not, click "SideStore (Nightly)."
 5. You will most likely get an **Untrusted Developer** error. To fix this, go to Settings > General > VPN and Device Management > Your Apple ID and press Trust. After doing this, move to the **Enabling Developer Mode** section below.
 > [!NOTE]
 > The Developer Mode option will not show up if you do not install SideStore! It will only appear when you install SideStore. So make sure to follow the **Install SideStore** section first, then try to enable Developer Mode.
@@ -68,11 +68,11 @@ simply select it in the recommended sources. Now go to the **Browse** tab, then 
 
 > [!NOTE]
 > For the first time setup, you will need a computer to get a pairing file. You will use iloader to get it.
-> Also, StikDebug will not give you any update notifications. It's recommended to use the AltSource so Sidestore will notify you about an update.
+> Also, StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so Sidestore will notify you about an update.
 ### Installing StikDebug
-1. Get the latest StikDebug IPA file (3.0.1 nightly if on 26.4) from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via Sidestore, or via AltSource. Follow the same guide for Geode altsource, only this time putting `https://stikdebug.xyz/index.json` instead. Or simply find it in recommened sources. Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
-2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
-3. Connect to LocalDevVPN.
+1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via Sidestore, or via AltSource. Follow the same guide for Geode altsource, only this time putting `https://stikdebug.xyz/index.json` instead. Or simply find it in recommened sources. Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
+2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function. (If you are on 26.4, follow the steps for 26.4 instead.)
+3. Connect to LocalDevVPN (and Super VPN if needed)
 4. Launch StikDebug.
 5. Check for any extra steps and follow them if needed below.
 6. Now you should be set! Simply tap **Launch** in the Geode launcher to use Geode with JIT.
@@ -81,11 +81,11 @@ simply select it in the recommended sources. Now go to the **Browse** tab, then 
 1. Go to StikDebug settings
 2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
 
-### Required Extra Steps for iOS 26.4
-1. Download and run [idevice_pair](https://github.com/jkcoxson/idevice_pair/releases/latest/download/idevice_pair--windows-x86_64.exe)
+### Step 2 for iOS 26.4
+1. Download and run [idevice_pair](https://github.com/jkcoxson/idevice_pair/releases/latest/)
 2. Generate an **rppairing** file.
 3. Click **Install** under **StikDebug**
-4. Go to StikDebug settings > **import pairing file**  then select the **rp_pairing_file** in StikDebug's folder.
+If the pairing file isn't detected properly, go to StikDebug settings > **import pairing file**  then select the **rp_pairing_file** in StikDebug's folder.
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
 Follow the instructions as listed here
