@@ -10,6 +10,8 @@
 
 ## Prerequisites
 - A computer running Windows, macOS or Linux
+- [iTunes](https://apps.microsoft.com/detail/9pb2mz1zmb1s) **For windows only**
+- **usbmuxd** on Linux (search how to get for your distro.)
 - [LocalDevVPN](https://apps.apple.com/us/app/localdevvpn/id6755608044) from the App Store
 - [iloader](https://github.com/nab138/iloader/releases) to install SideStore
 - An Apple ID (A secondary Apple ID is recommended, though it's not necessarily required)
@@ -44,8 +46,7 @@
 1: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
 ![](screenshots/install-sidestore.png)
 
-2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource. In the input box, type `https://ios-repo.geode-sdk.org/altsource/main.json`, then press the `+` button, or
-simply select it in the recommended sources. Now go to the **Browse** tab, then **Games**, and you will find Geode. Press `Free` to install it.
+2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource, then simply select it in the recommended sources (it will be labeled Geode). Now go to the **Browse** tab, then **Games**, and you will find Geode. Press `Free` to install it.
 ![](screenshots/altsource-install.png)
 > [!NOTE]
 > The AltSource method may recieve updates *later*, and should only be used if you are okay with this.
@@ -70,7 +71,7 @@ simply select it in the recommended sources. Now go to the **Browse** tab, then 
 > For the first time setup, you will need a computer to get a pairing file. You will use iloader to get it.
 > Also, StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so Sidestore will notify you about an update.
 ### Installing StikDebug
-1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via Sidestore, or via AltSource. Follow the same guide for Geode altsource, only this time putting `https://stikdebug.xyz/index.json` instead. Or simply find it in recommened sources. Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
+1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via Sidestore, or via AltSource. Follow the same guide for Geode altsource, only this time picking **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
 2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function. (If you are on 26.4, follow the steps for 26.4 instead.)
 3. Connect to LocalDevVPN (and Super VPN if needed)
 4. Launch StikDebug.
@@ -96,3 +97,5 @@ You will need to be nearby your computer to use this, StikDebug does not and wil
 
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
+> [!TIP]
+> To refresh Geode, connect to LocalDevVPN (Super VPN first, if needed) then tap refresh all.
