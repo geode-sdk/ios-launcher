@@ -72,7 +72,7 @@
 > Also, StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so Sidestore will notify you about an update.
 ### Installing StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via Sidestore, or via AltSource. Follow the same guide for Geode altsource, only this time picking **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
-2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function. (If you are on 26.4, follow the steps for 26.4 instead.)
+2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 3. Connect to LocalDevVPN (and Super VPN if needed)
 4. Launch StikDebug.
 5. Check for any extra steps and follow them if needed below.
@@ -82,11 +82,6 @@
 1. Go to StikDebug settings
 2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
 
-### Step 2 for iOS 26.4
-1. Download and run [idevice_pair](https://github.com/jkcoxson/idevice_pair/releases/latest/)
-2. Generate an **rppairing** file.
-3. Click **Install** under **StikDebug**
-If the pairing file isn't detected properly, go to StikDebug settings > **import pairing file**  then select the **rp_pairing_file** in StikDebug's folder.
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
 Follow the instructions as listed here
