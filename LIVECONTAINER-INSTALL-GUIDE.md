@@ -95,17 +95,11 @@ Finally, the last steps are:
 ![](./screenshots/livecontainer.png)
 4. Go to Livecontainer settings, and select **StikDebug** (not StikDebug (Another Livecontainer))
 ### Get StikDebug
-1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via **Sidestore** (not LiveContainer) or via AltSource. Go to **Sources** in Sidestore, tap "+" then tap **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
-
-2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function. (If you are on 26.4, follow the steps for 26.4 instead.)
+1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via **Sidestore** (not LiveContainer) or via AltSource. Go to **Sources** in Sidestore, tap "+" then tap **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**.
+2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 3. Connect to LocalDevVPN (and Super VPN if needed)
 4. Launch StikDebug.
 5. Check for any extra steps and follow them if needed below.
-#### Step 2 for iOS 26.4
-1. Download and run [idevice_pair](https://github.com/jkcoxson/idevice_pair/releases/latest/)
-2. Generate an **rppairing** file.
-3. Click **Install** under **StikDebug**
-If the pairing file isn't detected properly, go to StikDebug settings > **import pairing file**  then select the **rp_pairing_file** in StikDebug's folder.
 ### Required Extra Steps for iOS 26
 > [!WARNING]
 > You will also need to enable **Use LiveContainer's Bundle ID** as iOS 26 requires a certificate for JIT, otherwise you will be stuck at a black screen.
