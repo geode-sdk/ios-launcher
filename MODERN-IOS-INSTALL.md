@@ -81,6 +81,7 @@
 ### Required Extra Steps for iOS 26
 1. Go to StikDebug settings
 2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
+3. Import a certifcate in settings (follow step 2 Jit-less)
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
