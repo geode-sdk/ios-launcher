@@ -64,10 +64,9 @@ After these steps:
 
 3. Tap on **Settings** on the bottom right
 4. Tap **Import Certificate from SideStore**
-5. On the popup in **SideStore**, hit **Export**
-6. Get back to LiveContainer and scroll down until you see the **version of LiveContainer**
-7. Tap on the **version text** 5 times
-8. Scroll down and tap **Export Cert** then return to **Apps** in the bottom left
+5. Get back to LiveContainer and scroll down until you see the **version of LiveContainer**
+6. Tap on the **version text** 5 times
+7. Scroll down and tap **Export Cert** then return to **Apps** in the bottom left
 
 ![](./screenshots/livecontainer-jitless.png)
 
@@ -108,6 +107,7 @@ Finally, the last steps are:
 2. On the Geode **app settings** in **LiveContainer**, find the **JIT Launch Script** option and select the **Geode.js** script that you have downloaded
 3. Go to StikDebug settings
 4. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
+5. Import a certifcate in settings (follow steps 3-7 Jit-less)
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
