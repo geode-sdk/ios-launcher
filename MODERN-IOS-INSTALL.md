@@ -4,6 +4,9 @@
 > \
 > This guide assumes you will be installing SideStore. Using enterprise (aka free) certificates to install SideStore **will not work**, as the use of a computer is required to install SideStore.
 
+> [!WARNING]
+> If you are on iOS 26.4, SideStore may not work as intended. To solve this, a workaround must be done to successfully refresh any app, including Geode. Scroll to "Refreshing on 26.4" for more information.
+
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
 | iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less, only 5% not supported) | Free |
@@ -92,6 +95,16 @@ Here you have 2 options:
 5. Turn off airplane mode.
 
 You will have to do this every time you want to launch Geode with JIT on cellular. As long as Geode stays open, you will not need to do these steps.
+
+## Refreshing on 26.4
+
+> [!NOTE]
+> You will need to install VPN Super from the App Store. The download link is [here](https://apps.apple.com/us/app/vpn-super-unlimited-proxy/id1370293473).
+
+1. After installing, open VPN Super and click IKEv2. Connect to the VPN.
+2. Connect to LocalDevVPN.
+
+You should now be able to refresh apps like normal.
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
