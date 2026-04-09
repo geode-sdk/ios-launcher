@@ -20,8 +20,7 @@
 - An internet connection
 - A passcode on your device (required for pairing file)
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest) (If you don't want to use this, follow the **AltSource** method below)
-## Required extra for iOS 26.4
-[Super VPN](https://apps.apple.com/us/app/vpn-super-unlimited-proxy/id1370293473) from the app store
+
 ## Install SideStore
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
 2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
@@ -41,7 +40,7 @@
 ### Installing Geode through SideStore
 > [!NOTE]
 > You will need to **refresh** both the store and Geode every week, otherwise you will not be able to run the app.
-> You will also need LocalDevVPN on to do this. If on iOS 26.4, turn on Super VPN, then LocalDevVPN.
+> You will also need LocalDevVPN on to do this.
 
 1: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
 ![](screenshots/install-sidestore.png)
@@ -66,6 +65,7 @@
 ## JIT
 > [!TIP]
 > Skip this **if you're on iOS 16**. SideStore lets you enable JIT **directly from it**. To do so, go to the **My Apps** section in SideStore, hold Geode, and press **"Enable JIT"** (you need to have LocalDevVPN enabled for this).
+> If you are on iOS **17.0.1 - 17.3.1** scroll down to the bottom for your JIT guide.
 
 > [!NOTE]
 > For the first time setup, you will need a computer to get a pairing file. You will use iloader to get it.
@@ -73,7 +73,7 @@
 ### Installing StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via Sidestore, or via AltSource. Follow the same guide for Geode altsource, only this time picking **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
 2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
-3. Connect to LocalDevVPN (and Super VPN if needed)
+3. Connect to LocalDevVPN
 4. Launch StikDebug.
 5. Check for any extra steps and follow them if needed below.
 6. Now you should be set! Simply tap **Launch** in the Geode launcher to use Geode with JIT.
@@ -94,4 +94,4 @@ You will need to be nearby your computer to use this, StikDebug does not and wil
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
 > [!TIP]
-> To refresh Geode, connect to LocalDevVPN (Super VPN first, if needed) then tap refresh all.
+> To refresh Geode, connect to LocalDevVPN, then tap refresh all.
