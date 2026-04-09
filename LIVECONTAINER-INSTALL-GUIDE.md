@@ -20,8 +20,7 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 - An internet connection
 - A passcode on your device (required for pairing file)
 - IPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest) (If you don't want to use this, follow the **AltSource** method below)
-## Required extra for iOS 26.4
-[Super VPN](https://apps.apple.com/us/app/vpn-super-unlimited-proxy/id1370293473) from the app store
+
 ## Install LiveContainer
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
 2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
@@ -96,7 +95,7 @@ Finally, the last steps are:
 ### Get StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via **Sidestore** (not LiveContainer) or via AltSource. Go to **Sources** in Sidestore, tap "+" then tap **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**.
 2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
-3. Connect to LocalDevVPN (and Super VPN if needed)
+3. Connect to LocalDevVPN
 4. Launch StikDebug.
 5. Check for any extra steps and follow them if needed below.
 ### Required Extra Steps for iOS 26
@@ -126,4 +125,4 @@ Once done, set the JIT enabler in settings to **SideJITServer**
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
 > [!TIP]
-> To refresh Geode, go to SideStore, connect to LocalDevVPN (Super VPN first, if needed) then tap refresh all.
+> To refresh Geode, go to SideStore (in LiveConatiner), connect to LocalDevVPN, then tap refresh all.
