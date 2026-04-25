@@ -146,6 +146,7 @@
 "jit.jit-enabler.trollstore" = "TrollStore";
 "jit.jit-enabler.sidestore" = "SideStore JIT";
 "jit.jit-enabler.livecontainer" = "LiveContainer";
+"jit.jit-enabler.custom" = "Custom";
 "jit.warning" = "You should only launch Geode with JIT if you want to launch Geometry Dash! Opening the launcher with JIT is only necessary in that case. If this app is opened with JIT no matter what, you can disable this notice in settings.";
 
 "jit.footer.default" = "Geode will figure out what method of JIT to use based on certain conditions. This default option is recommended.";

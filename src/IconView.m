@@ -26,6 +26,7 @@
 		@{ @"name" : @"Asexual", @"iconName" : @"Asexual", @"iconImg" : @"AsexualIcon60x60" },
 		@{ @"name" : @"Genderfluid", @"iconName" : @"Genderfluid", @"iconImg" : @"GenderfluidIcon60x60" },
 		@{ @"name" : @"Perfection.", @"iconName" : @"Perfection", @"iconImg" : @"PerfectionIcon60x60" },
+		@{ @"name" : @"Sapphire", @"iconName" : @"Sapphire", @"iconImg" : @"SapphireIcon60x60" },
 	];
 	// https://github.com/reactwg/react-native-new-architecture/blob/76d8426c27c1bf30c235f653e425ef872554a33b/docs/fabric-native-components.md
 	[NSLayoutConstraint activateConstraints:@[

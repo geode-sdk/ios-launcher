@@ -211,7 +211,7 @@
 	[Utils increaseLaunchCount];
 
 	_icons = @[
-		@{ @"name" : @"Default", @"Logo" : @"geode_logo", @"iconName" : @"AppIcon" },
+		@{ @"name" : @"Default", @"Logo" : [Utils isSapphireDay] ? @"sapphire_logo" : @"geode_logo", @"iconName" : @"AppIcon" },
 		@{ @"name" : @"Geode", @"Logo" : @"new_geode_logo", @"iconName" : @"Geode" },
 		@{ @"name" : @"Pride", @"Logo" : @"pride_logo", @"iconName" : @"Pride" },
 		@{ @"name" : @"Lesbian", @"Logo" : @"lesbian_logo", @"iconName" : @"Lesbian" },
@@ -222,7 +222,8 @@
 		@{ @"name" : @"Nonbinary", @"Logo" : @"nonbinary_logo", @"iconName" : @"Nonbinary" },
 		@{ @"name" : @"Asexual", @"Logo" : @"asexual_logo", @"iconName" : @"Asexual" },
 		@{ @"name" : @"Genderfluid", @"Logo" : @"genderfluid_logo", @"iconName" : @"Genderfluid" },
-		@{ @"name" : @"Perfection.", @"Logo" : @"pride_logo", @"iconName" : @"Perfection" }
+		@{ @"name" : @"Perfection.", @"Logo" : @"pride_logo", @"iconName" : @"Perfection" },
+		@{ @"name" : @"Sapphire", @"Logo" : @"sapphire_logo", @"iconName" : @"Sapphire" }
 	];
 
 	self.impactFeedback = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy];
@@ -266,9 +267,8 @@
 	if (logoFile) {
 		self.logoImageView = [Utils imageViewFromPDF:logoFile];
 	} else {
-		self.logoImageView = [Utils imageViewFromPDF:@"geode_logo"];
+		self.logoImageView = [Utils imageViewFromPDF:[Utils isSapphireDay] ? @"sapphire_logo" : @"geode_logo"];
 	}
-	//self.logoImageView = [Utils imageViewFromPDF:@"geode_logo"];
 	if (self.logoImageView) {
 		self.logoImageView.layer.cornerRadius = 50;
 		self.logoImageView.clipsToBounds = YES;
@@ -283,7 +283,7 @@
 	[self.logoImageView addGestureRecognizer:longPressGR];
 
 	self.titleLabel = [[UILabel alloc] init];
-	self.titleLabel.text = @"Geode";
+	self.titleLabel.text = [Utils isSapphireDay] ? @"Sapphire" : @"Geode";
 	self.titleLabel.textColor = [Theming getWhiteColor];
 	self.titleLabel.textAlignment = NSTextAlignmentCenter;
 	self.titleLabel.font = [UIFont systemFontOfSize:35 weight:UIFontWeightRegular];

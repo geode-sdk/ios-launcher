@@ -1,6 +1,6 @@
 Package: com.geode.launcher
 Name: Geode
-Version: 1.5.3
+Version: 1.5.4
 Architecture: iphoneos-arm
 Description: Geode launcher helper for iOS!
 Maintainer: Firee

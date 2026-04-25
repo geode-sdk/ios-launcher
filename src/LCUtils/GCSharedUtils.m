@@ -299,6 +299,9 @@ extern NSBundle* gcMainBundle;
 			}
 		}
 	}
+	if (jitEnabler == 7) {
+		urlScheme = [gcUserDefaults objectForKey:@"SideJITServerAddr"];
+	}
 	NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:urlScheme, gcMainBundle.bundleIdentifier]];
 	AppLog(@"Attempting to launch geode with %@", launchURL);
 	if ([application canOpenURL:launchURL]) {
@@ -319,9 +322,14 @@ extern NSBundle* gcMainBundle;
 	NSInteger jitEnabler = [gcUserDefaults integerForKey:@"JIT_ENABLER"];
 	if (!jitEnabler)
 		jitEnabler = 0;
+
+	NSString* sideJITServerAddress = [gcUserDefaults objectForKey:@"SideJITServerAddr"];
+	if (!sideJITServerAddress && jitEnabler == 7) {
+		[Utils showErrorGlobal:@"Custom URI redirect not set" error:nil];
+		return NO;
+	}
 	if (jitEnabler != 3 && jitEnabler != 4)
 		return YES;
-	NSString* sideJITServerAddress = [gcUserDefaults objectForKey:@"SideJITServerAddr"];
 	NSString* deviceUDID = [gcUserDefaults objectForKey:@"JITDeviceUDID"];
 	if (!sideJITServerAddress || (!deviceUDID && jitEnabler == 4)) {
 		[Utils showErrorGlobal:@"Server Address not set." error:nil];

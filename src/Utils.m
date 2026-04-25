@@ -232,19 +232,33 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	}
 
 	CGRect pageRect = CGPDFPageGetBoxRect(pdfPage, kCGPDFMediaBox);
-	UIGraphicsBeginImageContext(pageRect.size);
-	CGContextRef context = UIGraphicsGetCurrentContext();
+	// UIGraphicsBeginImageContext(pageRect.size);
+	// CGContextRef context = UIGraphicsGetCurrentContext();
+	UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat defaultFormat];
+	format.opaque = NO;
+	format.scale = [UIScreen mainScreen].scale;
 
-	// Draw the PDF page into the context
-	CGContextSaveGState(context);
-	CGContextTranslateCTM(context, 0.0, pageRect.size.height);
-	CGContextScaleCTM(context, 1.0, -1.0);
-	CGContextDrawPDFPage(context, pdfPage);
-	CGContextRestoreGState(context);
+	// Force extended color (important!)
+	format.preferredRange = UIGraphicsImageRendererFormatRangeExtended;
 
-	// Create the UIImage from the context
-	UIImage* pdfImage = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
+	UIGraphicsImageRenderer *renderer =
+		[[UIGraphicsImageRenderer alloc] initWithSize:pageRect.size format:format];
+
+	UIImage *pdfImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+		CGContextRef context = rendererContext.CGContext;
+
+	    // Draw the PDF page into the context
+		CGContextSaveGState(context);
+		CGContextTranslateCTM(context, 0.0, pageRect.size.height);
+		CGContextScaleCTM(context, 1.0, -1.0);
+		CGContextDrawPDFPage(context, pdfPage);
+		CGContextRestoreGState(context);
+	}];
+
+	//
+	// // Create the UIImage from the context
+	// UIImage* pdfImage = UIGraphicsGetImageFromCurrentImageContext();
+	// UIGraphicsEndImageContext();
 
 	// Release the PDF document
 	CGPDFDocumentRelease(pdfDocument);
@@ -684,6 +698,12 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 		return completionHandler(NO, @"Couldn't find original binary.");
 	}
 	return completionHandler(YES, @"Success");
+}
++ (BOOL)isSapphireDay {
+	NSDate *now = [NSDate date];
+	NSCalendar *cal = [NSCalendar currentCalendar];
+	NSDateComponents *c = [cal components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:now];
+	return (c.year == 2026 && c.month == 4 && c.day == 1);
 }
 @end
 

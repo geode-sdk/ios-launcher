@@ -568,6 +568,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 	// hook NSUserDefault before running libraries' initializers
 	NUDGuestHooksInit();
 	SecItemGuestHooksInit();
+	AppLog(@"[invokeAppMain] Finished init guest hooks, now dlopen binary.");
 	// NSFMGuestHooksInit();
 	// initDead10ccFix();
 	//  UIAGuestHooksInit();
@@ -578,6 +579,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 
 	void* appHandle = dlopen(appExecPath, RTLD_LAZY | RTLD_GLOBAL | RTLD_FIRST);
 	appExecutableHandle = appHandle;
+	AppLog(@"[invokeAppMain] Opened binary handle.");
 	const char* dlerr = dlerror();
 
 	if (!appHandle || (uint64_t)appHandle > 0xf00000000000 || dlerr) {
@@ -590,6 +592,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 		*path = oldPath;
 		return appError;
 	}
+	AppLog(@"[invokeAppMain] No dlopen error");
 
 	// hook dlsym to solve RTLD_MAIN_ONLY
 	rebind_symbols((struct rebinding[1]){ { "dlsym", (void*)new_dlsym, (void**)&orig_dlsym } }, 1);
@@ -603,7 +606,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 		*path = oldPath;
 		return appError;
 	}
-	AppLog(@"[GeodeBootstrap] loaded bundle");
+	AppLog(@"[GeodeBootstrap] loaded bundle, now finding main entry point");
 
 	// Find main()
 	appMain = getAppEntryPoint(appHandle, appIndex);

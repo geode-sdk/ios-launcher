@@ -150,6 +150,17 @@
 				<key>UIPrerenderedIcon</key>
 				<true/>
 			</dict>
+			<key>Sapphire</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>SapphireIcon20x20</string>
+					<string>SapphireIcon40x40</string>
+					<string>SapphireIcon60x60</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<true/>
+			</dict>
 		</dict>
 	</dict>
 	<key>CFBundleIcons~ipad</key>
@@ -276,6 +287,16 @@
 				<key>UIPrerenderedIcon</key>
 				<true/>
 			</dict>
+			<key>Sapphire</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>SapphireIcon60x60</string>
+					<string>SapphireIcon76x76</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<true/>
+			</dict>
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
@@ -293,9 +314,9 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleVersion</key>
-	<string>1.5.3</string>
+	<string>1.5.4</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.5.3</string>
+	<string>1.5.4</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIDeviceFamily</key>
