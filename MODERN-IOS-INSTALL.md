@@ -40,8 +40,8 @@
 
 ### Installing Geode through SideStore
 > [!NOTE]
-> You will need to **refresh** both the store and Geode every week, otherwise you will not be able to run the app.
-> You will also need LocalDevVPN on to do this.
+> You will need to **refresh** both SideStore and Geode every week, otherwise you will not be able to run the app.
+> Find how to do this in the Conclusion.
 
 1: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
 ![](screenshots/install-sidestore.png)
@@ -50,9 +50,6 @@
 ![](screenshots/altsource-install.png)
 > [!NOTE]
 > The AltSource method may recieve updates *later*, and should only be used if you are okay with this.
-
-> [!TIP]
-> To refresh, tap **Refresh All** in SideStore's app menu. You will need LocalDevVPN (and Super VPN, if needed) for this.
 
 # Launch Geode
 ## JIT-Less
@@ -70,9 +67,9 @@
 
 > [!NOTE]
 > For the first time setup, you will need a computer to get a pairing file. You will use iloader to get it.
-> Also, StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so Sidestore will notify you about an update.
+> Also, StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so SideStore will notify you about an update.
 ### Installing StikDebug
-1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via Sidestore, or via AltSource. Follow the same guide for Geode altsource, only this time picking **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
+1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via SideStore, or via AltSource. Follow the same guide for Geode altsource, only this time picking **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
 2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 3. Connect to LocalDevVPN
 4. Launch StikDebug.
@@ -81,7 +78,7 @@
 
 ### Required Extra Steps for iOS 26
 1. Go to StikDebug settings
-2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
+2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON TXM**. If it is reported as NON TXM, turn on **Always Run Scripts**.
 3. Import a certifcate in settings (follow step 2 Jit-less)
 4. When running for the first time, allow StikDebug to use your location.
 
