@@ -122,6 +122,12 @@ Once done, set the JIT enabler in settings to **SideJITServer**
 3. Press **Download**
 4. Press **Launch**
 
+## Launching on cellular
+1. Turn on **LocalDevVPN**
+2. Turn on **Airplane mode**
+3. Press **Launch** like normal
+4. Once Geode has started, turn off **Airplane mode** and *LocalDevVPN**
+
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
 > [!TIP]
