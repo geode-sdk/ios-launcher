@@ -83,6 +83,13 @@
 1. Go to StikDebug settings
 2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
 3. Import a certifcate in settings (follow step 2 Jit-less)
+4. When running for the first time, allow StikDebug to use your location.
+
+### Launching on cellular
+1. Turn on **LocalDevVPN**
+2. Turn on **Airplane mode**
+3. Press **Launch** like normal
+4. Once Geode has started, turn off **Airplane mode** and *LocalDevVPN**
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
