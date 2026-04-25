@@ -107,7 +107,7 @@ Finally, the last steps are:
 1. Download the [TuliphookJIT.js](https://github.com/geode-sdk/ios-launcher/blob/main/TuliphookJIT.js) script (click on the script name, then press the download button on the redirected page to download it)
 2. On the Geode **app settings** in **LiveContainer**, find the **JIT Launch Script** option and select the **Geode.js** script that you have downloaded
 3. Go to StikDebug settings
-4. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON TXM**. If it is reported as NON TXM, turn on **Always Run Scripts**.
+4. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **Non TXM**. If it is reported as Non TXM, turn on **Always Run Scripts**.
 5. Import a certifcate in settings (follow steps 3-7 Jit-less)
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
