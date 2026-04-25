@@ -94,18 +94,20 @@ Finally, the last steps are:
 4. Go to Livecontainer settings, and select **StikDebug** (not StikDebug (Another Livecontainer))
 ### Get StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via **Sidestore** (not LiveContainer) or via AltSource. Go to **Sources** in Sidestore, tap "+" then tap **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**.
+> [!NOTE]
+> StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so SideStore will notify you about an update.
 2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 3. Connect to LocalDevVPN
-4. Launch StikDebug.
-5. Check for any extra steps and follow them if needed below.
+3. Launch StikDebug.
+4. Check for any extra steps and follow them if needed below.
 ### Required Extra Steps for iOS 26
 > [!WARNING]
 > You will also need to enable **Use LiveContainer's Bundle ID** as iOS 26 requires a certificate for JIT, otherwise you will be stuck at a black screen.
 
-1. Download the [Geode.js](https://github.com/StephenDev0/StikDebug/blob/main/StikJIT/Scripts/Geode.js) script (click on the script name, then press the download button on the redirected page to download it)
+1. Download the [TuliphookJIT.js](https://github.com/geode-sdk/ios-launcher/blob/main/TuliphookJIT.js) script (click on the script name, then press the download button on the redirected page to download it)
 2. On the Geode **app settings** in **LiveContainer**, find the **JIT Launch Script** option and select the **Geode.js** script that you have downloaded
 3. Go to StikDebug settings
-4. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON-TXM**. If it is reported as NON-TXM, turn on **Always Run Scripts**.
+4. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **NON TXM**. If it is reported as NON TXM, turn on **Always Run Scripts**.
 5. Import a certifcate in settings (follow steps 3-7 Jit-less)
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
@@ -126,7 +128,7 @@ Once done, set the JIT enabler in settings to **SideJITServer**
 1. Turn on **LocalDevVPN**
 2. Turn on **Airplane mode**
 3. Press **Launch** like normal
-4. Once Geode has started, turn off **Airplane mode** and *LocalDevVPN**
+4. Once Geode has started, turn off **Airplane mode** and **LocalDevVPN**
 
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
