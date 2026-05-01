@@ -3,7 +3,9 @@
 > For this installation guide, it is **required** to have a computer with Administrator access (if you are on Windows), as this guide will require installing software on your computer to sideload Geode, and to obtain a pairing file for **SideStore**.
 > \
 > This guide assumes you will be installing SideStore. Using enterprise (aka free) certificates to install SideStore **will not work**, as the use of a computer is required to install SideStore.
-> Note support for iOS 26.4 is experimental. Expect some bugs for Sidestore.
+
+> [!NOTE]
+> Support for iOS 26.4 is experimental for SideStore. Geode will work on this version, but expect some bugs for SideStore.
 
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
@@ -12,9 +14,9 @@
 ## Prerequisites
 - A computer running Windows, macOS or Linux
 - [iTunes](https://apps.microsoft.com/detail/9pb2mz1zmb1s) **For windows only**
-- **usbmuxd** on Linux (search how to get for your distro.)
+- **usbmuxd** on **devices running Linux or Chromebooks only** (search how to get it for your distro.)
 - [LocalDevVPN](https://apps.apple.com/us/app/localdevvpn/id6755608044) from the App Store
-- [iloader](https://github.com/nab138/iloader/releases) to install SideStore
+- [iLoader](https://github.com/nab138/iloader/releases) to install SideStore
 - An Apple ID (A secondary Apple ID is recommended, though it's not necessarily required)
 - USB Cable to connect your device (Lightning / USB C)
 - Full version of Geometry Dash installed
@@ -24,9 +26,9 @@
 
 ## Install SideStore
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
-2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
-3. Sign in with your Apple ID in iloader
-4. In the **Installers** section in iloader, click "SideStore (Stable)" if you are below iOS 26.4, if not, click "SideStore (Nightly)."
+2. Download iLoader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
+3. Sign in with your Apple ID in iLoader
+4. In the **Installers** section in iLoader, click "SideStore (Stable)" if you are below **iOS 26.4**, if not, click "SideStore (Nightly)."
 5. You will most likely get an **Untrusted Developer** error. To fix this, go to Settings > General > VPN and Device Management > Your Apple ID and press Trust. After doing this, move to the **Enabling Developer Mode** section below.
 > [!NOTE]
 > The Developer Mode option will not show up if you do not install SideStore! It will only appear when you install SideStore. So make sure to follow the **Install SideStore** section first, then try to enable Developer Mode.
@@ -66,11 +68,11 @@
 > If you are on iOS **17.0.1 - 17.3.1** scroll down to the bottom for your JIT guide.
 
 > [!NOTE]
-> For the first time setup, you will need a computer to get a pairing file. You will use iloader to get it.
+> For the first time setup, you will need a computer to get a pairing file. You will use iLoader to get it.
 > Also, StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so SideStore will notify you about an update.
 ### Installing StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via SideStore, or via AltSource. Follow the same guide for Geode altsource, only this time picking **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
-2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
+2. Connect your phone back to your computer via cable and then open iLoader. In iLoader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 3. Connect to LocalDevVPN
 4. Launch StikDebug.
 5. Check for any extra steps and follow them if needed below.
