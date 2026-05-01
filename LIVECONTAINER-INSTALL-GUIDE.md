@@ -7,13 +7,13 @@
 This tutorial is for people that use LiveContainer to bypass Apple's 3 active app and 10 app ID limit.
 
 > [!NOTE]
-> You will have to refresh LiveContainer in Sidestore weekly.
+> You will have to refresh LiveContainer in SideStore weekly.
 ## Prerequisites
 - A computer running Windows, macOS or Linux
 - [iTunes](https://apps.microsoft.com/detail/9pb2mz1zmb1s) **For windows only**
-- **usbmuxd** on Linux (search how to get for your distro.)
+- **usbmuxd** on **devices running Linux or Chromebooks only** (search how to get it for your distro.)
 - [LocalDevVPN](https://apps.apple.com/us/app/localdevvpn/id6755608044) from the App Store
-- [iloader](https://github.com/nab138/iloader/releases) to install SideStore
+- [iLoader](https://github.com/nab138/iloader/releases) to install SideStore
 - An Apple ID (A secondary Apple ID is recommended, though it's not necessarily required)
 - USB Cable to connect your device (Lightning / USB C)
 - Full version of Geometry Dash installed
@@ -23,9 +23,9 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 
 ## Install LiveContainer
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
-2. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
-3. Sign in with your Apple ID in iloader
-4. In the **Installers** section in iloader, click "LiveContainer+Sidestore (Stable)"
+2. Download iLoader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
+3. Sign in with your Apple ID in iLoader
+4. In the **Installers** section in iLoader, click "LiveContainer+SideStore (Stable)" if you are below **iOS 26.4**, if not, click, otherwise click "LiveContainer+SideStore (Nightly).
 5. You will most likely get an **Untrusted Developer** error. To fix this, go to Settings > General > VPN and Device Management > Your Apple ID and press Trust. After doing this, move to the **Enabling Developer Mode** section below.
 > [!NOTE]
 > The Developer Mode option will not show up if you do not install SideStore! It will only appear when you install SideStore. So make sure to follow the **Install SideStore** section first, then try to enable Developer Mode.
@@ -37,14 +37,16 @@ This tutorial is for people that use LiveContainer to bypass Apple's 3 active ap
 - ![](https://faq.altstore.io/~gitbook/image?url=https%3A%2F%2F2606795771-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FAfe8qEztjcTjsjjaMBY2%252Fuploads%252FWSvXhUTj8UZyGd1ex652%252FFcejvMRXgAE8k3R.jpg%3Falt%3Dmedia%26token%3D5e380cd0-be4e-406a-914b-8fa0519e1196&width=768&dpr=2&quality=100&sign=8860eb96&sv=2)
 - After your device restarts, you will be prompted to "Turn on Developer Mode", press "Turn On", and **Developer Mode** should be enabled!
 
-## Setup Livecontainer
+## Setup LiveContainer
 ![](https://livecontainer.github.io/img/lc_sidestore/4.jpg)
 ![](https://livecontainer.github.io/img/lc_sidestore/5.jpg)
 ![](https://livecontainer.github.io/img/lc_sidestore/6.jpg)
 ![](https://livecontainer.github.io/img/lc_sidestore/7.jpg)
 
-## Add Geode Altsource
-1. Go to LiveContainer's **Sources** tab. Click +, and type "https://ios-repo.geode-sdk.org/altsource/main.json" then add it.
+## Add Geode AltSource
+1. Go to LiveContainer's **Sources** tab.
+2. Tap `+`.
+3. Copy and paste `https://ios-repo.geode-sdk.org/altsource/main.json` then add it.
 
 ## Set Up LiveContainer for Geode (JIT-Less)
 > [!WARNING]
@@ -91,12 +93,12 @@ Finally, the last steps are:
 - **Don't Inject TweakLoader**
 - **Don't Load TweakLoader**
 ![](./screenshots/livecontainer.png)
-4. Go to Livecontainer settings, and select **StikDebug** (not StikDebug (Another Livecontainer))
+4. Go to LiveContainer settings, and select **StikDebug** (not `StikDebug (Another LiveContainer)`)
 ### Get StikDebug
 1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via **Sidestore** (not LiveContainer) or via AltSource. Go to **Sources** in Sidestore, tap "+" then tap **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**.
 > [!NOTE]
 > StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so SideStore will notify you about an update.
-2. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
+2. Connect your phone back to your computer via cable and then open iLoader. In iLoader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
 3. Connect to LocalDevVPN
 3. Launch StikDebug.
 4. Check for any extra steps and follow them if needed below.
@@ -120,17 +122,17 @@ Once done, set the JIT enabler in settings to **SideJITServer**
 (If you don't know what to do, ask for support in the discord.)
 ## Last Step
 1. Open Geode
-2. Press **Verify Geometry Dash**
-3. Press **Download**
-4. Press **Launch**
+2. Tap **Verify Geometry Dash**
+3. Tap **Download**
+4. Tap **Launch**
 
-## Launching on cellular
+## Launching on Cellular
 1. Turn on **LocalDevVPN**
 2. Turn on **Airplane mode**
-3. Press **Launch** like normal
+3. Tap **Launch** like normal
 4. Once Geode has started, turn off **Airplane mode** and **LocalDevVPN**
 
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
 > [!TIP]
-> To refresh Geode, go to SideStore (in LiveConatiner), connect to LocalDevVPN, then tap refresh all.
+> To refresh Geode, connect to LocalDevVPN, open SideStore (in LiveContainer), then tap refresh all.
