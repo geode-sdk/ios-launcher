@@ -4,14 +4,19 @@
 > \
 > This guide assumes you will be installing SideStore. Using enterprise (aka free) certificates to install SideStore **will not work**, as the use of a computer is required to install SideStore.
 
+> [!NOTE]
+> Support for iOS 26.4 is experimental for SideStore. Geode will work on this version, but expect some bugs for SideStore.
+
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
 | iOS 16 to 17.4 and above | Yes | *Partial* to *Full* (*Partial* on JIT-Less, only 5% not supported) | Free |
 
 ## Prerequisites
 - A computer running Windows, macOS or Linux
+- [iTunes](https://apps.microsoft.com/detail/9pb2mz1zmb1s) **For windows only**
+- **usbmuxd** on **devices running Linux or Chromebooks only** (search how to get it for your distro.)
 - [LocalDevVPN](https://apps.apple.com/us/app/localdevvpn/id6755608044) from the App Store
-- [iloader](https://github.com/nab138/iloader/releases) to install SideStore
+- [iLoader](https://github.com/nab138/iloader/releases) to install SideStore
 - An Apple ID (A secondary Apple ID is recommended, though it's not necessarily required)
 - USB Cable to connect your device (Lightning / USB C)
 - Full version of Geometry Dash installed
@@ -21,12 +26,10 @@
 
 ## Install SideStore
 1. Connect your phone to your computer via cable and trust the computer on your phone when prompted (trusting the computer is an important step!)
-2. You may also need to install additional applications depending on your operating system. On Windows you will need iTunes, on Linux you will need usbmuxd. (Explained in https://docs.sidestore.io/docs/installation/prerequisites)
-3. Download iloader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
-4. Sign in with your Apple ID in iloader
-5. In the **Installers** section in iloader, you should generally click "SideStore (Stable)".
-6. You will most likely get an **Untrusted Developer** error. To fix this, go to Settings > General > VPN and Device Management > Your Apple ID and press Trust. After doing this, move to the **Enabling Developer Mode** section below.
-
+2. Download iLoader on your computer and LocalDevVPN on your iDevice as mentioned in the **Prerequisites** section
+3. Sign in with your Apple ID in iLoader
+4. In the **Installers** section in iLoader, click "SideStore (Stable)" if you are below **iOS 26.4**, if not, click "SideStore (Nightly)."
+5. You will most likely get an **Untrusted Developer** error. To fix this, go to Settings > General > VPN and Device Management > Your Apple ID and press Trust. After doing this, move to the **Enabling Developer Mode** section below.
 > [!NOTE]
 > The Developer Mode option will not show up if you do not install SideStore! It will only appear when you install SideStore. So make sure to follow the **Install SideStore** section first, then try to enable Developer Mode.
 
@@ -39,21 +42,19 @@
 
 ### Installing Geode through SideStore
 > [!NOTE]
-> You will need to **refresh** both the store and Geode every week, otherwise you will not be able to run the app.
-
-Here you have 2 options:
+> You will need to **refresh** both SideStore and Geode every week, otherwise you will not be able to run the app.
+> Find how to do this in the Conclusion.
 
 1: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
 ![](screenshots/install-sidestore.png)
 
-2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource. In the input box, type `https://ios-repo.geode-sdk.org/altsource/main.json`, then press the `+` button. Now go to the **Browse** tab, then **Games**, and you will find Geode. Press `Free` to install it.
+2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource, then simply select it in the recommended sources (it will be labeled Geode). Now go to the **Browse** tab, then **Games**, and you will find Geode. Press `Free` to install it.
 ![](screenshots/altsource-install.png)
 > [!NOTE]
 > The AltSource method may recieve updates *later*, and should only be used if you are okay with this.
 
-
 # Launch Geode
-## With JIT-Less
+## JIT-Less
 1. Press **"Enable JIT-Less"**.
 2. Press **"Import SideStore Certificate"**.
 3. Press **"Test JIT-Less Mode"** to test if JIT-less mode works properly.
@@ -61,37 +62,33 @@ Here you have 2 options:
 
 ![](screenshots/jitless-sidestore.png)
 
-## With JIT
+## JIT
 > [!TIP]
 > Skip this **if you're on iOS 16**. SideStore lets you enable JIT **directly from it**. To do so, go to the **My Apps** section in SideStore, hold Geode, and press **"Enable JIT"** (you need to have LocalDevVPN enabled for this).
+> If you are on iOS **17.0.1 - 17.3.1** scroll down to the bottom for your JIT guide.
 
 > [!NOTE]
-> For the first time setup, you will need a computer to get a pairing file. If you installed SideStore, you likely already have a pairing file, meaning there is no need to reinstall iDevice Pair.
-
+> For the first time setup, you will need a computer to get a pairing file. You will use iLoader to get it.
+> Also, StikDebug will not give you any update notification unless you are tracking the Github. It's recommended to use the AltSource so SideStore will notify you about an update.
 ### Installing StikDebug
-1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases).
-2. Install StikDebug from SideStore.
-3. Connect your phone back to your computer via cable and then open iloader. In iloader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
-4. Connect to LocalDevVPN.
-5. Launch StikDebug.
-6. Now you should be set! Simply tap on **Connect by App** to enable JIT on Geode.
-![](screenshots/stikdebug-updated.png)
+1. Get the latest StikDebug IPA file from [Releases](https://github.com/StephenDev0/StikDebug/releases) and install it via SideStore, or via AltSource. Follow the same guide for Geode altsource, only this time picking **Stikdebug Repository** Install by going to **Browse** then **Other** then **StikDebug** and then pressing **Free**
+2. Connect your phone back to your computer via cable and then open iLoader. In iLoader, find **Manage Pairing File**. Click on it and click **Place** near StikDebug. This will place the pairing file to StikDebug, which is essential for StikDebug to function.
+3. Connect to LocalDevVPN
+4. Launch StikDebug.
+5. Check for any extra steps and follow them if needed below.
+6. Now you should be set! Simply tap **Launch** in the Geode launcher to use Geode with JIT.
 
 ### Required Extra Steps for iOS 26
 1. Go to StikDebug settings
-2. Enable **Picture in Picture**, scroll down and see if your device is reported as **TXM** or **Non TXM**. If your device is reported as **Non TXM**, enable **Always Run Scripts**
-3. Import a certificate in **Geode settings**, otherwise you will be stuck at a black screen when launching to Geometry Dash with Geode.
+2. Enable **Silent Audio** and **Background Location**. Scroll down to see if your device is reported as **TXM** or **Non TXM**. If it is reported as Non TXM, turn on **Always Run Scripts**.
+3. Import a certifcate in settings (follow step 2 Jit-less)
+4. When running for the first time, allow StikDebug to use your location.
 
-> [!WARNING]
-> Since LocalDevVPN only works on Wi-Fi and airplane mode, This also means StikDebug also only works on Wi-Fi and airplane mode. To use StikDebug on cellular, do these steps:
-
-1. Enable cellular.
-2. Connect to LocalDevVPN.
-3. Switch to airplane mode.
-4. Launch Geode with JIT using StikDebug.
-5. Turn off airplane mode.
-
-You will have to do this every time you want to launch Geode with JIT on cellular. As long as Geode stays open, you will not need to do these steps.
+### Launching on cellular
+1. Turn on **LocalDevVPN**
+2. Turn on **Airplane mode**
+3. Press **Launch** like normal
+4. Once Geode has started, turn off **Airplane mode** and *LocalDevVPN**
 
 ## Installing SideJITServer (17.0.1 - 17.3.1)
 
@@ -103,3 +100,5 @@ You will need to be nearby your computer to use this, StikDebug does not and wil
 
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
+> [!TIP]
+> To refresh Geode, connect to LocalDevVPN, then tap refresh all.
