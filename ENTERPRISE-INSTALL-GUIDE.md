@@ -19,7 +19,7 @@ This tutorial is for people who cannot afford to purchase a Developer Certificat
 ## Prerequisites
 - **Full version of Geometry Dash installed**
 - An internet connection
-- A signer/installer of your choice with a certificate ([Feather](https://github.com/khcrysalis/Feather) as an example)
+- A signer/installer of your choice with a certificate (such as [Ksign](https://github.com/Nyasami/Ksign) or [Feather](https://github.com/CLARATION/Feather))
 - **IPA file** of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest)
 - At least 400 MB of storage available
 
