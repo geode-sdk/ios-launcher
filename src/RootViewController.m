@@ -92,13 +92,21 @@
 
 - (void)countdownUpdate {
 	self.countdown--;
-	if (self.countdown < 0)
-		self.countdown = 0;
-	self.optionalTextLabel.text = [@"launcher.status.automatic-launch" localizeWithFormat:[NSString stringWithFormat:@"%ld", (long)self.countdown]];
-
-	if (self.countdown <= 0) {
+	if (self.countdown < 0) {
+		if (self.launchTimer != nil) {
+			[self.launchTimer invalidate];
+			self.launchTimer = nil;
+			[self.launchButton addTarget:self action:@selector(launchGame) forControlEvents:UIControlEventTouchUpInside];
+			[self.optionalTextLabel setHidden:YES];
+			self.launchButton.frame = CGRectMake(self.view.center.x - 95, CGRectGetMaxY(self.titleLabel.frame) + 15, 140, 45);
+			self.settingsButton.frame = CGRectMake(self.view.center.x + 50, CGRectGetMaxY(self.titleLabel.frame) + 15, 45, 45);
+		}
+	}
+	if (self.countdown == 0) {
 		self.optionalTextLabel.text = @"launcher.status.automatic-launch.end".loc;
 		[self launchGame];
+	} else if (self.countdown > 0) {
+		self.optionalTextLabel.text = [@"launcher.status.automatic-launch" localizeWithFormat:[NSString stringWithFormat:@"%ld", (long)self.countdown]];
 	}
 }
 
@@ -136,13 +144,12 @@
 			[self.optionalTextLabel setHidden:NO];
 			self.launchButton.frame = CGRectMake(self.view.center.x - 95, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 140, 45);
 			self.settingsButton.frame = CGRectMake(self.view.center.x + 50, CGRectGetMaxY(self.optionalTextLabel.frame) + 15, 45, 45);
-			self.countdown = 3;
+			self.countdown = 4;
 			[self countdownUpdate];
 			self.launchTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(countdownUpdate) userInfo:nil repeats:YES];
 			[self.launchButton addTarget:self action:@selector(launchGame) forControlEvents:UIControlEventTouchUpInside];
-		} else {
-			[self.launchButton addTarget:self action:@selector(launchGame) forControlEvents:UIControlEventTouchUpInside];
 		}
+	    [self.launchButton addTarget:self action:@selector(launchGame) forControlEvents:UIControlEventTouchUpInside];
 	} else {
 		[self.optionalTextLabel setHidden:NO];
 		if (![VerifyInstall verifyGDAuthenticity] && ![VerifyInstall verifyGDInstalled]) {
@@ -430,14 +437,7 @@
 
 - (void)showSettings {
 	[self updatePatchStatus];
-	if (self.launchTimer != nil) {
-		[self.launchTimer invalidate];
-		self.launchTimer = nil;
-		[self.launchButton addTarget:self action:@selector(launchGame) forControlEvents:UIControlEventTouchUpInside];
-		[self.optionalTextLabel setHidden:YES];
-		self.launchButton.frame = CGRectMake(self.view.center.x - 95, CGRectGetMaxY(self.titleLabel.frame) + 15, 140, 45);
-		self.settingsButton.frame = CGRectMake(self.view.center.x + 50, CGRectGetMaxY(self.titleLabel.frame) + 15, 45, 45);
-	}
+	self.countdown = -1;
 	SettingsVC* settings = [[SettingsVC alloc] initWithNibName:nil bundle:nil];
 	settings.root = self;
 	UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:settings];
