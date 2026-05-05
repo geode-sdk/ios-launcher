@@ -91,6 +91,7 @@
 "launcher.status.getting-ver" = "Getting current version...";
 "launcher.status.update-available" = "Update available!";
 "launcher.status.download-geode" = "Downloading Geode...";
+"launcher.status.download-resources" = "Downloading Resources...";
 "launcher.status.extracting" = "Extracting...";
 "launcher.status.patching" = "Patching...";
 "launcher.status.signing" = "Signing...";
@@ -102,6 +103,7 @@
 "launcher.error.download-fail" = "Download failed";
 "launcher.error.download-not-found" = "Download failed, couldn't find ZIP archive. Please try again or enable nightly.";
 "launcher.error.req-failed" = "Request failed";
+"launcher.error.download-updates" = "Couldn't check for updates";
 "launcher.error.json-failed" = "JSON parsing failed";
 "launcher.error.sign.invalidcert" = "Couldn't validate certificate: %@";
 "launcher.error.sign.invalidcert2" = "Certificate Status Invalid";

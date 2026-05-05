@@ -89,6 +89,83 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 	}];
 	[dataTask resume];
 }
+- (void)downloadResource:(RootViewController *)root ignoreRoot:(BOOL)ignoreRoot {
+	if (!ignoreRoot) {
+		_root = root;
+	}
+	_root.optionalTextLabel.text = @"launcher.status.getting-ver".loc;
+	NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:[Utils getGeodeReleaseURL]]];
+	NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
+	NSURLSessionDataTask* dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
+		if (error) {
+			return dispatch_async(dispatch_get_main_queue(), ^{
+				[Utils showError:_root title:@"launcher.error.req-failed".loc error:error];
+				[self.root updateState];
+				AppLog(@"Error during request: %@", error);
+			});
+		}
+		if (data) {
+			NSError* jsonError;
+			id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+			if (jsonError) {
+				return dispatch_async(dispatch_get_main_queue(), ^{
+					[Utils showError:_root title:@"launcher.error.json-failed".loc error:jsonError];
+					[self.root updateState];
+					AppLog(@"Error during JSON: %@", error);
+				});
+			}
+			if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+				NSDictionary* jsonDict = (NSDictionary*)jsonObject;
+				NSArray* assets = jsonDict[@"assets"];
+				if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
+					NSString* published_at = jsonDict[@"published_at"];
+					if (published_at && [published_at isKindOfClass:[NSString class]]) {
+						updateDate = published_at;
+					}
+				} else {
+					NSString* tagName = jsonDict[@"tag_name"];
+					if (tagName && [tagName isKindOfClass:[NSString class]]) {
+						updateDate = tagName;
+					}
+				}
+				if ([assets isKindOfClass:[NSArray class]]) {
+					bool foundAsset = false;
+					for (NSDictionary* asset in assets) {
+						if ([asset isKindOfClass:[NSDictionary class]]) {
+							NSString* assetName = asset[@"name"];
+							if ([assetName isKindOfClass:[NSString class]]) {
+								if ([assetName isEqualToString:@"resources.zip"]) {
+									NSString* downloadURL = asset[@"browser_download_url"];
+									if ([downloadURL isKindOfClass:[NSString class]]) {
+										dispatch_async(dispatch_get_main_queue(), ^{
+											[_root progressVisibility:NO];
+											_root.optionalTextLabel.text = @"launcher.status.download-resources".loc;
+											NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self
+																							 delegateQueue:nil];
+											downloadTask = [session downloadTaskWithURL:[NSURL URLWithString:downloadURL]];
+											[downloadTask setTaskDescription:@"resources"];
+											[downloadTask resume];
+										});
+										foundAsset = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+					if (!foundAsset) {
+						return dispatch_async(dispatch_get_main_queue(), ^{
+							[Utils showError:_root title:@"launcher.error.download-not-found".loc error:nil];
+							[self.root updateState];
+						});
+					}
+				}
+			}
+		}
+	}];
+	[dataTask resume];
+}
+
 
 - (void)checkUpdates:(RootViewController*)root download:(BOOL)download {
 	AppLog(@"Checking for Geode updates...");
@@ -98,7 +175,7 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 	NSURLSessionDataTask* dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
 		if (error) {
 			return dispatch_async(dispatch_get_main_queue(), ^{
-				[Utils showError:_root title:@"launcher.error.req-failed".loc error:error];
+				[Utils showError:_root title:@"launcher.error.download-updates".loc error:error];
 				[self.root updateState];
 				AppLog(@"Error during request: %@", error);
 			});
@@ -260,66 +337,122 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 }
 
 // updating
-- (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)downloadTask didFinishDownloadingToURL:(NSURL*)url {
+- (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)task didFinishDownloadingToURL:(NSURL*)url {
 	NSFileManager* fm = [NSFileManager defaultManager];
-	NSString* docPath = [fm URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject.path;
-	NSString* tweakPath = [NSString stringWithFormat:@"%@/Tweaks/Geode.ios.dylib", docPath];
-	if (![Utils isSandboxed]) {
-		NSString* applicationSupportDirectory = [[Utils getGDDocPath] stringByAppendingString:@"Library/Application Support"];
-		if (applicationSupportDirectory != nil) {
-			// https://github.com/geode-catgirls/geode-inject-ios/blob/meow/src/geode.m
-			NSString* geode_dir = [applicationSupportDirectory stringByAppendingString:@"/GeometryDash/game/geode"];
-			NSString* geode_lib = [geode_dir stringByAppendingString:@"/Geode.ios.dylib"];
-			bool is_dir;
-			NSFileManager* fm = [NSFileManager defaultManager];
-			if (![fm fileExistsAtPath:geode_dir isDirectory:&is_dir]) {
-				AppLog(@"mrow creating geode dir !!");
-				if (![fm createDirectoryAtPath:geode_dir withIntermediateDirectories:YES attributes:nil error:NULL]) {
-					AppLog(@"mrow failed to create folder!!");
-				}
+	if ([[downloadTask taskDescription] isEqualToString:@"resources"]) {
+		NSURL* resourcesPath = [[LCPath dataPath] URLByAppendingPathComponent:@"game/geode/resources"];
+		NSURL* geodeLoaderTmpPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"geode.loader"];
+		NSURL* geodeLoaderPath = [resourcesPath URLByAppendingPathComponent:@"geode.loader"];
+		bool is_dir;
+		if (![fm fileExistsAtPath:resourcesPath.path isDirectory:&is_dir]) {
+			if (![fm createDirectoryAtPath:resourcesPath.path withIntermediateDirectories:YES attributes:nil error:NULL]) {
+				AppLog(@"Failed to create resources folder.");
+				return dispatch_async(dispatch_get_main_queue(), ^{
+					[Utils showError:_root title:@"Failed to create resources folder.".loc error:nil];
+				});
 			}
-			tweakPath = geode_lib;
 		}
-	}
-	if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
-		[[Utils getPrefs] setObject:updateDate forKey:@"NIGHTLY_DATE"];
-	} else {
-		[Utils updateGeodeVersion:updateDate];
-	}
-	[Utils decompress:url.path extractionPath:[[fm temporaryDirectory] path] completion:^(int decompError) {
-		if (decompError) {
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[Utils showError:_root title:[NSString stringWithFormat:@"Decompressing ZIP failed.\nStatus Code: %d\nView app logs for more information.", decompError] error:nil];
-				[_root updateState];
-			});
-			return AppLog(@"Error trying to decompress ZIP: (Code %@)", decompError);
+		if (![fm fileExistsAtPath:geodeLoaderTmpPath.path isDirectory:&is_dir]) {
+			if (![fm createDirectoryAtPath:geodeLoaderTmpPath.path withIntermediateDirectories:YES attributes:nil error:NULL]) {
+				AppLog(@"Failed to create geode.loader folder.");
+				return dispatch_async(dispatch_get_main_queue(), ^{
+					[Utils showError:_root title:@"Failed to create geode.loader folder.".loc error:nil];
+				});
+			}
 		}
-		NSError* error;
-		NSURL* dylibPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"Geode.ios.dylib"];
-		if ([fm fileExistsAtPath:tweakPath isDirectory:false]) {
-			AppLog(@"deleting existing Geode library");
-			NSError* removeError;
-			[fm removeItemAtPath:tweakPath error:&removeError];
-			if (removeError) {
+		[Utils decompress:url.path extractionPath:geodeLoaderTmpPath.path completion:^(int decompError) {
+			if (decompError) {
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[Utils showError:_root title:@"Failed to delete old Geode library" error:removeError];
+					[Utils showError:_root title:[NSString stringWithFormat:@"Decompressing ZIP failed.\nStatus Code: %d\nView app logs for more information.", decompError] error:nil];
 					[_root updateState];
 				});
-				return AppLog(@"Error trying to delete existing Geode library: %@", removeError);
+				return AppLog(@"Error trying to decompress ZIP: (Code %@)", decompError);
 			}
-		}
-		[fm moveItemAtPath:dylibPath.path toPath:tweakPath error:&error];
-		if (error) {
+			NSError* error;
+			if ([fm fileExistsAtPath:geodeLoaderPath.path isDirectory:nil]) {
+				AppLog(@"deleting existing geode.loader");
+				NSError* removeError;
+				[fm removeItemAtPath:geodeLoaderPath.path error:&removeError];
+				if (removeError) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[Utils showError:_root title:@"Failed to delete old geode.loader folder" error:removeError];
+						[_root updateState];
+					});
+					return AppLog(@"Error trying to delete existing geode.loader folder: %@", removeError);
+				}
+			}
+			[fm moveItemAtPath:geodeLoaderTmpPath.path toPath:geodeLoaderPath.path error:&error];
+			if (error) {
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[Utils showError:_root title:@"Failed to move geode.loader folder" error:error];
+					[_root updateState];
+				});
+			}
 			dispatch_async(dispatch_get_main_queue(), ^{
-				[Utils showError:_root title:@"Failed to move Geode lib" error:error];
+				[_root progressVisibility:YES];
 				[_root updateState];
 			});
+		}];
+	} else {
+		NSString* docPath = [fm URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject.path;
+		NSString* tweakPath = [NSString stringWithFormat:@"%@/Tweaks/Geode.ios.dylib", docPath];
+		if (![Utils isSandboxed]) {
+			NSString* applicationSupportDirectory = [[Utils getGDDocPath] stringByAppendingString:@"Library/Application Support"];
+			if (applicationSupportDirectory != nil) {
+				// https://github.com/geode-catgirls/geode-inject-ios/blob/meow/src/geode.m
+				NSString* geode_dir = [applicationSupportDirectory stringByAppendingString:@"/GeometryDash/game/geode"];
+				NSString* geode_lib = [geode_dir stringByAppendingString:@"/Geode.ios.dylib"];
+				bool is_dir;
+				NSFileManager* fm = [NSFileManager defaultManager];
+				if (![fm fileExistsAtPath:geode_dir isDirectory:&is_dir]) {
+					AppLog(@"mrow creating geode dir !!");
+					if (![fm createDirectoryAtPath:geode_dir withIntermediateDirectories:YES attributes:nil error:NULL]) {
+						AppLog(@"mrow failed to create folder!!");
+					}
+				}
+				tweakPath = geode_lib;
+			}
 		}
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[_root progressVisibility:YES];
-			[_root updateState];
-		});
-	}];
+		if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
+			[[Utils getPrefs] setObject:updateDate forKey:@"NIGHTLY_DATE"];
+		} else {
+			[Utils updateGeodeVersion:updateDate];
+		}
+		[Utils decompress:url.path extractionPath:[[fm temporaryDirectory] path] completion:^(int decompError) {
+			if (decompError) {
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[Utils showError:_root title:[NSString stringWithFormat:@"Decompressing ZIP failed.\nStatus Code: %d\nView app logs for more information.", decompError] error:nil];
+					[_root updateState];
+				});
+				return AppLog(@"Error trying to decompress ZIP: (Code %@)", decompError);
+			}
+			NSError* error;
+			NSURL* dylibPath = [[fm temporaryDirectory] URLByAppendingPathComponent:@"Geode.ios.dylib"];
+			if ([fm fileExistsAtPath:tweakPath isDirectory:nil]) {
+				AppLog(@"deleting existing Geode library");
+				NSError* removeError;
+				[fm removeItemAtPath:tweakPath error:&removeError];
+				if (removeError) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[Utils showError:_root title:@"Failed to delete old Geode library" error:removeError];
+						[_root updateState];
+					});
+					return AppLog(@"Error trying to delete existing Geode library: %@", removeError);
+				}
+			}
+			[fm moveItemAtPath:dylibPath.path toPath:tweakPath error:&error];
+			if (error) {
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[Utils showError:_root title:@"Failed to move Geode lib" error:error];
+					[_root updateState];
+				});
+			}
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[_root progressVisibility:YES];
+				[_root updateState];
+			});
+		}];
+	}
 }
 
 - (void)URLSession:(NSURLSession*)session

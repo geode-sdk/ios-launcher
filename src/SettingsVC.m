@@ -420,7 +420,6 @@ extern NSString *lcAppUrlScheme;
 		} custom:nil],
 		[Setting create:@"general.enable-updates".loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"UPDATE_AUTOMATICALLY" switchTag:0 action:nil custom:nil],
 		[Setting simpleCreate:@"general.check-updates".loc type:SettingTypeButton action:^{
-			[[Utils getPrefs] setObject:@"NO" forKey:@"PATCH_CHECKSUM"];
 			if ([VerifyInstall verifyGeodeInstalled]) {
 				[[GeodeInstaller alloc] checkUpdates:_root download:YES];
 				[self dismissViewControllerAnimated:YES completion:nil];
@@ -864,13 +863,18 @@ extern NSString *lcAppUrlScheme;
 									 title:[NSString stringWithFormat:@"JIT-Less Mode Test Passed!\nApp Group ID: %@\nStore: %@", [LCUtils appGroupID], [LCUtils getStoreName]]];
 						} else {
 							AppLog(@"JIT-Less test failed: %@", error);
-							return [Utils
-								showError:self
-									title:[NSString stringWithFormat:@"The test library has failed to load. This means your certificate may be having issue. Please try to: 1. "
-																	 @"Reopen %@; 2. Refresh all apps in %@; 3. Tap Refresh Certificate from %@ and try again.\n\nIf you imported certificate, "
-																	 @"please ensure the certificate is valid, and it is NOT an enterprise certificate.",
-																	 [LCUtils getStoreName], [LCUtils getStoreName], [LCUtils getStoreName]]
-									error:nil];
+							if (![[LCUtils getStoreName] isEqualToString:@"Unknown"]) {
+								return [Utils showError:self title:[NSString stringWithFormat:@"The test library has failed to load. This means your certificate may be having issue. Please try to: 1. "
+										@"Reopen %@; 2. Refresh all apps in %@; 3. Tap Refresh Certificate from %@ and try again.\n\nIf you imported certificate, "
+										@"please ensure the certificate is valid, and it is NOT an enterprise certificate.",
+										[LCUtils getStoreName], [LCUtils getStoreName], [LCUtils getStoreName]]
+										error:nil];
+							} else {
+								return [Utils showError:self title:@"The test library has failed to load. This means your certificate may be having issue. Please try to: 1. "
+										@"Make sure the certificate is valid and not expired/revoked; 2. Make sure the certificate is the same one used as the app; 3. Resign the app with a new certificate and import that certificate.\n\nAdditionally, please ensure the certificate is valid, and it is NOT a distribution/enterprise certificate."
+										error:nil];
+
+							}
 						}
 					}];
 				}];
@@ -947,6 +951,17 @@ extern NSString *lcAppUrlScheme;
 			[alert addAction:okAction];
 			[alert addAction:cancelAction];
 			[self presentViewController:alert animated:YES completion:nil];
+		} custom:nil],
+		// TODO LATER: add support for enterprise mode and jb
+		[Setting create:@"Download Latest Resources" type:SettingTypeButton disabled:^BOOL(){
+			return ![Utils isSandboxed] || ![Utils isDevCert];
+		} visible:nil prefsKey:nil switchTag:0 action:^{
+			if ([VerifyInstall verifyGeodeInstalled]) {
+				[[GeodeInstaller alloc] downloadResource:_root ignoreRoot:NO];
+				[self dismissViewControllerAnimated:YES completion:nil];
+			} else {
+				[Utils showError:_root title:@"general.check-updates.error".loc error:nil];
+			}
 		} custom:nil]
 	];
 	NSArray<Setting*>* about = @[

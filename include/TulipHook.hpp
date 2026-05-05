@@ -37,4 +37,5 @@ namespace tulip {
 	typedef RelocaledBytesReturn (*getRelocatedBytesDef)(int64_t original, int64_t relocated, std::vector<uint8_t> const& originalBuffer);
 	typedef std::vector<uint8_t> (*getCommonHandlerBytesDef)(int64_t handler, ptrdiff_t spaceOffset);
 	typedef std::vector<uint8_t> (*getCommonIntervenerBytesDef)(int64_t original, int64_t handler, size_t unique, ptrdiff_t relocOffset);
+	typedef void (*setLogCallbackDef)(std::function<void(std::string_view)> callback);
 }
