@@ -50,6 +50,9 @@ static void showDlerrAlert(NSString *error) {
 
  __attribute__((constructor))
 static void TweakLoaderConstructor() {
+    if (getenv("GC_WAIT_DEBUGGER")) {
+        sleep(10);
+    }
     const char *tweakFolderC = getenv("GC_GLOBAL_TWEAKS_FOLDER");
     NSString *globalTweakFolder = @(tweakFolderC);
     unsetenv("GC_GLOBAL_TWEAKS_FOLDER");

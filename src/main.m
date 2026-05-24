@@ -26,7 +26,7 @@
 
 // since theos sdk apparently doesnt have this
 // thanks to https://github.com/theos/theos/issues/493
-int __isOSVersionAtLeast(int major, int minor, int patch) {
+__attribute__((weak)) int __isOSVersionAtLeast(int major, int minor, int patch) {
 	NSOperatingSystemVersion version;
 	version.majorVersion = major;
 	version.minorVersion = minor;
@@ -358,6 +358,10 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 	if (tweakFolder != nil) {
 		setenv("GC_GLOBAL_TWEAKS_FOLDER", tweakFolder.UTF8String, 1);
 
+		// waits 10 seconds before launching the game to allow lldb attach
+		if (![gcUserDefaults boolForKey:@"WAIT_DEBUGGER"]) {
+			setenv("GC_WAIT_DEBUGGER", "1", 1);
+		}
 		// Update TweakLoader symlink
 		NSString* tweakLoaderPath = [tweakFolder stringByAppendingPathComponent:@"TweakLoader.dylib"];
 		if (![fm fileExistsAtPath:tweakLoaderPath]) {

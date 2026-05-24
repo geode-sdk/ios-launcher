@@ -8,6 +8,8 @@
 	<string>Geode</string>
 	<key>CFBundleExecutable</key>
 	<string>Geode</string>
+	<key>CADisableMinimumFrameDuration</key>
+	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UISupportsDocumentBrowser</key>

@@ -92,6 +92,10 @@ static NSString* certPassword = nil;
 
 - (BOOL)application:(UIApplication*)application openURL:(nonnull NSURL*)url options:(nonnull NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options {
 	if (url && [url isFileURL]) {
+		if ([Utils isDevCert]) {
+			dispatch_async(dispatch_get_main_queue(), ^{ [Utils showErrorGlobal:@"Cannot import mod: Enterprise Mode does not support mod importing yet." error:nil]; });
+			return NO;
+		}
 		NSFileManager* fm = NSFileManager.defaultManager;
 		NSString* fileName = [url lastPathComponent];
 

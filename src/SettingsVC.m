@@ -1032,6 +1032,7 @@ extern NSString *lcAppUrlScheme;
 		[Setting create:@"advanced.dev-mode".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"DEVELOPER_MODE" switchTag:2 action:nil custom:nil],
 		[Setting create:@"developer.completedsetup".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"CompletedSetup" switchTag:6 action:nil custom:nil],
 		[Setting create:@"developer.webserver".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"WEB_SERVER" switchTag:12 action:nil custom:nil],
+		[Setting create:@"Wait for Debugger".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"WAIT_DEBUGGER" switchTag:27 action:nil custom:nil],
 		[Setting create:@"Force Patching".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_PATCHING" switchTag:14 action:nil custom:nil],
 		[Setting create:@"Don't patch on Safe Mode".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"DONT_PATCH_SAFEMODE" switchTag:15 action:nil custom:nil],
 		[Setting create:@"Force Enterprise Mode".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_ENTERPRISE" switchTag:17 action:nil custom:nil],
@@ -1161,6 +1162,7 @@ extern NSString *lcAppUrlScheme;
 				infoDict[@"GCSupportsControllerUserInteraction"] = @YES;
 				infoDict[@"GCSupportsGameMode"] = @YES;
 				infoDict[@"LSApplicationCategoryType"] = @"public.app-category.games";
+				infoDict[@"CADisableMinimumFrameDuration"] = @YES;
 				infoDict[@"CADisableMinimumFrameDurationOnPhone"] = @YES;
 				infoDict[@"UISupportsDocumentBrowser"] = @YES; // is this necessary? dunno
 				infoDict[@"UIFileSharingEnabled"] = @YES;
@@ -1606,6 +1608,9 @@ extern NSString *lcAppUrlScheme;
 		break;
 	case 26:
 		[Utils toggleKey:@"HELPER_IPA_DOCS"];
+		break;
+	case 27:
+		[Utils toggleKey:@"WAIT_DEBUGGER"];
 		break;
 	}
 }

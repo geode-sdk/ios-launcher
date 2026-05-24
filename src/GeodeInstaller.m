@@ -59,7 +59,7 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 						if ([asset isKindOfClass:[NSDictionary class]]) {
 							NSString* assetName = asset[@"name"];
 							if ([assetName isKindOfClass:[NSString class]]) {
-								if ([assetName hasSuffix:@"-ios.zip"]) {
+								if ([assetName hasSuffix:@"ios.zip"]) {
 									NSString* downloadURL = asset[@"browser_download_url"];
 									if ([downloadURL isKindOfClass:[NSString class]]) {
 										dispatch_async(dispatch_get_main_queue(), ^{

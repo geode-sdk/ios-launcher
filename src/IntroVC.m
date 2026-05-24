@@ -290,6 +290,7 @@ bool passJITTest = false;
 				subtitleLabel.text = @"intro.warning.subtitle1".loc;
 			}
 		} else {
+			[[Utils getPrefs] setBool:YES forKey:@"HELPER_IPA_DOCS"];
 			subtitleLabel.text = @"intro.warning.subtitle2".loc;
 		}
 	}
@@ -947,7 +948,7 @@ bool passJITTest = false;
 	subtitleLabel.textAlignment = NSTextAlignmentCenter;
 	subtitleLabel.font = [UIFont systemFontOfSize:14];
 	subtitleLabel.numberOfLines = 8;
-	subtitleLabel.frame = CGRectMake(0, CGRectGetMaxY(titleLabel.frame) + 20, view.bounds.size.width, 200);
+	subtitleLabel.frame = CGRectMake(0, CGRectGetMaxY(titleLabel.frame) + 20, view.bounds.size.width, 240);
 	if ([[GCSharedUtils appGroupID] isEqualToString:@"Unknown"]) {
 		subtitleLabel.text = @"To continue, you'll need to import your .p12 signing certificate you used to sign the app.\n\nThis will be used to sign mods and get around the code signing requirement. You will also need the certificate password as well.\nIf you do not have a .p12 signing certificate, and you haven't paid for a certificate, please use SideStore instead.";
 	} else {
