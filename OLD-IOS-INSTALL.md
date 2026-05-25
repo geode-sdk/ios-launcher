@@ -7,24 +7,31 @@
 This guide is for devices that are compatible with TrollStore (and optionally a jailbreak)
 
 > [!TIP]
-> On devices below iOS 17.0, you can use enterprise (aka free) certificates to get any installer you will use to install TrollStore. You will not need the free certificates after installing TrollStore, and you should get rid of them after installing TrollStore; as TrollStore permanently signs apps. iOS 15.8.7 and iOS 17.0 requires the use of a computer to install TrollStore.
+> On devices below iOS 17.0.0 (except 15.8.7+), you may use [this website](https://jailbreaks.app/) to download TrollInstallerX to install TrollStore.
+
+> [!NOTE]
+> Installing TrollStore on iOS 17.0.0 currently requires a Computer.
 
 ## Prerequisites
 
-## iOS 15.8.7/iOS 17.0
+## iOS 17.0
 - PC (Windows, Mac, Linux)
 - USB Cable to connect your device (Lightning / USB C)
-- TrollStore
+- TrollStore 
 - Full version of Geometry Dash installed
 - IPA / TIPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest) (only get the TIPA file if you want to use the jailbreak tweak)
 - Jailbreak tweak (optional, you need to be jailbroken and have the TIPA version)
 
-## Below/Above iOS 15.8.7/iOS 17.0
+
+## Below iOS 17.0 
 - TrollStore (or **if you're on an iOS version where TrollStore is not supported** but you're able to jailbreak, **[TrollStore Lite](https://havoc.app/package/trollstorelite))**
 - A jailbreak like Dopamine (optional, only if you want to use the jailbreak tweak)
 - Full version of Geometry Dash installed
 - IPA / TIPA file of Geode launcher from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest) (only get the TIPA file if you want to use the jailbreak tweak)
 - Jailbreak tweak (optional, you need to be jailbroken)
+
+> [!WARNING]
+> If you're using iOS 15.8.7+ you will need to use [TrollInstallerDark](https://github.com/rockylabs-dev/TrollInstallerDark/) instead.
 
 ## Installing TrollStore
 Check out the table on the [iOS CFW Guide](https://ios.cfw.guide/installing-trollstore/) to find the correct method to install TrollStore based on your iOS version and your device's chipset. Check the table on [this page](https://appledb.dev/device-selection/iPhone.html) to see which chipset your device uses. Click [here](https://appledb.dev/device-selection/iPads.html) if you are using an iPad. The part you want to look on this page is **SoC**.
