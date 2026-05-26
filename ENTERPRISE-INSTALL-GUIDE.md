@@ -1,20 +1,23 @@
-# Installation Guide (Free aka Enterprise Certificates)
+# Installation Guide (Free / Distribution Certificates)
+
 > [!IMPORTANT]
-> While this guide will teach you how to enable and use certificates without entitlements on Geode, it is still recommended to buy a Developer Certificate if you can, and follow the [Apple Developer Certificates guide](./APPLE-DEV-CERT-INSTALL-GUIDE.md), as this method is not endorsed or recommended.
-> This is because this method is time consuming, tedious, and slow for using Geode, as it will require you to install a patched Geometry Dash ("Geode Helper") each time you want to install a mod, update a mod, enable a mod, disable a mod, update Geode, and launch in safe mode.
+> Installing Geode via this method is **not recommended** due to the limitations of such Certificates.
+> 
+> Using this method **WILL** require you install a Helper app to install, update, enable and disable mods. As well as updating Geode itself and entering Safe Mode.
 
 > [!CAUTION]
-> In this tutorial, you will install the Geode Helper. This Helper stores a seperate save data for Geometry Dash. Uninstalling the Helper will cause your ***__SAVE DATA, MODS AND MOD SETTINGS in the Helper, to be PERMANENTLY DELETED!!!__*** Instead, keep the Helper installed and just install the IPA the iOS launcher generates for you. Think of it like updating the Helper.
+> The Geode Helper stores a seperate save data for Geometry Dash. Uninstalling the Helper will cause your ***__SAVE DATA, MODS AND MOD SETTINGS in the Helper, to be PERMANENTLY DELETED!!!__*** Keep the Helper installed and just install the IPA the iOS launcher generates for you. Think of it like updating the Helper.
 
 > [!WARNING]
-> This guide will not teach you how to go about obtaining such certificates. These certificates ("free certificates") violate [Apple's Terms of Service](https://developer.apple.com/support/terms/apple-developer-program-license-agreement/#ADPLA5), and may get your iDevice blacklisted. As such, this guide is only for educational purposes, given the consequences: Use at your own risk.
+> Free Certificates violate [Apple's Terms of Service](https://developer.apple.com/support/terms/apple-developer-program-license-agreement/#ADPLA5), and may get your iDevice blacklisted. As such we will not assist you in accquiring them.
+They may also stop working at any time. We **cannot** prevent this as it isn't Geode related.
+> 
 > If you are fine with this, and acknowledge the warning, you can proceed to follow this guide.
 
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14.0 and above | No | *Partial* | Free |
+| iOS 14.0 and above | No | *Partial* | Free (Paid if using a Dist. cert) |
 
-This tutorial is for people who cannot afford to purchase a Developer Certificate, and do not have a computer, but wish to use Geode.
 
 ## Prerequisites
 - **Full version of Geometry Dash installed**
