@@ -425,9 +425,11 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 		AppLog(@"[invokeAppMain] Couldn't find tweak folder!");
 	}
 	// If JIT is enabled, bypass library validation so we can load arbitrary binaries
-	if (has_txm()) {
-		setenv("TXM_JIT", "1", 1);
-	}
+	if (![gcUserDefaults boolForKey:@"JITLESS"]) {
+        if (has_txm()) {
+            setenv("TXM_JIT", "1", 1);
+        }
+    }
 	if (!usingLiveContainer || has_txm()) {
 		if (checkJITEnabled() && ![gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
 			init_bypassDyldLibValidation();
