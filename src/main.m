@@ -50,6 +50,19 @@ bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** or
 	uint32_t* baseAddr = dlsym(RTLD_DEFAULT, functionName);
 	assert(baseAddr != 0);
 	/*
+	 arm64e 27.0b1+ (change was after the autda instruction, since we only look for __NSGetExecutablePath, we will just search for common instructions and hope for the best)
+	 arm64e
+	 180461554 68 44 33 f0     adrp       x8,0x1e6cf0000
+	 180461558 00 19 40 f9     ldr        x0,[x8, #offset dyld4::gAPIs]
+	 18046155c 10 00 40 f9     ldr        x16,[x0]
+	 180461560 f1 03 00 aa     mov        x17,x0
+	 180461564 51 7f ec f2     movk       x17,#0x63fa, LSL #48
+	 180461568 30 1a c1 da     autda      x16,x17
+	 18046156c 03 0e 45 f8     ldr        x3,[x16, #0x50]!
+	 180461570 d1 07 1e ca     eor        x17,x30,x30, LSL #0x1
+	 180461574 51 00 f0 b6     tbz        x17,#0x3e,LAB_18046157c
+	 180461578 20 8e 38 d4     brk        #0xc471
+	
 	 arm64e 26.4b1+ has extra 20 instructions between adrpOffset and adrp
 	 arm64e
 	 1ad450b90  e10300aa   mov     x1, x0
@@ -76,11 +89,48 @@ bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** or
 	 00000001ac934c94         br         x2
 	 */
 	uint32_t* adrpInstPtr = baseAddr + adrpOffset;
-	if ((*adrpInstPtr & 0x9f000000) != 0x90000000) {
-		adrpOffset += 20;
-		adrpInstPtr = baseAddr + adrpOffset;
+
+	// 38 insts
+	// https://github.com/CAS-Atlantic/AArch64-Encoding
+	/*for (uint32_t* ptr = adrpInstPtr; ptr < (baseAddr + 38); ptr++) {
+		if ((*ptr & 0x9f000000) != 0x90000000) { // adrp
+			continue;
+		} else if (((*(ptr+1) & 0xFFC00000) != 0xF9400000) || ((*(ptr+2) & 0xFFC00000) != 0xF9400000)) { // ldr, ldr
+			continue;
+		// lazy approach since we dont really need to
+		} else if ((*(ptr+3) != 0xAA0003F1)) { // mov x17,x0
+			continue;
+		} else if ((*(ptr+4) != 0xF2EC7F51)) { // movk x17,#0x63fa, LSL #48
+			continue;
+		} else if ((*(ptr+5) != 0xDAC11A30)) { // autda x16,x17
+			continue;
+		}
+		adrpOffset += *ptr;
+		break;
+	}*/
+	// i just wasted an hour trying to make a fix when LC had already been updated, anyways
+	// apparently i dont need to compare the first 5 insts and can instead do 3?
+	// i am a bit cautious on if there are similar insts
+	//
+	// also my logic might have been wrong because i didnt create an "extra offset"
+	static long adrpExtraOffset = -1;
+	uint32_t* adrpEnd = baseAddr + 200;
+	for (uint32_t* cur = adrpInstPtr; cur < adrpEnd; ++cur) {
+		if ((*cur & 0x9f000000) != 0x90000000) {
+			continue;
+		}
+		if ((*(cur+1) & 0xFFC00000) != 0xF9400000) {
+			continue;
+		}
+		if ((*(cur+2) & 0xFFC00000) != 0xF9400000) {
+			continue;
+		}
+		adrpExtraOffset = cur - adrpInstPtr;
+		break;
 	}
-	assert((*adrpInstPtr & 0x9f000000) == 0x90000000);
+	assert(adrpExtraOffset != -1);
+	adrpInstPtr += adrpExtraOffset;
+	
 	/*uint32_t immlo = (*adrpInstPtr & 0x60000000) >> 29;
 	uint32_t immhi = (*adrpInstPtr & 0xFFFFE0) >> 5;
 	int64_t imm = (((int64_t)((immhi << 2) | immlo)) << 43) >> 31;
@@ -100,7 +150,7 @@ bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** or
 	void* vtablePtr = **(void***)gdyldPtr;
 
 	void* vtableFunctionPtr = 0;
-	uint32_t* movInstPtr = baseAddr + adrpOffset + 6;
+	uint32_t* movInstPtr = adrpInstPtr + 6;
 
 	if ((*movInstPtr & 0x7F800000) == 0x52800000) {
 		// arm64e, mov imm + add + ldr
@@ -112,7 +162,7 @@ bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** or
 		vtableFunctionPtr = vtablePtr + imm9;
 	} else {
 		// arm64
-		uint32_t* ldrInstPtr2 = baseAddr + adrpOffset + 3;
+		uint32_t* ldrInstPtr2 = adrpInstPtr + 3;
 		assert((*ldrInstPtr2 & 0xBFC00000) == 0xB9400000);
 		uint32_t size2 = (*ldrInstPtr2 & 0xC0000000) >> 30;
 		uint32_t imm12_2 = (*ldrInstPtr2 & 0x3FFC00) >> 10;
@@ -172,15 +222,29 @@ static void overwriteMainCFBundle() {
 	// Overwrite CFBundleGetMainBundle
 	uint32_t* pc = (uint32_t*)CFBundleGetMainBundle;
 	void** mainBundleAddr = 0;
+	bool iOS27 = NO;
+	if (@available(iOS 27.0, *)) {
+		iOS27 = YES;
+	}
 	while (true) {
-		uint64_t addr = aarch64_get_tbnz_jump_address(*pc, (uint64_t)pc);
-		if (addr) {
-			// adrp <- pc-1
-			// tbnz <- pc
-			// ...
-			// ldr  <- addr
-			mainBundleAddr = (void**)aarch64_emulate_adrp_ldr(*(pc - 1), *(uint32_t*)addr, (uint64_t)(pc - 1));
-			break;
+		if (iOS27) {
+			if (((*pc) & 0x7F000000) == 0x36000000) { // tb_z
+				// adrp <- pc-1
+				// tbz <- pc
+				// ldr  <- addr
+				mainBundleAddr = (void **)aarch64_emulate_adrp_ldr(*(pc-1), *(uint32_t *)(pc+1), (uint64_t)(pc-1));
+				break;
+			}
+		} else {
+			uint64_t addr = aarch64_get_tbnz_jump_address(*pc, (uint64_t)pc);
+			if (addr) {
+				// adrp <- pc-1
+				// tbnz <- pc
+				// ...
+				// ldr  <- addr
+				mainBundleAddr = (void**)aarch64_emulate_adrp_ldr(*(pc - 1), *(uint32_t*)addr, (uint64_t)(pc - 1));
+				break;
+			}
 		}
 		++pc;
 	}
@@ -359,7 +423,7 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 		setenv("GC_GLOBAL_TWEAKS_FOLDER", tweakFolder.UTF8String, 1);
 
 		// waits 10 seconds before launching the game to allow lldb attach
-		if (![gcUserDefaults boolForKey:@"WAIT_DEBUGGER"]) {
+		if ([gcUserDefaults boolForKey:@"WAIT_DEBUGGER"]) {
 			setenv("GC_WAIT_DEBUGGER", "1", 1);
 		}
 		// Update TweakLoader symlink

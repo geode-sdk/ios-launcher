@@ -95,10 +95,11 @@ Class LCSharedUtilsClass = nil;
 	const char* dlerr = dlerror();
 	if (!handle || (uint64_t)handle > 0xf00000000000) {
 		if (dlerr) {
-			AppLog(@"Failed to load ZSign: %s", dlerr);
+			*error = [NSError errorWithDomain:NSBundle.mainBundle.bundleIdentifier code:1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Failed to load ZSign: %s", dlerr]}];
 		} else {
-			AppLog(@"Failed to load ZSign: An unknown error occured.");
+			*error = [NSError errorWithDomain:NSBundle.mainBundle.bundleIdentifier code:1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Failed to load ZSign: An unknown error occurred."]}];
 		}
+		AppLog(@"Failed to load ZSign: %s", dlerr);
 	}
 
 	loaded = YES;
