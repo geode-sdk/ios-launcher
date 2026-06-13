@@ -143,7 +143,7 @@ bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** or
 	uint32_t size = (*ldrInstPtr1 & 0xC0000000) >> 30;
 	uint32_t imm12 = (*ldrInstPtr1 & 0x3FFC00) >> 10;
 	gdyldPtr += (imm12 << size);*/
-	void* gdyldPtr = (void*)aarch64_emulate_adrp_ldr(*adrpInstPtr, *(baseAddr + adrpOffset + 1), (uint64_t)(baseAddr + adrpOffset));
+	void* gdyldPtr = (void*)aarch64_emulate_adrp_ldr(*adrpInstPtr, *(adrpInstPtr + 1), (uint64_t)adrpInstPtr);
 
 	assert(gdyldPtr != 0);
 	assert(*(void**)gdyldPtr != 0);
