@@ -1,9 +1,6 @@
 # Getting Started on Installing Geode
 This page **will help you install Geode on your iDevice**. Unlike other platforms, installing Geode on iOS is not straightforward because of Apple's strict policy of not directly allowing apps outside of the App Store.
 
-> [!CAUTION]
-> Do **NOT** update to the iOS 27 beta, as Geode does not work on that version. If you want to proceed with this guide, make sure your iOS version is not iOS 27 and you have not updated to it. This notice will be removed once Geode supports iOS 27.
-
 > [!WARNING]
 > Geode **only works from iOS 14 to the latest iOS version**. Geode will not work on iOS versions below iOS 14.
 

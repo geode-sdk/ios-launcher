@@ -952,6 +952,24 @@ extern NSString *lcAppUrlScheme;
 			[alert addAction:cancelAction];
 			[self presentViewController:alert animated:YES completion:nil];
 		} custom:nil],
+		[Setting create:@"Delete and Redownload Geode" type:SettingTypeButton disabled:^BOOL(){
+			return ![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_CERT_JIT"];
+		} visible:nil prefsKey:nil switchTag:0 action:^{
+			if ([VerifyInstall verifyGeodeInstalled]) {
+				NSError* err;
+				NSString* docPath = [fm URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject.path;
+				NSString* tweakPath = [NSString stringWithFormat:@"%@/Tweaks/Geode.ios.dylib", docPath];
+				[fm removeItemAtPath:tweakPath error:&err];
+				if (err) {
+					[Utils showError:self title:@"Couldn't remove Geode.ios.dylib" error:err];
+					return;
+				}
+				[[GeodeInstaller alloc] checkUpdates:_root download:YES];
+				[self dismissViewControllerAnimated:YES completion:nil];
+			} else {
+				[Utils showError:_root title:@"general.check-updates.error".loc error:nil];
+			}
+		} custom:nil],
 		// TODO LATER: add support for enterprise mode and jb
 		[Setting create:@"Download Latest Resources" type:SettingTypeButton disabled:^BOOL(){
 			return ![Utils isSandboxed] || ![Utils isDevCert];
