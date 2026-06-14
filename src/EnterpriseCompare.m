@@ -31,4 +31,30 @@
 	}
 	return output;
 }
++ (NSInteger)getModCount:(BOOL)helper {
+	NSFileManager* fm = [NSFileManager defaultManager];
+	NSMutableSet<NSString*>* modIDs = [NSMutableSet new];
+	NSError* err;
+	NSArray* modsDir = [fm contentsOfDirectoryAtPath:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"mods"] error:&err];
+	if (!helper) {
+		NSURL* docPath = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject;
+		NSURL* bundlePath = [[docPath URLByAppendingPathComponent:@"Applications"] URLByAppendingPathComponent:@"com.robtop.geometryjump.app"];
+		modsDir = [fm contentsOfDirectoryAtPath:[bundlePath.path stringByAppendingPathComponent:@"mods"] error:nil];
+	}
+	if (err || modsDir.count == 0) {
+		return 0;
+	}
+	for (NSString* file in modsDir) {
+		NSString* modID = [[file stringByDeletingPathExtension] stringByDeletingPathExtension];
+		[modIDs addObject:modID];
+	}
+	NSMutableArray* modIDSorted = [[[modIDs allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] mutableCopy];
+	for (int i = 0; i < modIDSorted.count; i++) {
+		NSString* item = modIDSorted[i];
+		if (item == nil || [item isEqualToString:@""]) {
+			[modIDSorted removeObjectAtIndex:i];
+		}
+	}
+	return [modIDSorted count];
+}
 @end
