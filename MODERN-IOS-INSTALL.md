@@ -42,10 +42,12 @@
 > You will need to **refresh** both SideStore and Geode every week. Otherwise, you will not be able to run the app.
 > Find how to do this in the Conclusion.
 
-1: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
+1: Make sure you turn on **LocalDevVPN** before opening SideStore.
+
+2: Navigate to the **My Apps** tab, and tap the `+` button to add an app. Select the IPA for the Geode app, and the Geode app should appear on your home screen!
 ![](screenshots/install-sidestore.png)
 
-2: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource, then simply select it in the recommended sources (it will be labeled Geode). Now go to the **Browse** tab, then **Games**, and you will find Geode. Press `Free` to install it.
+3: Navigate to the **Sources** tab, and tap the `+` button to add the Geode AltSource, then simply select it in the recommended sources (it will be labeled Geode). Now go to the **Browse** tab, then **Games**, and you will find Geode. Press `Free` to install it.
 ![](screenshots/altsource-install.png)
 > [!NOTE]
 > The AltSource method may recieve updates *later*, and should only be used if you are okay with this.
@@ -98,4 +100,4 @@ You will need to be nearby your computer to use this, StikDebug does not and wil
 ## Conclusion
 You should now be able to run Geometry Dash with Geode! You can install mods by tapping the **Geode** button on the bottom of the menu, and browse for mods to install!
 > [!TIP]
-> To refresh Geode, connect to LocalDevVPN, then tap Refresh All.
+> To refresh Geode, connect to LocalDevVPN, open SideStore, then tap Refresh All in the My Apps tab.
