@@ -990,7 +990,7 @@ bool passJITTest = false;
 	}];
 	[nextButton addAction:action forControlEvents:UIControlEventTouchUpInside];
 
-	nextButton.frame = CGRectMake((view.bounds.size.width / 2) / 2, CGRectGetMaxY(subtitleLabel.frame) + 80, view.bounds.size.width / 2, 45);
+	nextButton.frame = CGRectMake((view.bounds.size.width / 2) / 2, (view.bounds.size.height / 1.5), view.bounds.size.width / 2, 45);
 	[view addSubview:nextButton];
 
 	[self transitionToView:view];
