@@ -104,7 +104,7 @@
 "launcher.error.download-not-found" = "Download failed, couldn't find ZIP archive. Please try again or enable nightly.";
 "launcher.error.req-failed" = "Request failed";
 "launcher.error.download-updates" = "Couldn't check for updates";
-"launcher.error.json-failed" = "JSON parsing failed";
+"launcher.error.json-failed" = "JSON parsing failed (Couldn't fetch updates for %@): %@\nIf you already have Geode installed, you can safely ignore this. This error only means it wasn't able to fetch updates due to your internet connection. View logs for more info on the response.";
 "launcher.error.sign.invalidcert" = "Couldn't validate certificate: %@";
 "launcher.error.sign.invalidcert2" = "Certificate Status Invalid";
 "launcher.error.sign.invalidcert3" = "Invalid Certificate Data";
@@ -181,7 +181,7 @@
 "advanced.use-tweak" = "Use Tweak instead of JIT";
 "advanced.use-tweak.warning" = "You will need to use the TrollStore (.tipa) version of the Geode Launcher to install & update Geode automatically, otherwise you will need to manually download Geode each time using Filza.";
 "advanced.manual-reopen-jit" = "Manual reopen with JIT";
-"advanced.use-nightly" = "Use Nightly Release";
+"advanced.use-nightly" = "Use Nightly Loader Release";
 "advanced.view-recent-logs" = "View Last Game Logs";
 "advanced.view-app-logs" = "View Last App Logs";
 "advanced.view-recent-crash" = "View Last Game Crash";

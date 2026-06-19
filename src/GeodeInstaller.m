@@ -34,9 +34,14 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 			id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
 			if (jsonError) {
 				return dispatch_async(dispatch_get_main_queue(), ^{
-					[Utils showError:_root title:@"launcher.error.json-failed".loc error:jsonError];
+					[Utils showError:_root title:[NSString stringWithFormat:@"launcher.error.json-failed".loc, @"Geode Loader", jsonError.localizedDescription] error:nil];
 					[self.root updateState];
-					AppLog(@"Error during JSON: %@", error);
+					NSString *stringData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+					if (stringData) {
+						AppLog(@"Error during JSON (%@): %@", error, stringData);
+					} else {
+						AppLog(@"Error during JSON (%@): Malformed response", error);
+					}
 				});
 			}
 			if ([jsonObject isKindOfClass:[NSDictionary class]]) {
@@ -109,9 +114,14 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 			id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
 			if (jsonError) {
 				return dispatch_async(dispatch_get_main_queue(), ^{
-					[Utils showError:_root title:@"launcher.error.json-failed".loc error:jsonError];
+					[Utils showError:_root title:[NSString stringWithFormat:@"launcher.error.json-failed".loc, @"Geode Resources", jsonError.localizedDescription] error:nil];
 					[self.root updateState];
-					AppLog(@"Error during JSON: %@", error);
+					NSString *stringData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+					if (stringData) {
+						AppLog(@"Error during JSON (%@): %@", error, stringData);
+					} else {
+						AppLog(@"Error during JSON (%@): Malformed response", error);
+					}
 				});
 			}
 			if ([jsonObject isKindOfClass:[NSDictionary class]]) {
@@ -185,10 +195,15 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 			id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
 			if (jsonError) {
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[Utils showError:_root title:@"launcher.error.json-failed".loc error:jsonError];
+					[Utils showError:_root title:[NSString stringWithFormat:@"launcher.error.json-failed".loc, @"Geode Loader", jsonError.localizedDescription] error:nil];
 					if (!download)
 						dispatch_async(dispatch_get_main_queue(), ^{ [self.root updateState]; });
-					AppLog(@"Error parsing JSON: %@", jsonError);
+					NSString *stringData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+					if (stringData) {
+						AppLog(@"Error during JSON (%@): %@", error, stringData);
+					} else {
+						AppLog(@"Error during JSON (%@): Malformed response", error);
+					}
 				});
 			} else {
 				if ([jsonObject isKindOfClass:[NSDictionary class]]) {
@@ -265,8 +280,13 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 			id jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
 			if (jsonError) {
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[Utils showError:_root title:@"launcher.error.json-failed".loc error:jsonError];
-					AppLog(@"Error parsing JSON: %@", jsonError);
+					[Utils showError:_root title:[NSString stringWithFormat:@"launcher.error.json-failed".loc, @"Geode Launcher", jsonError.localizedDescription] error:nil];
+					NSString *stringData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+					if (stringData) {
+						AppLog(@"Error during JSON (%@): %@", error, stringData);
+					} else {
+						AppLog(@"Error during JSON (%@): Malformed response", error);
+					}
 				});
 			} else {
 				if ([jsonObject isKindOfClass:[NSDictionary class]]) {
