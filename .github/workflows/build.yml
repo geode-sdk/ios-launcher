@@ -54,6 +54,10 @@ jobs:
           sed -i 's|__KEY_PART1__|${{ secrets.KEYONE }}|' src/RootViewController.m
           sed -i 's|__KEY_PART2__|${{ secrets.KEYTWO }}|' src/RootViewController.m
 
+      - name: Replace Metadata Keywords
+        run: |
+          sed -i 's|__COMMIT_HASH__|$(git rev-parse --short "$GITHUB_SHA")' src/main.m
+
       - name: Build
         run: |
           git submodule update --init --recursive

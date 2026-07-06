@@ -23,6 +23,7 @@
 #import "Patcher.h"
 
 extern NSString *lcAppUrlScheme;
+extern NSString *g_commitHash;
 
 @implementation Setting
 + (instancetype)create:(NSString *)title type:(SettingType)type disabled:(BOOL(^)(void))disabled visible:(BOOL(^)(void))visible prefsKey:(NSString *)prefsKey switchTag:(NSInteger)switchTag action:(void (^)(void))action custom:(void (^)(UITableViewCell *cell))custom {
@@ -512,7 +513,7 @@ extern NSString *lcAppUrlScheme;
 			return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} visible:nil prefsKey:@"FIX_BLACKSCREEN" switchTag:8 action:nil custom:nil],
 		[Setting create:@"Aspect Ratio".loc type:SettingTypeCustomVal1 disabled:^BOOL() {
-			return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
+			return ![Utils isSandboxed];
 		} visible:nil prefsKey:nil switchTag:0 action:^{
 			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Aspect Ratio".loc message:nil preferredStyle:[UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad ? UIAlertControllerStyleAlert : UIAlertControllerStyleActionSheet];
 			NSArray* defaultAspectOptions = @[ @"Device Native".loc, @"16:9", @"16:10", @"4:3", @"1:1", @"jit.jit-enabler.custom".loc ];
@@ -953,7 +954,7 @@ extern NSString *lcAppUrlScheme;
 			[self presentViewController:alert animated:YES completion:nil];
 		} custom:nil],
 		[Setting create:@"Delete and Redownload Geode" type:SettingTypeButton disabled:^BOOL(){
-			return ![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_CERT_JIT"];
+			return (![[Utils getPrefs] boolForKey:@"JITLESS"] && ![[Utils getPrefs] boolForKey:@"FORCE_CERT_JIT"]) || (![Utils isSandboxed] || ![Utils isDevCert]);
 		} visible:nil prefsKey:nil switchTag:0 action:^{
 			if ([VerifyInstall verifyGeodeInstalled]) {
 				NSError* err;
@@ -989,6 +990,10 @@ extern NSString *lcAppUrlScheme;
 			cell.textLabel.userInteractionEnabled = YES;
 			UILongPressGestureRecognizer* longPressGR = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showDevMode:)];
 			[cell.textLabel addGestureRecognizer:longPressGR];
+		}],
+		[Setting simpleCreate:@"about.build".loc type:SettingTypeCustomVal1 action:nil custom:^(UITableViewCell *cell){
+			cell.selectionStyle = UITableViewCellSelectionStyleNone;
+			cell.detailTextLabel.text = [g_commitHash isEqualToString:@"__COMMIT_HASH__"] ? @"Local" : g_commitHash;
 		}],
 		[Setting simpleCreate:@"about.geode".loc type:SettingTypeCustomVal1 action:nil custom:^(UITableViewCell *cell){
 			cell.selectionStyle = UITableViewCellSelectionStyleNone;

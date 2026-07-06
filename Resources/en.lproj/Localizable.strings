@@ -189,6 +189,7 @@
 
 "about" = "About";
 "about.launcher" = "iOS Launcher";
+"about.build" = "Build";
 "about.geode" = "Geode";
 "about.geometry-dash" = "Geometry Dash";
 "about.device" = "Device";

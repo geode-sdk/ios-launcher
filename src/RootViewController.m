@@ -24,6 +24,8 @@
 #include <mach-o/dyld.h>
 #include <objc/runtime.h>
 
+extern NSString* g_commitHash;
+
 #define LOCAL_BUILD 0
 #define LOCAL_URL "http://192.168.1.22:3000/Geometry-2.208.ipa"
 
@@ -215,6 +217,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	AppLog(@"== Geode Launcher - %@ (%@) ==", [NSString stringWithFormat:@"v%@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]], [g_commitHash isEqualToString:@"__COMMIT_HASH__"] ? @"Local" : g_commitHash)
 	[Utils increaseLaunchCount];
 
 	_icons = @[

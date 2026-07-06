@@ -28,7 +28,8 @@
 
 #include "LCUtils/utils.h"
 
-bool passJITTest = false;
+static bool s_passJITTest = false;
+extern bool g_skipIntro;
 
 @implementation IntroVC
 
@@ -41,6 +42,11 @@ bool passJITTest = false;
 - (void)goToNextStep {
 	switch (_currentStep) {
 	case InstallStepWelcome:
+		if (g_skipIntro) {
+			_currentStep = InstallStepComplete;
+		    [self completeSetup];
+			break;
+		}
 		_currentStep = InstallStepAccentColor;
 		[self showAccentColorStep];
 		break;
@@ -694,8 +700,8 @@ bool passJITTest = false;
 		};
 		BreakJITWrite((void*)buf_rx, instructions, sizeof(instructions));
 		int (*func)(void) = (int (*)(void))buf_rx;
-		passJITTest = func() == 42;
-		AppLog(@"Function called! Result: %@", (passJITTest) ? @"PASS" : @"FAIL");
+		s_passJITTest = func() == 42;
+		AppLog(@"Function called! Result: %@", (s_passJITTest) ? @"PASS" : @"FAIL");
 		[Utils showNoticeGlobal:@"Tap the Next button."];
 	}];
 	[nextButton addAction:action forControlEvents:UIControlEventTouchUpInside];
@@ -712,7 +718,7 @@ bool passJITTest = false;
 	[self transitionToView:view];
 }
 - (void)jitLCError {
-	if (passJITTest) {
+	if (s_passJITTest) {
 		[self goToNextStep];
 	} else {
 		[self showSoftLock:1];

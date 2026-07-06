@@ -44,6 +44,8 @@ NSDictionary* guestAppInfo;
 
 BOOL usingLiveContainer;
 
+NSString* g_commitHash = @"__COMMIT_HASH__";
+
 void NUDGuestHooksInit();
 void SecItemGuestHooksInit();
 bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** origFunction, void* hookFunction) {

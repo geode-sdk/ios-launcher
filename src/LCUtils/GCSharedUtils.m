@@ -307,13 +307,20 @@ extern NSBundle* gcMainBundle;
 	if ([application canOpenURL:launchURL]) {
 		//[UIApplication.sharedApplication suspend];
 		for (int i = 0; i < tries; i++) {
-			[application openURL:launchURL options:@{} completionHandler:^(BOOL b) { exit(0); }];
+			[application openURL:launchURL options:@{} completionHandler:^(BOOL b) {
+				// exit(0);
+				// syscall(SYS_ptrace, PT_DENY_ATTACH, 0, 0, 0);
+				__asm__ __volatile__ (
+					"mov x0, #31\n"
+					"mov x16, #26\n"
+					"svc #0x80\n"
+				);
+				raise(SIGKILL);
+			}];
 		}
-		// ios 26+
-		/*if(@available(iOS 19.0, *)) {
-			[[NSClassFromString(@"LSApplicationWorkspace") defaultWorkspace] openApplicationWithBundleID:@"com.apple.springboard"];
-		}*/
 		return YES;
+	} else {
+		exit(0);
 	}
 	return NO;
 }

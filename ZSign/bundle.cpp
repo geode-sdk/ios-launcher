@@ -252,16 +252,16 @@ bool ZBundle::SignNode(jvalue& jvNode)
 			ZMachO macho;
 			if (macho.InitV("%s/%s", m_strAppFolder.c_str(), strFile.c_str())) {
 				if (!macho.Sign(m_pSignAsset, m_bForceSign, config["bundle_id"], "", "", "")) {
-                    signFailedFiles += strFile;
-                    signFailedFiles += "\n";
-                }
-                if(progressHandler) {
-                    progressHandler();
-                }
+					signFailedFiles += strFile;
+					signFailedFiles += "\n";
+				}
+				if(progressHandler) {
+					progressHandler();
+				}
 			} else {
-//				return false;
-                signFailedFiles += strFile;
-                signFailedFiles += "\n";
+	//			return false;
+				signFailedFiles += strFile;
+				signFailedFiles += "\n";
 			}
 		}
 	}

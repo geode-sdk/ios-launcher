@@ -360,6 +360,7 @@ Class LCSharedUtilsClass = nil;
 }
 
 + (void)signFilesInFolder:(NSURL*)url onProgressCreated:(void (^)(NSProgress* progress))onProgressCreated completion:(void (^)(NSString* error))completion {
+	AppLog(@"Signing files in %@", url);
 	NSFileManager* fm = [NSFileManager defaultManager];
 	NSURL* codesignPath = [url URLByAppendingPathComponent:@"_CodeSignature"];
 	NSURL* provisionPath = [url URLByAppendingPathComponent:@"embedded.mobileprovision"];
@@ -371,10 +372,13 @@ Class LCSharedUtilsClass = nil;
 
 	NSError* copyError = nil;
 	if (![fm copyItemAtURL:[gcMainBundle executableURL] toURL:tmpExecPath error:&copyError]) {
+		AppLog(@"Couldn't copy main bundle executable to tmp exec path! %@", copyError);
 		completion(copyError.localizedDescription);
 		return;
 	}
+	AppLog(@"Copied main bundle executable from %@ to %@, now signing!", [gcMainBundle executableURL], tmpExecPath);
 	[self signAppBundleWithZSign:url completionHandler:^(BOOL success, NSError* error) {
+		AppLog(@"Finished signing app bundle (%@) with ZSign (%@, %@)", url, (success) ? @"PASS" : @"FAIL", error);
 		NSString* ans = nil;
 		if (error) {
 			ans = error.localizedDescription;
