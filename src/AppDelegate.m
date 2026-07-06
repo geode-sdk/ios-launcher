@@ -12,6 +12,7 @@
 static ImportCertHandler importCertFunc = nil;
 static NSData* certData = nil;
 static NSString* certPassword = nil;
+bool g_skipIntro = false;
 
 // https://www.uicolor.io/
 @implementation AppDelegate
@@ -137,7 +138,10 @@ static NSString* certPassword = nil;
 		}
 		return YES;
 	}
-
+	if ([url.host isEqualToString:@"skip"]) {
+        g_skipIntro = true;
+		return YES;
+	}
 	if ([url.host isEqualToString:@"launchent"]) {
 		AppLog(@"force open helper3");
 		[((RootViewController*)self.window.rootViewController) launchHelper2:NO patchCheck:YES];

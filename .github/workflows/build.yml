@@ -56,7 +56,7 @@ jobs:
 
       - name: Replace Metadata Keywords
         run: |
-          sed -i 's|__COMMIT_HASH__|$(git rev-parse --short "$GITHUB_SHA")' src/main.m
+          sed -i 's|__COMMIT_HASH__|$(git rev-parse --short "$GITHUB_SHA")|' src/main.m
 
       - name: Build
         run: |
