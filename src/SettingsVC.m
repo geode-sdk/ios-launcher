@@ -940,6 +940,18 @@ extern NSString *g_commitHash;
 			NSURL* file = [Utils pathToMostRecentLogInDirectory:[[Utils docPath] stringByAppendingString:@"game/geode/crashlogs/"]];
 			[[self navigationController] pushViewController:[[LogsViewController alloc] initWithFile:file] animated:YES];
 		} custom:nil],
+		[Setting simpleCreate:@"Open Crashlogs Folder".loc type:SettingTypeButton action:^{
+			NSString* openURL;
+			if (![Utils isSandboxed]) {
+				openURL = [NSString stringWithFormat:@"filza://%@", [[Utils getGDDocPath] stringByAppendingPathComponent:@"Documents/game/geode/crashlogs"]];
+			} else {
+				openURL = [NSString stringWithFormat:@"shareddocuments://%@", [[LCPath dataPath] URLByAppendingPathComponent:@"GeometryDash/Documents/game/geode/crashlogs"].path];
+			}
+			NSURL* url = [NSURL URLWithString:openURL];
+			if ([[UIApplication sharedApplication] canOpenURL:url]) {
+				[[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+			}
+		} custom:nil],
 		[Setting create:@"Force Update" type:SettingTypeButton disabled:^BOOL(){
 			return ![Utils isSandboxed];
 		} visible:nil prefsKey:nil switchTag:0 action:^{
