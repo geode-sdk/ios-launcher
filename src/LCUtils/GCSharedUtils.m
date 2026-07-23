@@ -168,7 +168,7 @@ extern NSBundle* gcMainBundle;
 		[fm createFileAtPath:[[LCPath docPath].path stringByAppendingPathComponent:@"../../../../jitflag"] contents:[[NSData alloc] init] attributes:@{}];
 		//UIApplication* application = [NSClassFromString(@"UIApplication") sharedApplication];
 		// assume livecontainer
-		NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=%@.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)], gcMainBundle.bundleIdentifier]];
+		NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=com.geode.launcher.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)]]];
 		//NSURL* launchURL2 = [NSURL URLWithString:[NSString stringWithFormat:@"livecontainer2://livecontainer-launch?bundle-name=%@.app", gcMainBundle.bundleIdentifier]];
 		AppLog(@"Attempting to launch geode with %@", launchURL);
 		if ([gcUserDefaults boolForKey:@"JITLESS"] || [gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
