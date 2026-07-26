@@ -130,7 +130,6 @@ bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** or
 		adrpExtraOffset = cur - adrpInstPtr;
 		break;
 	}
-	assert(adrpExtraOffset != -1);
 	adrpInstPtr += adrpExtraOffset;
 	
 	/*uint32_t immlo = (*adrpInstPtr & 0x60000000) >> 29;
@@ -283,27 +282,45 @@ static void overwriteMainNSBundle(NSBundle* newBundle) {
 	assert(![NSBundle.mainBundle.executablePath isEqualToString:oldPath]);
 }
 
-int hook__NSGetExecutablePath_overwriteExecPath(char*** dyldApiInstancePtr, char* newPath, uint32_t* bufsize) {
+typedef struct {
+	void *gap_0x0[2];                  // 0x00, 0x08
+	char *mainExecutablePath_old;      // 0x10
+	void *gap_0x18;                    // 0x18
+	char *mainExecutablePath_18_4;     // 0x20
+	size_t mainExecutablePathLen_27_0; // 0x28
+} DyldConfig;
+typedef struct {
+	void *gap_0x0;
+	DyldConfig *dyldConfig;
+} DyldAPI;
+
+int hook__NSGetExecutablePath_overwriteExecPath(DyldAPI* dyldApiInstancePtr, char* newPath, uint32_t* bufsize) {
 	assert(dyldApiInstancePtr != 0);
-	char** dyldConfig = dyldApiInstancePtr[1];
+	DyldConfig* dyldConfig = dyldApiInstancePtr->dyldConfig;
 	assert(dyldConfig != 0);
 
 	char** mainExecutablePathPtr = 0;
 	// mainExecutablePath is at 0x10 for iOS 15~18.3.2, 0x20 for iOS 18.4+
-	if (dyldConfig[2] != 0 && dyldConfig[2][0] == '/') {
-		mainExecutablePathPtr = dyldConfig + 2;
-	} else if (dyldConfig[4] != 0 && dyldConfig[4][0] == '/') {
-		mainExecutablePathPtr = dyldConfig + 4;
+	if (dyldConfig->mainExecutablePath_old != 0 && dyldConfig->mainExecutablePath_old[0] == '/') {
+		mainExecutablePathPtr = &(dyldConfig->mainExecutablePath_old);
+	} else if (dyldConfig->mainExecutablePath_18_4 != 0 && dyldConfig->mainExecutablePath_18_4[0] == '/') {
+		mainExecutablePathPtr = &(dyldConfig->mainExecutablePath_18_4);
 	} else {
 		assert(mainExecutablePathPtr != 0);
 	}
 
-	kern_return_t ret = builtin_vm_protect(mach_task_self(), (mach_vm_address_t)mainExecutablePathPtr, sizeof(mainExecutablePathPtr), false, PROT_READ | PROT_WRITE);
+	// "suspicious usage of 'sizeof()' on an expression of pointer type"
+	kern_return_t ret = builtin_vm_protect(mach_task_self(), (mach_vm_address_t)dyldConfig, sizeof(dyldConfig), false, PROT_READ | PROT_WRITE);
 	if (ret != KERN_SUCCESS) {
 		BOOL tpro_ret = os_thread_self_restrict_tpro_to_rw();
 		assert(tpro_ret);
 	}
 	*mainExecutablePathPtr = newPath;
+
+	// in iOS 27, the length is also cached, it's at +0x28
+    if(@available(iOS 27.0, *)) {
+        dyldConfig->mainExecutablePathLen_27_0 = strlen(newPath);
+    }
 	if (ret != KERN_SUCCESS) {
 		os_thread_self_restrict_tpro_to_ro();
 	}
@@ -326,7 +343,7 @@ static void* getAppEntryPoint(void* handle, uint32_t imageIndex) {
 	const struct mach_header_64* header = (struct mach_header_64*)_dyld_get_image_header(imageIndex);
 	uint8_t* imageHeaderPtr = (uint8_t*)header + sizeof(struct mach_header_64);
 	struct load_command* command = (struct load_command*)imageHeaderPtr;
-	for (int i = 0; i < header->ncmds > 0; ++i) {
+	for (int i = 0; i < header->ncmds; ++i) {
 		if (command->cmd == LC_MAIN) {
 			struct entry_point_command ucmd = *(struct entry_point_command*)imageHeaderPtr;
 			entryoff = ucmd.entryoff;
