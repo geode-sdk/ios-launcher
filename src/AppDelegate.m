@@ -99,14 +99,20 @@ bool g_skipIntro = false;
 		}
 		NSFileManager* fm = NSFileManager.defaultManager;
 		NSString* fileName = [url lastPathComponent];
-
+		NSString* modID = fileName;
+		if ([fileName hasSuffix:@".geode"]) {
+			modID = [fileName substringToIndex:[fileName length] - [@".geode" length]];
+		}
 		NSURL* path;
+		NSURL* unzipPath;
 		NSURL* docPath = [NSURL fileURLWithPath:[LCPath docPath].path];
 		NSError* error = nil;
 		if ([Utils isContainerized]) {
 			path = [NSURL fileURLWithPath:[[LCPath docPath].path stringByAppendingString:@"/game/geode/mods/"]];
+			unzipPath = [NSURL fileURLWithPath:[[LCPath docPath].path stringByAppendingString:@"/game/geode/unzipped/binaries"]];
 		} else {
 			path = [NSURL fileURLWithPath:[[Utils docPath] stringByAppendingString:@"game/geode/mods/"]];
+			unzipPath = [NSURL fileURLWithPath:[[Utils docPath] stringByAppendingString:@"game/geode/unzipped/binaries"]];
 		}
 		NSURL* destinationURL = [path URLByAppendingPathComponent:fileName];
 		if ([fm fileExistsAtPath:destinationURL.path]) {
@@ -124,6 +130,43 @@ bool g_skipIntro = false;
 				if (reconstructedPath != nil) {
 					[fm removeItemAtURL:reconstructedPath error:nil];
 				}
+			}
+			bool is_dir;
+			if (![fm fileExistsAtPath:unzipPath.path isDirectory:&is_dir]) {
+				if (![fm createDirectoryAtPath:unzipPath.path withIntermediateDirectories:YES attributes:nil error:NULL]) {
+					AppLog(@"Failed to create binaries folder.");
+				}
+			}
+			if ([fm fileExistsAtPath:unzipPath.path isDirectory:&is_dir]) {
+				NSString* modDylibName = [modID stringByAppendingString:@".ios.dylib"];
+				NSURL* moveModTo = [unzipPath URLByAppendingPathComponent:modDylibName];
+				NSURL* modTmpPath = [[[fm temporaryDirectory] URLByAppendingPathComponent:@"mods"] URLByAppendingPathComponent:modDylibName];
+				[Utils decompress:destinationURL.path extractionPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"mods"].path completion:^(int decompError) {
+					if (decompError) {
+						dispatch_async(dispatch_get_main_queue(), ^{
+							[Utils showErrorGlobal:[NSString stringWithFormat:@"Decompressing ZIP failed.\nStatus Code: %d\nView app logs for more information.", decompError] error:nil];
+						});
+						return AppLog(@"Error trying to decompress ZIP: (Code %@)", decompError);
+					}
+					NSError* error;
+					if ([fm fileExistsAtPath:moveModTo.path]) {
+						AppLog(@"deleting existing mod");
+						NSError* removeError;
+						[fm removeItemAtPath:moveModTo.path error:&removeError];
+						if (removeError) {
+							return AppLog(@"Error trying to delete existing geode.loader folder: %@", removeError);
+						}
+					}
+					[fm moveItemAtPath:modTmpPath.path toPath:moveModTo.path error:&error];
+					if (error) {
+						AppLog(@"Couldn't move file after extracting: %@", error);
+					}
+					NSError* removeError;
+					[fm removeItemAtPath:[[fm temporaryDirectory] URLByAppendingPathComponent:@"mods"].path error:&removeError];
+					if (removeError) {
+						return AppLog(@"Error trying to delete tmp mods folder: %@", removeError);
+					}
+				}];
 			}
 			if (access)
 				[url stopAccessingSecurityScopedResource];
