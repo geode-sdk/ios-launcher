@@ -101,6 +101,8 @@
 "launcher.error.app-uri" = "Couldn't open any app urls. Please ensure you have selected the right JIT Enabler, then restart the launcher.";
 "launcher.error.download-fail-restart" = "Download failed, please restart the app";
 "launcher.error.download-fail" = "Download failed";
+"launcher.error.download-fail-msg" = "Download failed: %@";
+"launcher.error.checksum-fail" = "Download verification failed! The file may be corrupted. Please try downloading again. (Expected: %@; Got: %@)";
 "launcher.error.download-not-found" = "Download failed, couldn't find ZIP archive. Please try again or enable nightly.";
 "launcher.error.req-failed" = "Request failed";
 "launcher.error.download-updates" = "Couldn't check for updates";

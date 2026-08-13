@@ -43,7 +43,6 @@
 + (NSString*)colorToHex:(UIColor*)color;
 + (NSData*)getTweakData;
 + (NSString*)getTweakDir;
-+ (NSArray<NSString*>*)strings:(NSData*)data;
 + (BOOL)isDevCert;
 
 + (NSData*)encryptData:(NSData*)data withKey:(NSString*)key;

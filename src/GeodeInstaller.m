@@ -7,6 +7,8 @@
 
 #define GD_VERSION @"2.208"
 
+static NSString* s_hashCheck = @"0";
+
 typedef void (^DecompressCompletion)(NSError* _Nullable error);
 
 @implementation GeodeInstaller {
@@ -47,18 +49,62 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 			if ([jsonObject isKindOfClass:[NSDictionary class]]) {
 				NSDictionary* jsonDict = (NSDictionary*)jsonObject;
 				NSArray* assets = jsonDict[@"assets"];
-				if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
-					NSString* published_at = jsonDict[@"published_at"];
-					if (published_at && [published_at isKindOfClass:[NSString class]]) {
-						updateDate = published_at;
-					}
-				} else {
-					NSString* tagName = jsonDict[@"tag_name"];
-					if (tagName && [tagName isKindOfClass:[NSString class]]) {
-						updateDate = tagName;
+
+				NSDictionary* payload = jsonDict[@"payload"];
+				NSString* error = jsonDict[@"error"];
+				if (error && [error isKindOfClass:[NSString class]]) {
+					if (error.length > 0) {
+						return dispatch_async(dispatch_get_main_queue(), ^{
+							[Utils showError:_root title:[NSString stringWithFormat:@"launcher.error.download-fail-msg".loc, error] error:nil];
+							[self.root updateState];
+							AppLog(@"Error during request: %@", error);
+						});
 					}
 				}
+
+				if (payload && [payload isKindOfClass:[NSDictionary class]]) {
+					// Assume we're using api.geode-sdk.org
+					if (![[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
+						NSString* tagName = payload[@"tag"];
+						if (tagName && [tagName isKindOfClass:[NSString class]]) {
+							updateDate = tagName;
+						}
+						NSDictionary* downloads = payload[@"downloads"];
+						if(downloads && [downloads isKindOfClass:[NSDictionary class]]) {
+							if (downloads[@"ios"] && [downloads[@"ios"] isKindOfClass:[NSDictionary class]]) {
+								NSString* downloadURL = downloads[@"ios"][@"url"];
+								s_hashCheck = downloads[@"ios"][@"hash"];
+								if (downloadURL && [downloadURL isKindOfClass:[NSString class]]) {
+									return dispatch_async(dispatch_get_main_queue(), ^{
+										[_root progressVisibility:NO];
+										_root.optionalTextLabel.text = @"launcher.status.download-geode".loc;
+										NSURLSession* session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self
+																						 delegateQueue:nil];
+										downloadTask = [session downloadTaskWithURL:[NSURL URLWithString:downloadURL]];
+										[downloadTask resume];
+									});
+								}
+							}
+						}
+						return dispatch_async(dispatch_get_main_queue(), ^{
+							[Utils showError:_root title:@"launcher.error.download-not-found".loc error:nil];
+							[self.root updateState];
+						});
+					}
+				}
+			
 				if ([assets isKindOfClass:[NSArray class]]) {
+					if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
+						NSString* published_at = jsonDict[@"published_at"];
+						if (published_at && [published_at isKindOfClass:[NSString class]]) {
+							updateDate = published_at;
+						}
+					} else {
+						NSString* tagName = jsonDict[@"tag_name"];
+						if (tagName && [tagName isKindOfClass:[NSString class]]) {
+							updateDate = tagName;
+						}
+					}
 					bool foundAsset = false;
 					for (NSDictionary* asset in assets) {
 						if ([asset isKindOfClass:[NSDictionary class]]) {
@@ -209,6 +255,49 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 				if ([jsonObject isKindOfClass:[NSDictionary class]]) {
 					NSDictionary* jsonDict = (NSDictionary*)jsonObject;
 					NSString* tagName = jsonDict[@"tag_name"];
+					NSDictionary* payload = jsonDict[@"payload"];
+
+					NSString* error = jsonDict[@"error"];
+					if (error && [error isKindOfClass:[NSString class]]) {
+						if (error.length > 0) {
+							return dispatch_async(dispatch_get_main_queue(), ^{
+								[Utils showError:_root title:[NSString stringWithFormat:@"launcher.error.download-fail-msg".loc, error] error:nil];
+								[self.root updateState];
+								AppLog(@"Error during request: %@", error);
+							});
+						}
+					}
+
+					if (payload && [payload isKindOfClass:[NSDictionary class]]) {
+						// Assume we're using api.geode-sdk.org
+						if (![[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
+							tagName = payload[@"tag"];
+							if (tagName && [tagName isKindOfClass:[NSString class]]) {
+								BOOL greaterThanVer = [CompareSemVer isVersion:tagName greaterThanVersion:[Utils getGeodeVersion]];
+								AppLog(@"Latest Geode version is %@ (Currently on %@)", tagName, [Utils getGeodeVersion]);
+								if (greaterThanVer) {
+									if ([Utils getGeodeVersion] == nil || [[Utils getGeodeVersion] isEqualToString:@"Geode not installed"]) {
+										AppLog(@"Updated launcher ver!");
+										[Utils updateGeodeVersion:tagName];
+									}
+									dispatch_async(dispatch_get_main_queue(), ^{ [self checkLauncherUpdates:_root]; });
+								} else if (!greaterThanVer) {
+									// assume out of date
+									dispatch_async(dispatch_get_main_queue(), ^{
+										if (download) {
+											[Utils updateGeodeVersion:tagName];
+											AppLog(@"Geode is out of date, updating...");
+											[self startInstall:nil ignoreRoot:YES];
+										} else {
+											root.optionalTextLabel.text = @"launcher.status.update-available".loc;
+											[root.launchButton setEnabled:YES];
+										}
+									});
+								}
+							}
+							return;
+						}
+					}
 					if (tagName && [tagName isKindOfClass:[NSString class]]) {
 						if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
 							NSString* published_at = jsonDict[@"published_at"];
@@ -414,6 +503,7 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 			});
 		}];
 	} else {
+		// s_hashCheck
 		NSString* docPath = [fm URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].lastObject.path;
 		NSString* tweakPath = [NSString stringWithFormat:@"%@/Tweaks/Geode.ios.dylib", docPath];
 		if (![Utils isSandboxed]) {
@@ -436,6 +526,19 @@ typedef void (^DecompressCompletion)(NSError* _Nullable error);
 		if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
 			[[Utils getPrefs] setObject:updateDate forKey:@"NIGHTLY_DATE"];
 		} else {
+			if (s_hashCheck && ![s_hashCheck isEqualToString:@"0"]) {
+				NSData* data = [NSData dataWithContentsOfFile:url.path options:0 error:nil];
+				NSString* newHash = [Utils sha256sumWithData:data];
+				if (data && ![s_hashCheck isEqualToString:newHash]) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[Utils showError:_root title:[NSString stringWithFormat:@"launcher.error.checksum-fail".loc, s_hashCheck, newHash] error:nil];
+						[_root updateState];
+					});
+					return;
+				} else {
+					AppLog(@"Checksum hash for zip file matches! Proceeding to extract! (%@)", newHash);
+				}
+			}
 			[Utils updateGeodeVersion:updateDate];
 		}
 		[Utils decompress:url.path extractionPath:[[fm temporaryDirectory] path] completion:^(int decompError) {
