@@ -1,4 +1,9 @@
 # Installation Guide (TrollStore / Jailbreak)
+> [!NOTE]
+> Jailbreaking on iOS 17.3.1 - 26.0.1 is ONLY for devices with an A13+ chip or older.
+>
+> Do **NOT** ask about jailbreaking compatibility,
+ please refer to [this guide](https://ios.cfw.guide/getting-started) first and ensure you're jailbroken before following the Jailbreak steps.
 
 **TrollStore Compatibility**
 | Supported on | Requires Computer? | Mod Support | Price |
@@ -8,23 +13,19 @@
 **Jailbreak Compatibility**
 | Supported on | Requires Computer? | Mod Support | Price |
 |--------------|--------------------|-------------------|-------|
-| iOS 14 - 18 | On 17.0.1+ | *Full* | Free |
+| iOS 14 - 17.3.1 - 18.7.1 / 26.0.1 | No | *Full* | Free |
 
-
-> [!NOTE]
-> Jailbreaking on iOS 17.0.1 - 18.x is only supported on **older iPads**
->
-> Please read [this guide](https://ios.cfw.guide/getting-started) first and ensure you're jailbroken before following the Jailbreak steps.
 
 > [!TIP]
 > If you are able to [install TrollStore](https://ios.cfw.guide/installing-trollstore/), it is **strongly advised to install Geode using that instead.**
 
 > [!WARNING]
-> If you're using iOS 15.8.7+ you will need to use [TrollInstallerDark](https://github.com/rockylabs-dev/TrollInstallerDark/) instead.
+> If you're using iOS 15, and are on version 15.8.7+, you will need to use [TrollInstallerDark](https://github.com/rockylabs-dev/TrollInstallerDark/) instead.
 
 # Prerequisites
 
-- TrollStore or [TrollStore Lite](https://havoc.app/package/trollstorelite) (Jailbreak users only!)  installed
+- Jailbroken iDevice
+- TrollStore or TrollStore Lite (JB-only) installed 
 - Full version of Geometry Dash installed
 - .ipa / .tipa from [Releases](https://github.com/geode-sdk/ios-launcher/releases/latest) (.tipa is for Jailbreak users only!)
 
