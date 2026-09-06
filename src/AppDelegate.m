@@ -266,9 +266,17 @@ bool g_skipIntro = false;
 		}
 		return YES;
 	} else if ([url.host isEqualToString:@"geode-launch"] || [url.host isEqualToString:@"launch"] || [url.host isEqualToString:@"relaunch"]) {
+		__block BOOL safeMode = NO;
+		NSURLComponents* components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+		for (NSURLQueryItem* item in components.queryItems) {
+			if ([item.name isEqualToString:@"safeMode"]) {
+				safeMode = [item.value isEqualToString:@"1"];
+				break;
+			}
+		}
 		[[Utils getPrefs] setValue:[Utils gdBundleName] forKey:@"selected"];
 		[[Utils getPrefs] setValue:@"GeometryDash" forKey:@"selectedContainer"];
-		[[Utils getPrefs] setBool:NO forKey:@"safemode"];
+		[[Utils getPrefs] setBool:safeMode forKey:@"safemode"];
 		if ([url.host isEqualToString:@"relaunch"] && ![Utils isSandboxed]) {
 			pid_t pid;
 			int status;
@@ -279,7 +287,7 @@ bool g_skipIntro = false;
 				return NO;
 			if (waitpid(pid, &status, 0) != -1) {
 				if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
-					dispatch_async(dispatch_get_main_queue(), ^{ [Utils tweakLaunch_withSafeMode:NO]; });
+					dispatch_async(dispatch_get_main_queue(), ^{ [Utils tweakLaunch_withSafeMode:safeMode]; });
 					return NO;
 				}
 			}
