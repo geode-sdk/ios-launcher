@@ -15,6 +15,8 @@ BOOL showNothing = NO;
 	NSLog(@"[EnterpriseLoader] viewDidAppear");
 	[super viewDidAppear:animated];
 	if (exitMsg != nil) {
+		NSLog(@"[EnterpriseLoader] exitMsg is NOT NULL!");
+		NSLog(@"[EnterpriseLoader] exitMsg is %@", exitMsg);
 		static dispatch_once_t onceToken;
 		dispatch_once(&onceToken, ^{
 			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Notice" message:exitMsg preferredStyle:UIAlertControllerStyleAlert];
