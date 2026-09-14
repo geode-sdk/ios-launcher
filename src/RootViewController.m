@@ -911,7 +911,7 @@ extern NSString* g_commitHash;
 	if (patchCheck) {
 		NSString* checksum = [EnterpriseCompare getChecksum:NO];
 		NSInteger modCount = [EnterpriseCompare getModCount:NO];
-		openURL = [NSString stringWithFormat:@"geode-helper://launch?checksum=%@count=%ld&args=%@%@", checksum, (long)modCount, encodedUrl, [[Utils getPrefs] boolForKey:@"USE_MAX_FPS"] ? @"&cahighfps=1" : @""];
+		openURL = [NSString stringWithFormat:@"geode-helper://launch?checksum=%@&count=%ld&args=%@%@", checksum, (long)modCount, encodedUrl, [[Utils getPrefs] boolForKey:@"USE_MAX_FPS"] ? @"&cahighfps=1" : @""];
 	}
 	NSURL* url = [NSURL URLWithString:openURL];
 	if ([[UIApplication sharedApplication] canOpenURL:url]) {
