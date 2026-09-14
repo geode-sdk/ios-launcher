@@ -100,7 +100,14 @@ BOOL showNothing = NO;
 					NSLog(@"[EnterpriseLoader] curr-checksum %@ vs other-checksum %@", currChecksum, otherChecksum);
 					if (![currChecksum isEqualToString:otherChecksum]) {
 						NSInteger currCount = [EnterpriseCompare getModCount:YES];
-						exitMsg = [NSString stringWithFormat:@"You must update the Helper to use any new mods. If you accidentally skipped the step to save the IPA, go back to the launcher, settings, and tap \"Install Helper\".\n\nYou will install that new helper IPA just like you installed it originally. Do not uninstall the Helper, update it like you would with any other app with your signer.\n(%ld mods found in Launcher%@)", (long)otherCount, (currCount == 0) ? @". However, the helper you have installed has not been updated ever. [no mods]" : [NSString stringWithFormat:@" vs %ld mods found in Helper.", (long)currCount]];
+						// TODO: Fix this pointer access problem because objc is amazing
+						// The problem: [NSString stringWithFormat:] creates an NSString* which is a pointer. It creates this in the autorelease pool (since we're in a swizzled method), but the pool is most likely drained the moment it exits this logic (or im not sure), meaning the obj is deallocated and im basically accessing a dangling pointer! At least it's either that or I'm trying to access the object outside of the "thread" (or whatever apple calls it)
+						// exitMsg = [NSString stringWithFormat:@"You must update the Helper to use any new mods. If you accidentally skipped the step to save the IPA, go back to the launcher, settings, and tap \"Install Helper\".\n\nYou will install that new helper IPA just like you installed it originally. Do not uninstall the Helper, update it like you would with any other app with your signer.\n(%ld mods found in Launcher%@)", (long)otherCount, (currCount == 0) ? @". However, the helper you have installed has not been updated ever. [no mods]" : [NSString stringWithFormat:@" vs %ld mods found in Helper.", (long)currCount]];
+						if (currCount == 0) {
+							exitMsg = @"You must update the Helper to use any new mods. If you accidentally skipped the step to save the IPA, go back to the launcher, settings, and tap \"Install Helper\".\n\nYou will install that new helper IPA just like you installed it originally. Do not uninstall the Helper, update it like you would with any other app with your signer.\nThe helper you have installed has not been updated ever.";
+						} else {
+							exitMsg = @"You must update the Helper to use any new mods. If you accidentally skipped the step to save the IPA, go back to the launcher, settings, and tap \"Install Helper\".\n\nYou will install that new helper IPA just like you installed it originally. Do not uninstall the Helper, update it like you would with any other app with your signer.\nThe mod count for both the Helper and the Launcher do not match.";
+						}
 					}
 				}
 			} else if ([url.host isEqualToString:@"check"]) {
