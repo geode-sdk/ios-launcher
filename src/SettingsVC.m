@@ -513,7 +513,7 @@ extern NSString *g_commitHash;
 			return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} visible:nil prefsKey:@"FIX_BLACKSCREEN" switchTag:8 action:nil custom:nil],
 		[Setting create:@"Aspect Ratio".loc type:SettingTypeCustomVal1 disabled:^BOOL() {
-			return ![Utils isSandboxed];
+			return ![Utils isSandboxed] || [[Utils getPrefs] integerForKey:@"ENTERPRISE_MODE"];
 		} visible:nil prefsKey:nil switchTag:0 action:^{
 			UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Aspect Ratio".loc message:nil preferredStyle:[UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad ? UIAlertControllerStyleAlert : UIAlertControllerStyleActionSheet];
 			NSArray* defaultAspectOptions = @[ @"Device Native".loc, @"16:9", @"16:10", @"4:3", @"1:1", @"jit.jit-enabler.custom".loc ];
