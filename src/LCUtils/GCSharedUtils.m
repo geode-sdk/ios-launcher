@@ -164,11 +164,23 @@ extern NSBundle* gcMainBundle;
 	if (NSClassFromString(@"LCSharedUtils")) {
 		[gcUserDefaults synchronize];
 		NSFileManager* fm = [NSFileManager defaultManager];
+		UIApplication* application = [NSClassFromString(@"UIApplication") sharedApplication];
 
 		[fm createFileAtPath:[[LCPath docPath].path stringByAppendingPathComponent:@"../../../../jitflag"] contents:[[NSData alloc] init] attributes:@{}];
 		//UIApplication* application = [NSClassFromString(@"UIApplication") sharedApplication];
 		// assume livecontainer
-		NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=com.geode.launcher.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)]]];
+		// TODO FOR ME, this is the commit where I forced it https://github.com/geode-sdk/ios-launcher/commit/cdb4071d735bf0188dbd4b94e84bea2f54442082
+		// sometimes people might install 2 geodes so... fix it so it gets the proper bundle id!
+
+		// NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=%@.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)], gcMainBundle.bundleIdentifier]];
+        NSURL* launchURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=com.geode.launcher.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)]]];
+		if (![application canOpenURL:launchURL]) {
+			launchURL = [NSURL URLWithString:@"livecontainer://livecontainer-launch?bundle-name=com.geode.launcher.app"];
+			if (![application canOpenURL:launchURL]) {
+				launchURL = [NSURL URLWithString:@"livecontainer2://livecontainer-launch?bundle-name=com.geode.launcher.app"];
+			}
+		}
+
 		//NSURL* launchURL2 = [NSURL URLWithString:[NSString stringWithFormat:@"livecontainer2://livecontainer-launch?bundle-name=%@.app", gcMainBundle.bundleIdentifier]];
 		AppLog(@"Attempting to launch geode with %@", launchURL);
 		if ([gcUserDefaults boolForKey:@"JITLESS"] || [gcUserDefaults boolForKey:@"FORCE_CERT_JIT"]) {
@@ -288,7 +300,12 @@ extern NSBundle* gcMainBundle;
 	}
 	if (NSClassFromString(@"LCSharedUtils")) {
 		tries = 2;
-		urlScheme = [NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=%@", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)], [[NSBundle mainBundle] bundlePath].lastPathComponent];
+		NSString* appID = [[NSBundle mainBundle] bundlePath].lastPathComponent;
+		if ([appID hasPrefix:@"com.kdt.livecontainer"] || [appID hasPrefix:@"com.robtop"]) {
+			urlScheme = [NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=com.geode.launcher.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)]];
+		} else {
+			urlScheme = [NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=%@", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)], appID];
+		}
 		if (![application canOpenURL:[NSURL URLWithString:urlScheme]]) {
 			urlScheme = [NSString stringWithFormat:@"%@://livecontainer-launch?bundle-name=com.geode.launcher.app", [NSUserDefaults performSelector:@selector(lcAppUrlScheme)]];
 			if (![application canOpenURL:[NSURL URLWithString:urlScheme]]) {

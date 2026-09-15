@@ -43,6 +43,7 @@ NSBundle* gcMainBundle;
 NSDictionary* guestAppInfo;
 
 BOOL usingLiveContainer;
+static BOOL usejitflag = NO;
 
 NSString* g_commitHash = @"__COMMIT_HASH__";
 
@@ -764,6 +765,7 @@ int GeodeMain(int argc, char* argv[]) {
 	if ([fm fileExistsAtPath:[docPath stringByAppendingPathComponent:@"jitflag"]]) {
 		selectedApp = [Utils gdBundleName];
 		[fm removeItemAtPath:[docPath stringByAppendingPathComponent:@"jitflag"] error:nil];
+		usejitflag = YES;
 	}
 	BOOL safeMode = [gcUserDefaults boolForKey:@"safemode"];
 
@@ -833,7 +835,7 @@ int GeodeMain(int argc, char* argv[]) {
 		}
 		NSSetUncaughtExceptionHandler(&exceptionHandler);
 		setenv("GC_HOME_PATH", getenv("HOME"), 1);
-		if ([gcUserDefaults boolForKey:@"RestartFlag"]) {
+		if ([gcUserDefaults boolForKey:@"RestartFlag"] || (usejitflag && usingLiveContainer)) {
 			[gcUserDefaults removeObjectForKey:@"RestartFlag"];
 			// a hacky workaround since we cant just copy & sign the binary while its running...
 			if ([gcUserDefaults boolForKey:@"JITLESS"] && !usingLiveContainer) {
@@ -902,9 +904,9 @@ int GeodeMain(int argc, char* argv[]) {
 				AppLog(@"Success patch! Now invoking main...");
 			}
 			// since zsign is being so weird
-			if ([gcUserDefaults boolForKey:@"JITLESS"] && usingLiveContainer) {
+			/*if ([gcUserDefaults boolForKey:@"JITLESS"] && usingLiveContainer) {
 				goto passafter;
-			}
+			}*/
 		}
 		NSString* appError = invokeAppMain(selectedApp, @"GeometryDash", safeMode, argc, argv);
 		if (appError) {
@@ -913,7 +915,7 @@ int GeodeMain(int argc, char* argv[]) {
 			return 1;
 		}
 	}
-passafter:
+// passafter:
 	@autoreleasepool {
 		dlopen("@executable_path/Frameworks/WebServer.dylib", RTLD_LAZY);
 		void* uikitHandle = dlopen("/System/Library/Frameworks/UIKit.framework/UIKit", RTLD_GLOBAL);
