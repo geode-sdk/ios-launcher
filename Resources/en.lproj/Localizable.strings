@@ -187,7 +187,7 @@
 "advanced.view-recent-logs" = "View Last Game Logs";
 "advanced.view-app-logs" = "View Last App Logs";
 "advanced.view-recent-crash" = "View Last Game Crash";
-"advanced.warn-launcher-jit" = "Show JIT Warning";
+"advanced.warn-launcher-jit" = "Don't Show JIT Warning";
 
 "about" = "About";
 "about.launcher" = "iOS Launcher";
