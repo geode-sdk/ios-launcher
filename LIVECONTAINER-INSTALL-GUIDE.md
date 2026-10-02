@@ -90,6 +90,7 @@ Finally, the last steps are:
 2. Install and configure **StikDebug** (steps below)
 3. Hold down **Geode**, press Settings and turn these on:
 - **Launch with JIT**
+- **Use LiveContainer's Bundle ID**
 - **Don't Inject TweakLoader**
 - **Don't Load TweakLoader**
 ![](./screenshots/livecontainer.png)
