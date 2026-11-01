@@ -599,9 +599,9 @@ static NSString* invokeAppMain(NSString* selectedApp, NSString* selectedContaine
 	// safe mode
 	if ([gcUserDefaults boolForKey:@"JITLESS"] || [gcUserDefaults boolForKey:@"FORCE_PATCHING"]) {
 		if (safeMode) {
-			setenv("LAUNCHARGS", "--geode:use-common-handler-offset=8c4000 --geode:safe-mode", 1);
+			setenv("LAUNCHARGS", "--geode:use-common-handler-offset=a4c000 --geode:safe-mode", 1);
 		} else {
-			setenv("LAUNCHARGS", "--geode:use-common-handler-offset=8c4000", 1);
+			setenv("LAUNCHARGS", "--geode:use-common-handler-offset=a4c000", 1);
 		}
 	} else {
 		if (safeMode) {
@@ -845,7 +845,7 @@ int GeodeMain(int argc, char* argv[]) {
 				NSURL* bundlePath = [[LCPath bundlePath] URLByAppendingPathComponent:[Utils gdBundleName]];
 				AppLog(@"Checking if GD needs to be patched & signed...");
 				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-					[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0x8c4000 force:NO withSafeMode:safeMode withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
+					[Patcher patchGDBinary:[bundlePath URLByAppendingPathComponent:@"GeometryOriginal"] to:[bundlePath URLByAppendingPathComponent:@"GeometryJump"] withHandlerAddress:0xa4c000 force:NO withSafeMode:safeMode withEntitlements:NO completionHandler:^(BOOL success, NSString* error) {
 						AppLog(@"Seeing conditions");
 						if (success) {
 							BOOL force = NO;
