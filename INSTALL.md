@@ -5,18 +5,18 @@ This page **will help you install Geode on your iDevice**. Unlike other platform
 > Geode **only works from iOS 14 to the latest iOS version**. Geode will not work on iOS versions below iOS 14.
 
 > [!TIP]
-> By iOS version (or iPadOS version), it's not talking about the model (like iPhone 12), but it's instead talking about the **software version** the device is running on. Geode can run on an **iPhone 6s / 6s Plus** up to the newest iPhone model (iPhone 17e)! Or from **iPad Mini 4** up to **iPad Air M4**
+> By iOS version (or iPadOS version), it's not talking about the model (like iPhone 12), but it's instead talking about the **software version** the device is running on.
 
 > [!TIP]
 > If you **don't know the iOS version of your iDevice**, follow [this page from Apple](https://support.apple.com/en-us/109065) to check your iOS version.
 
 | Method | Supported iOS | Computer Required | Mod Support | Price |
 | ------ | ------------- | ----------------- | ----------------- | ----- |
-| [TrollStore / Jailbreak](/OLD-IOS-INSTALL.md) | iOS 14–17.0 (excluding 16.7.x+ & 17.0.x+) | No* | Full (Native JIT) | Free |
 | [SideStore](/MODERN-IOS-INSTALL.md) | iOS 14+ | First-time setup only | Full (JIT) / Partial (JIT-less) | Free |
+| [LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md) | iOS 15+ | First-time setup only | Full (JIT) / Partial (JIT-less) | Free |
 | [Apple Developer Certificate](/APPLE-DEV-CERT-INSTALL-GUIDE.md) | iOS 14+ | No* | Full (JIT) / Partial (JIT-less) | Paid |
 | [Free Certificates](/ENTERPRISE-INSTALL-GUIDE.md) | iOS 14+ | No | Partial | Free |
-| [LiveContainer](/LIVECONTAINER-INSTALL-GUIDE.md) | iOS 15+ | Yes* | Full (JIT) / Partial (JIT-less) | Free |
+| [TrollStore / Jailbreak](/OLD-IOS-INSTALL.md) | iOS 14 - 26.0.1 (versions may vary depending on Device) | No* | Full (Native JIT) | Free |
 
 In case you still do not know which installation method to use, look at the image below (starting on the white box) to see which guide you should use. (ending on the green box)
 ![](screenshots/geode_path.png)
@@ -50,8 +50,8 @@ Here's a comparison of all methods for you to see which method is the most suita
 - Works very reliably
 
 ### Cons
-- Limited iOS version support (iOS 14-17.0, excluding 16.7.x+ and 17.0.x+)
-- Might require a computer to set up (if on-device options like using free certificates to install TrollStore do not work; iOS 17.0 requires a computer)
+- Limited iOS version support (iOS 14 - 17.0, excluding 16.7.x+ and 17.0.x+)
+- May need to jailbreak to install (can lead to some apps not working if not properly removed)
 
 ## SideStore
 🚀 If you have a computer, don't want to pay for a certificate, and your device is on the latest iOS version, this is the best option to install Geode 🚀
