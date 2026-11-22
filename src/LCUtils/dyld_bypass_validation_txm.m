@@ -25,6 +25,7 @@ int cache_txm2 = 0;
 extern NSBundle* gcMainBundle;
 
 BOOL has_txm() {
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"FORCE_NON_TXM"]) return NO;
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"FORCE_TXM"]) return YES;
 	if (@available(iOS 26.0, *)) return YES;
 	if (cache_txm > 0) return cache_txm == 2;
@@ -233,8 +234,7 @@ void init_bypassDyldLibValidation() {
 		return;
 	bypassed = YES;
 
-	NSString* tsPath = [NSString stringWithFormat:@"%@/../_TrollStore", gcMainBundle.bundlePath];
-	if (!access(tsPath.UTF8String, F_OK) || !has_txm()) { //_no_force()
+	if (!has_txm()) { //_no_force()
 		init_bypassDyldLibValidationNonTXM();
 		return;
 	}

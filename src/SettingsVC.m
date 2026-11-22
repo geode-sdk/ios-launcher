@@ -1073,6 +1073,7 @@ extern NSString *g_commitHash;
 		[Setting create:@"Force Enterprise Mode".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_ENTERPRISE" switchTag:17 action:nil custom:nil],
 		[Setting create:@"Is Compressing IPA".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"IS_COMPRESSING_IPA" switchTag:18 action:nil custom:nil],
 		[Setting create:@"Force TXM".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_TXM" switchTag:21 action:nil custom:nil],
+		[Setting create:@"Force Non-TXM".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_NON_TXM" switchTag:28 action:nil custom:nil],
 		[Setting create:@"Force ANGLEGLKit".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"FORCE_ANGLE" switchTag:23 action:nil custom:nil],
 		[Setting create:@"Change .ipa loc to Docs".loc.loc type:SettingTypeToggle disabled:nil visible:nil prefsKey:@"HELPER_IPA_DOCS" switchTag:26 action:nil custom:nil],
 		[Setting simpleCreate:@"developer.testbundleaccess".loc type:SettingTypeButton action:^{
@@ -1646,6 +1647,9 @@ extern NSString *g_commitHash;
 		break;
 	case 27:
 		[Utils toggleKey:@"WAIT_DEBUGGER"];
+		break;
+	case 28:
+		[Utils toggleKey:@"FORCE_NON_TXM"];
 		break;
 	}
 }
