@@ -5,7 +5,7 @@
 #import "VerifyInstall.h"
 #import "components/LogUtils.h"
 
-#define GD_VERSION @"2.208"
+#define GD_VERSION @"2.209"
 
 static NSString* s_hashCheck = @"0";
 
