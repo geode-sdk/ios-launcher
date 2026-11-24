@@ -181,7 +181,7 @@ extern SecTaskRef SecTaskCreateFromSelf(CFAllocatorRef allocator) __attribute__(
 	if ([[Utils getPrefs] boolForKey:@"USE_NIGHTLY"]) {
 		return @"https://api.github.com/repos/geode-sdk/geode/releases/tags/nightly";
 	} else {
-		return @"https://api.geode-sdk.org/v1/loader/versions/latest?gd=2.2081";
+		return @"https://api.geode-sdk.org/v1/loader/versions/latest?gd=2.2091";
 	}
 }
 + (NSString*)getGeodeLauncherURL {
